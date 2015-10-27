@@ -1,12 +1,23 @@
 import React from "react-native";
-let {View, Text, StyleSheet, Image} = React;
+let {View, Text, StyleSheet, Image, TouchableOpacity} = React;
+
+import Io from '../../io';
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
     	alignItems: 'flex-start',
-    	flexDirection: 'column',
-    	paddingBottom: 20
+    	flexDirection: 'row',
+    	height: 55
+	},
+	trackInfo: {
+		flex: 1,
+    	flexDirection: 'column'
+	},
+	cover: {
+		width: 50,
+    	height: 50,
+    	marginRight: 10
 	},
 	title: {
 		flex:1,
@@ -25,18 +36,30 @@ const styles = StyleSheet.create({
 let ArtistItem = React.createClass({
 	render: function() {
 		let {track} = this.props;
+		console.log(track);
 		return (
 			<View style={styles.container}>
-				<Text style={styles.title}>{track.name}</Text>
-				<View style={styles.trackData}>
-					<Text style={styles.artistsNames}>{
-						track.artists.map(artist => {
-							return artist.name + ";";
-						})
-					}</Text>
+				<Image style={styles.cover} source={{uri: track.album.images[0].url}} />
+				<View style={styles.trackInfo}>
+					<TouchableOpacity
+							style={styles.trackInfo}
+							onPress={this._playTrack}>
+						
+						<Text style={styles.title}>{track.name}</Text>
+						<View style={styles.trackData}>
+							<Text style={styles.artistsNames}>{
+								track.artists.map(artist => {
+									return artist.name + ";";
+								})
+							}</Text>
+						</View>
+					</TouchableOpacity>
 				</View>
 			</View>
 		);
-	}
+	},
+	_playTrack: function() {
+		Io.socket.emit("player:play:track", {"source": "spotify", "uri": this.props.track.uri});
+	},
 });
 export default  ArtistItem;

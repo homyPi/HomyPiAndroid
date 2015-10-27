@@ -1,3 +1,3 @@
 module.exports = {
-	server_url: "http://homypi.herokuapp.com"
+	server_url: "http://192.168.1.13:3000"
 };

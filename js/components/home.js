@@ -24,10 +24,9 @@ var Home = React.createClass({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#F5FCFF',
+      backgroundColor: '#FAFAFA',
     },
     status: {
-      fontSize: 20,
       flexDirection: 'row'
     },
     statusOk: {

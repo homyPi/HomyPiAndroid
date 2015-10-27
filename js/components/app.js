@@ -8,23 +8,42 @@ var {
   TouchableHighlight,
   Navigator
 } = React;
-var Home = require("./home");
+var Home = require("./music/searchMusic");
 var PlayerHeader = require("./music/playerHeader");
-var SideMenu = require('react-native-side-menu');
+var Drawer = require('react-native-drawer')
 var Menu = require("./menu");
 var TopMenu = require("./topMenu");
+import RCTDeviceEventEmitter from 'RCTDeviceEventEmitter'
+var Io = require("../io");
+import Subscribable from "Subscribable";
+var UserApi = require("../apis/UserAPI");
+
+var SocketConnection = require("../natives/SocketConnection");
+
+
 
 var App = React.createClass({
+  mixins: [Subscribable.Mixin],
   getInitialState() {
     return {}
+  },
+  componentWillMount: function() {
+    //SocketConnection.addListenerOn = this.addListenerOn;
+    //this.addListenerOn(RCTDeviceEventEmitter, "socketService:binded", function() {
+      Io.connect(UserApi.getToken());
+    //});
   },
   render: function() {
     var initialRoute = {name: 'home', component: Home, index: 1};
     
     let nav = null;
-    var menu = <Menu pushRoute={this._push.bind(this)} />;
+    var menu = <Menu pushRoute={this._push} closeMenu={this.closeMenu} />;
     return (
-        <SideMenu menu={menu} ref="sideMenu">
+        <Drawer 
+          content={menu}
+          ref="sideMenu"
+          tweenHandler={Drawer.tweenPresets.parallax}
+          openDrawerOffset={100}>
           <TopMenu openMenu={this.openSideMenu} />
           <View style={this.styles.container}> 
             <Navigator
@@ -44,19 +63,22 @@ var App = React.createClass({
               <PlayerHeader navigator = {this.props.navigator} />
             </View>
           </View>
-        </SideMenu>
+        </Drawer>
       );
   },
   _push: function(route) {
     this.refs.appNavigator.push(route);
   },
   openSideMenu: function() {
-    console.log(this.refs.sideMenu);
+    this.refs.sideMenu.open();
+  },
+  closeMenu: function() {
+    this.refs.sideMenu.close()
   },
   styles: StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#F5FCFF'
+      backgroundColor: '#FAFAFA'
     },
     player: {
       height: 65

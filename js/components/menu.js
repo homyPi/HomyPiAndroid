@@ -41,10 +41,11 @@ const styles = StyleSheet.create({
     top: 20,
   },
   item: {
-    fontSize: 16,
-    fontWeight: '300',
-    paddingTop: 5,
-  },
+    paddingTop: 10,
+    paddingBottom: 10,
+    fontSize: 18,
+    fontWeight: '300'
+  }
 });
 
 class Menu extends Component {
@@ -59,34 +60,34 @@ class Menu extends Component {
         </View>
 
         <TouchableHighlight
-              onPress={this.gotoSearchMusic.bind(this)} >
+          style={styles.clickable}
+          onPress={this.gotoSearchMusic.bind(this)} >
             <Text style={styles.item}>Music</Text>
         </TouchableHighlight>
         
         <TouchableHighlight
-              onPress={this.gotoMyArtists.bind(this)} >
+              onPress={this.gotoMyArtists} >
           <Text style={styles.item}>My artists</Text>
         </TouchableHighlight>
       </ScrollView>
     );
   }
   gotoMyArtists() {
+    console.log(this, "push route");
     this.props.pushRoute({
       name:"my artists",
       component: MyArtists
     });
-    this.context.menuActions.toggle();
+    this.props.closeMenu();
   }
   gotoSearchMusic() {
+    console.log(this, "push route");
     this.props.pushRoute({
       name:"search music",
       component: SearchMusic
     });
-    this.context.menuActions.toggle();
+    this.props.closeMenu();
   }
 }
-Menu.contextTypes = {
-  menuActions: React.PropTypes.object.isRequired
-};
 
 module.exports = Menu;

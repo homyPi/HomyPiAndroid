@@ -19,17 +19,11 @@ class TopMenu extends React.Component {
 		return (
 			<TouchableOpacity
 				style={styles.container}
-		        onPress={this.handlePress.bind(this)}>
+		        onPress={this.props.openMenu}>
 		        <Image style={styles.menuButton} source={require('image!ic_action')} />
 		    </TouchableOpacity>
 		);
 	}
-	handlePress(e) {
-		this.context.menuActions.toggle();
-	}
 }
-TopMenu.contextTypes = {
-  menuActions: React.PropTypes.object.isRequired
-};
 
 export default TopMenu;

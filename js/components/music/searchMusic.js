@@ -1,7 +1,7 @@
 import React from "react-native";
 var {ScrollView, View, TextInput, Text, Image, ListView, TouchableOpacity} = React;
 
-import {MKTextField, MKColor}  from "react-native-material-kit";
+import {MKTextField, MKColor, mdl}  from "react-native-material-kit";
 
 const Dimensions = require('Dimensions');
 const window = Dimensions.get('window');
@@ -40,87 +40,100 @@ const styles = {
 		paddingBottom: 15
 	},
 	scrollView: {
-    	height: (window.height - 100)
+		height: (window.height - 200)
   	}
 }
-
+const SingleColorSpinner = mdl.Spinner.singleColorSpinner()
+  .build();
 class SearchMusic extends React.Component {
 	constructor(props) {
 		super(props);
 		this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 		this.state = {
-			search: "gorillaz",
 			artists: MusicSearchStore.getAll().artists,
-			tracks: MusicSearchStore.getAll().tracks.items,
-			albums: MusicSearchStore.getAll().albums.items
+			tracks: MusicSearchStore.getAll().tracks,
+			albums: MusicSearchStore.getAll().albums,
+			loading: false,
+			search: "gorillaz"
 		};
 	}
 	_onChange() {
-	    this.setState({
-	      artists: MusicSearchStore.getAll().artists,
-	      tracks: MusicSearchStore.getAll().tracks.items,
-	      albums: MusicSearchStore.getAll().albums.items
-	    });
-    }
+		this.setState({
+		  artists: MusicSearchStore.getAll().artists,
+		  tracks: MusicSearchStore.getAll().tracks,
+		  albums: MusicSearchStore.getAll().albums,
+		  loading: false
+		});
+	}
   	componentDidMount() {
 	  	MusicSearchStore.addChangeListener(this._onChange.bind(this));
-    	if (this.state.search != "") {
-	    	this.handleSearch();
-	    }
+		if (this.state.search != "") {
+			this.handleSearch();
+		}
   	}
   	componentWillUnmount() {
-    	MusicSearchStore.removeChangeListener(this._onChange.bind(this));
+		MusicSearchStore.removeChangeListener(this._onChange.bind(this));
   	}
 	render () {
-		let {artists, tracks, albums} = this.state;
+		let {search, loading} = this.state;
 		return (
 			<View style={styles.container}>
 				<View style={styles.form}>
-	              	<MKTextField
-	              	  style={styles.input}
+				  	<MKTextField
+				  	  style={styles.input}
 					  tintColor={MKColor.Blue}
 					  textInputStyle={{color: MKColor.BlueGrey}}
-					  placeholder="Search"
+					  placeholder={search || "Search"}
 					  onChangeText={(search) => this.setState({search: search})} />
-		            <TouchableOpacity
+					<TouchableOpacity
 						style={styles.searchButton}
 						onPress={this.handleSearch.bind(this)}>
 						<Image style={styles.searchButtonImg} resizeMode={Image.resizeMode.contain} source={require('image!ic_search')} />
-				    </TouchableOpacity>
-              	</View>
-              	<View>
-	              	<ScrollView
-						automaticallyAdjustContentInsets={true}
-						horizontal={false}
-						style={[styles.scrollView]}>
-								<Text style={styles.title}>Tracks</Text>
-				              	<View>
-				              		{
-					              		tracks.map(track => {
-					              			return (<Track key={track.id} track={track} playTrack={this._playTrack} addTrack={this._addTrackInPlaylist}/>);
-					              		})
-					              	}
-					            </View>
-					            <Text style={styles.title}>Albums</Text>
-						        <GridView
-								   		style={styles.albumsGrid}
-									    items={albums}
-								        itemsPerRow={2}
-								        renderItem={this.renderAlbumItem}
-								        scrollEnabled={false}
-						        		onEndReached={this.onEndReached} />
-							<Text style={styles.title}>Artists</Text>
-				             	<GridView
-								   		style={styles.artistsGrid}
-									    items={artists.items}
-								        itemsPerRow={2}
-								        renderItem={this.renderArtistItem}
-								        scrollEnabled={false}
-						        		onEndReached={this.onEndReached} />
-					</ScrollView>
-		        </View>
-            </View>
+					</TouchableOpacity>
+			  	</View>
+			  	{(loading)? this.getLoadingView(): this.getResultsView()}
+			</View>
 		);
+	}
+	getResultsView() {
+		let {artists, tracks, albums} = this.state;
+		return (
+			<View>
+			  	<ScrollView
+					automaticallyAdjustContentInsets={true}
+					horizontal={false}
+					style={[styles.scrollView]}>
+							<Text style={styles.title}>Tracks</Text>
+						  	<View>
+						  		{
+							  		tracks.items.map(track => {
+							  			return (<Track key={track.id} track={track} playTrack={this._playTrack} addTrack={this._addTrackInPlaylist}/>);
+							  		})
+							  	}
+							</View>
+							<Text style={styles.title}>Albums</Text>
+							<GridView
+							   		style={styles.albumsGrid}
+									items={albums.items}
+									itemsPerRow={2}
+									renderItem={this.renderAlbumItem}
+									scrollEnabled={false}
+									onEndReached={this.onEndReached} />
+						<Text style={styles.title}>Artists</Text>
+						 	<GridView
+							   		style={styles.artistsGrid}
+									items={artists.items}
+									itemsPerRow={2}
+									renderItem={this.renderArtistItem}
+									scrollEnabled={false}
+									onEndReached={this.onEndReached} />
+				</ScrollView>
+			</View>
+		)
+	}
+
+	getLoadingView() {
+		return (<SingleColorSpinner/>);
 	}
 	
 	renderArtistItem(result) {
@@ -137,7 +150,8 @@ class SearchMusic extends React.Component {
 
 	handleSearch() {
 		let search =this.state.search;
-		MusicSearchActions.search(this.state.search);
+		this.setState({loading: true});
+		MusicSearchActions.search(this.state.search, null, 4);
 	}
 }
 

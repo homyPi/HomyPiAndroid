@@ -3,12 +3,11 @@ import Constants from '../Constants';
 import BaseStore from './BaseStore';
 import assign from 'object-assign';
 
-// data storage
-let _data = {albums: {items:[]}, tracks: {items:[]}, artists: {items:[]}};
+let _data = {albums: {items: []}, tracks: {items: []}, artists: {items: []}};
 
 
 function setList(resTracks, resAlbums, resArtists) {
-  _data = {albums: resAlbums || {items:[]}, tracks: resTracks, artists: resArtists};
+  _data = {albums: resAlbums, tracks: resTracks, artists: resArtists};
 }
 // Facebook style store creation.
 const MusicSearchStore = assign({}, BaseStore, {
@@ -17,7 +16,7 @@ const MusicSearchStore = assign({}, BaseStore, {
     return {
       tracks: _data.tracks,
       albums: _data.albums,
-      artists: _data.artists || {items:[]}
+      artists: _data.artists
     };
   },
 
@@ -26,14 +25,9 @@ const MusicSearchStore = assign({}, BaseStore, {
     let action = payload.action;
     switch(action.type) {
       case Constants.MusicSearchActionTypes.SET_RESULTS:
-      try {
         let {tracks, albums, artists} = action.results;
-        setList(tracks, albums, artists);
+        setList(tracks ||{items: []}, albums ||{items: []}, artists ||{items: []});
         MusicSearchStore.emitChange();
-      } catch(e) {
-        console.log(e);
-        console.log(e.stack);
-      }
         break;
       default:
         break;

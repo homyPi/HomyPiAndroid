@@ -1,34 +1,29 @@
 
 import UserAPI from "./UserAPI.js"
 var config = require("../config.js");
-
+var superagent = require('superagent');
 
 export default {
 	search(request, type, nb) {
 		return new Promise((resolve, reject) => {
-			let url = config.server_url + "/api/spotify/search?q=" + request;
+			let url = config.server_url + "/api/modules/music/search?q=" + request;
 			if (type) {
 				url += "&type=" + type;
 			}
 			if (nb) {
-				url += "&nb_items=" + nb
+				url += "&limit=" + nb
 			}
-			console.log("fetch " + url);
-			fetch(url,
-				{
-					method: "GET",
-				    headers: {
-					    'Accept': 'application/json',
-					    'Content-Type': 'application/json',
-					    "Authorization": "Bearer " + UserAPI.getToken()
+			url += "&source=spotify";
+			console.log(url);
+			superagent.get(url)
+				.set("Authorization", "Bearer " + UserAPI.getToken())
+				.end(function(err, res) {
+					if (err) {
+						console.log(err.stack);
+						return console.log(err);
 					}
-				}).then(function(response) {
-					return response.json();
-				}).then(function(json) {
-					return resolve(json);
-				}).catch(function(err) {
-					return reject(err);
+					return resolve(JSON.parse(res.text));
 				});
-			});
+		});
 	}
 }

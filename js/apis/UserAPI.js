@@ -9,7 +9,7 @@ var token = null;
 var setToken = function(newToken) {
 	token = newToken;
 	try {
-		Io.connect(token);
+		//Io.connect(token);
 	} catch(e) {
 		console.log(e);
 	}
@@ -30,7 +30,7 @@ var loadStoredToken = function(callback) {
 };
 
 
-module.exports = {
+export default {
 	loadStoredToken: loadStoredToken,
 	getToken: getToken,
 	login(username, password) {

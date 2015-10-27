@@ -7,8 +7,67 @@ var {
   TouchableHighlight
 } = React;
 
+const Dimensions = require('Dimensions');
+const window = Dimensions.get('window');
+
+var Io = require("../../io");
+import Progress from './Progress';
+import PlayPause from './PlayPause';
+import PlaylistStore from '../../stores/PlaylistStore';
+import PlaylistActionCreators from '../../actions/PlaylistActionCreators';
+
+var RaspberryActionCreators = require("../../actions/RaspberryActionCreators");
+var RaspberryStore = require("../../stores/RaspberryStore");
+
 var PlayerFull = React.createClass({
+
+	_onRaspberryChange() {
+	    this.setState({
+	    	raspberries: RaspberryStore.getAll().raspberries,
+			selectedRaspberry : RaspberryStore.getAll().selectedRaspberry
+	    });
+	    this.setGetTrackProgressInterval();
+	},
+	_onPlaylistChange() {
+		this.setState({
+			playing: PlaylistStore.getAll().playing,
+			progress: PlaylistStore.getAll().progress
+		});
+		this.setGetTrackProgressInterval();
+	},
+	getInitialState() {
+	   	RaspberryActionCreators.getAll();
+	   	PlaylistActionCreators.loadPlaylist();
+	    return {
+	      raspberries: RaspberryStore.getAll().raspberries,
+	      selectedRaspberry : RaspberryStore.getAll().selectedRaspberry,
+	      playing: PlaylistStore.getAll().playing,
+	      progress: PlaylistStore.getAll().progress,
+	      extended: false
+	    };
+	},
+	componentDidMount() {
+	    RaspberryStore.addChangeListener(this._onRaspberryChange);
+	    PlaylistStore.addChangeListener(this._onPlaylistChange);
+	    
+		//this.setGetTrackProgressInterval();
+	},
+	componentWillUnmount() {
+	    RaspberryStore.removeChangeListener(this._onRaspberryChange);
+	    PlaylistStore.removeChangeListener(this._onPlaylistChange);
+	    if (this.getProgressInterval) {
+			//clearInterval(this.getProgressInterval);				this.getProgressInterval = null;
+		}
+		if (this.autoUpdateProgress) {
+			//clearInterval(this.autoUpdateProgress)
+			//this.autoUpdateProgress = null;
+		}
+	},
 	render: function() {
+		let {selectedRaspberry, playing} = this.state;
+		var raspberry = selectedRaspberry;
+		let statusAction = null;
+		
 		return (
 			<View style={this.styles.container}>
 				<View style={this.styles.viewActions}>
@@ -18,33 +77,42 @@ var PlayerFull = React.createClass({
 						<Image
 				        style={this.styles.hidePlayer}
 	              		resizeMode={Image.resizeMode.contain}
-				        source={{uri: 'https://cdn3.iconfinder.com/data/icons/faticons/32/arrow-left-01-512.png'}} />
+				        source={require("image!ic_close_white_48dp")} />
 					</ TouchableHighlight>
 					
 				</View>
 				<Image
 			        style={this.styles.cover}
-              		resizeMode={Image.resizeMode.contain}
-			        source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}} />
+              		resizeMode={Image.resizeMode.cover}
+			        source={{uri: playing.album.images[0].url}} />
 				<View style={this.styles.trackInfo}>
-					<Text style={this.styles.trackName}>track name</Text>
-					<Text style={this.styles.artists}>a1, a2</Text>
+					<Text style={this.styles.trackName}>{playing.name}</Text>
+					<Text style={this.styles.artists}>{playing.artists.map(function(artist) { return (artist.name + "; ")})}</Text>
 				</View>
+				<Progress />
+				{
+					(raspberry)? (
 				<View style={this.styles.playerActions}>
-					<Image
-				        style={this.styles.previous}
-	              		resizeMode={Image.resizeMode.contain}
-				        source={{uri: 'https://cdn3.iconfinder.com/data/icons/faticons/32/arrow-left-01-512.png'}} />
-					<Image
-				        style={this.styles.playPause}
-	              		resizeMode={Image.resizeMode.contain}
-				        source={{uri: 'http://www.datavideo.us/wp-content/plugins/youtube-simplegallery/img/play.png'}} />
-					<Image
-				        style={this.styles.next}
-	              		resizeMode={Image.resizeMode.contain}
-				        source={{uri: 'https://cdn3.iconfinder.com/data/icons/faticons/32/arrow-left-01-512.png'}} />
-					
+					<TouchableHighlight
+						style={this.styles.skip}
+						onPress={this._pause} >
+						<Image
+					        style={this.styles.skipImg}
+		              		resizeMode={Image.resizeMode.cover}
+					        source={require("image!ic_skip_previous_white_48dp")} />
+					</ TouchableHighlight>
+					<PlayPause raspberry={raspberry} style={this.styles.playPause} styleImg={this.styles.playPauseImg} />
+					<TouchableHighlight
+						style={this.styles.skip}
+						onPress={this._pause} >
+						<Image
+					        style={this.styles.skipImg}
+		              		resizeMode={Image.resizeMode.contain}
+					        source={require("image!ic_skip_next_white_48dp")} />
+					</ TouchableHighlight>
 				</View>
+				): (<View style={this.styles.playerActions}></View>)
+				}
 			</View>
 		);
 	},
@@ -55,8 +123,9 @@ var PlayerFull = React.createClass({
 			backgroundColor: "#263238"
 		},
 		viewActions: {
-			flex: 0.1,
-			flexDirection: "row"
+			//flex: 0.1,
+			flexDirection: "row",
+			alignItems: "flex-start"
 		},
 		viewActionsButtons: {
 			flex: 0.5,
@@ -65,12 +134,13 @@ var PlayerFull = React.createClass({
 		},
 		hidePlayer: {
 			height: 50,
-			width: 75,
-			justifyContent: "flex-start",
-			transform: [{rotate: "-90deg"}],
+			width: 50,
+			justifyContent: "flex-start"
 		},
 		cover: {
-			flex: 0.6
+			flex: 0.5,
+			height: (window.height/2),
+			width: window.width
 		},
 		trackInfo: {
 			flex: 0.10,
@@ -89,6 +159,8 @@ var PlayerFull = React.createClass({
 			flex: 0.5
 		},
 		playerActions: {
+			marginLeft: 45,
+			marginRight: 45,
 			flex: 0.2,
 			flexDirection: "row",
 			alignItems: "center",
@@ -96,25 +168,22 @@ var PlayerFull = React.createClass({
 		},
 		playPause: {
 			flex: 0.5,
+			alignItems: "center",
 			alignSelf: "center",
-			justifyContent: "center",
-			height: 75,
-			color: "#ffffff"
+			justifyContent: "center"
 		},
-		previous: {
+		playPauseImg: {
+			width: 90,
+			height: 90
+		},
+		skip: {
 			flex: 0.25,
 			alignSelf: "center",
-			justifyContent: "center",
-			height: 50,
-			color: "#ffffff"
+			justifyContent: "center"
 		},
-		next: {
-			flex: 0.25,
-			alignSelf: "center",
-			justifyContent: "center",
-			height: 50,
-			transform: [{rotate: "180deg"}],
-			color: "#ffffff"
+		skipImg: {
+			width: 50,
+			height: 50
 		}
 
 	})

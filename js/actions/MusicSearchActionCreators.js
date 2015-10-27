@@ -3,8 +3,8 @@ import Constants from '../Constants';
 import MusicSearchAPI from '../apis/MusicSearchAPI.js';
 
 export default {
-	search(query) {
-		MusicSearchAPI.search(query)
+	search(query, type, nb) {
+		MusicSearchAPI.search(query, type, nb)
 			.then(function(results) {
 				console.log(results);
 				Dispatcher.handleViewAction({

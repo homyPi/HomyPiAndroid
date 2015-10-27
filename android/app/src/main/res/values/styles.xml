@@ -4,5 +4,12 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
     </style>
+    <style name="NotificationText">
+      <item name="android:textColor">?android:attr/textColorPrimaryInverse</item>
+    </style>
+    <style name="NotificationTitle">
+      <item name="android:textColor">?android:attr/textColorPrimaryInverse</item>
+      <item name="android:textStyle">bold</item>
+    </style>
 
 </resources>

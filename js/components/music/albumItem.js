@@ -1,19 +1,21 @@
 import React from 'react-native';
 
-var {View, Image, Text, StyleSheet} = React
+var {View, Image, Text, StyleSheet} = React;
+const Dimensions = require('Dimensions');
+const window = Dimensions.get('window');
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
     	alignItems: 'center',
-    	flexDirection: 'column',
+    	flexDirection: 'column'
 	},
 	cover: {
-		height: 150,
-		width: 175
+		height: 125,
+		width: (window.width/2-25)
 	},
 	coverContainer: {
-		flex: 1,
+		flex: 1
 	},
 	artistName: {
 		flex: 0.20,

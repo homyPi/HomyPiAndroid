@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/player_notification"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="left" >
+
+    <ImageView
+        android:id="@+id/notification_image"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:scaleType="fitCenter"
+        android:gravity="left"
+    />
+	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/track_info"
+	    android:layout_width="wrap_content"
+	    android:layout_height="fill_parent" 
+	    android:layout_toRightOf="@id/notification_image"
+	    android:layout_alignTop="@+id/notification_image" >
+
+	    <TextView 
+	        android:id="@+id/notification_title"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="@style/NotificationTitle"
+	    />
+
+	    <TextView
+	        android:id="@+id/notification_text"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_toRightOf="@+id/notification_image"
+	        android:layout_below="@+id/notification_title"
+	        style="@style/NotificationText"
+	    />
+	</RelativeLayout>
+
+
+    <ImageButton
+        android:id="@+id/play_pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+	    android:layout_toRightOf="@+id/track_info"
+        android:gravity="right"
+    />
+
+</RelativeLayout>

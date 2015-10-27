@@ -11,9 +11,8 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
-import com.github.xinthink.rnmk.ReactMaterialKitPackage;
-
 public class MainActivity extends Activity implements DefaultHardwareBackBtnHandler {
+    private static Activity mCurrentActivity = null;
 
     private ReactInstanceManager mReactInstanceManager;
     private ReactRootView mReactRootView;
@@ -21,6 +20,7 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mCurrentActivity = this;
         mReactRootView = new ReactRootView(this);
 
         mReactInstanceManager = ReactInstanceManager.builder()
@@ -28,7 +28,7 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
                 .setBundleAssetName("index.android.bundle")
                 .setJSMainModuleName("index.android")
                 .addPackage(new MainReactPackage())
-                .addPackage(new ReactMaterialKitPackage())
+                .addPackage(new CustomReactPackage(this))
                 .setUseDeveloperSupport(BuildConfig.DEBUG)
                 .setInitialLifecycleState(LifecycleState.RESUMED)
                 .build();
@@ -45,6 +45,15 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
             return true;
         }
         return super.onKeyUp(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+      if (mReactInstanceManager != null) {
+        mReactInstanceManager.onBackPressed();
+      } else {
+        super.onBackPressed();
+      }
     }
 
     @Override
@@ -68,5 +77,11 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
         if (mReactInstanceManager != null) {
             mReactInstanceManager.onResume(this);
         }
+    }
+
+    public static Activity getActivity(){
+        Activity activity = new Activity();
+        activity = mCurrentActivity;
+        return activity;
     }
 }
