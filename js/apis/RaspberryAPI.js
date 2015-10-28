@@ -10,7 +10,7 @@ export default {
 			
 			superagent.get(url)
 				.set("Authorization", "Bearer " + UserAPI.getToken())
-  .set('Accept', 'application/json')
+  				.set('Accept', 'application/json')
 				.end(function(err, res) {
 					if(err) {
 						console.log(err.stack);

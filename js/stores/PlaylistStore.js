@@ -3,7 +3,6 @@ import Constants from '../Constants';
 import BaseStore from './BaseStore';
 import assign from 'object-assign';
 
-import PlayerNotification from "../natives/PlayerNotification";
 // data storage
 let _data = [];
 let playing = {
@@ -40,18 +39,9 @@ function removeItemById(_id) {
   }
 }
 function setPlaying(idPlaying) {
-    console.log("setPlaying");
   _data.forEach(function(track) {
     if (idPlaying == track._id) {
       playing = track;
-      PlayerNotification.setTrackName(track.name);
-      var artists = "";
-      for(var i = 0; i < track.artists.length; i++) {
-        artists += track.artists[i].name + "; ";
-      }
-      PlayerNotification.setArtists(artists);
-      PlayerNotification.setcover(track.album.images[0].url);
-      //PlayerNotification.show();
     }
   });
 }

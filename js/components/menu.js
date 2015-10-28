@@ -11,8 +11,6 @@ const {
   TouchableHighlight
 } = React;
 
-import MyArtists from "./music/myArtists";
-var SearchMusic = require("./music/searchMusic");
 
 const window = Dimensions.get('window');
 const uri = 'http://pickaface.net/includes/themes/clean/img/slide2.png';
@@ -49,6 +47,10 @@ const styles = StyleSheet.create({
 });
 
 class Menu extends Component {
+  constructor(props) {
+    super(props);
+  }
+
   render() {
     return (
       <ScrollView style={styles.menu}>
@@ -66,7 +68,7 @@ class Menu extends Component {
         </TouchableHighlight>
         
         <TouchableHighlight
-              onPress={this.gotoMyArtists} >
+              onPress={() => {this.gotoMyArtists() }} >
           <Text style={styles.item}>My artists</Text>
         </TouchableHighlight>
       </ScrollView>
@@ -75,19 +77,18 @@ class Menu extends Component {
   gotoMyArtists() {
     console.log(this, "push route");
     this.props.pushRoute({
-      name:"my artists",
-      component: MyArtists
+      name:"myArtists"
     });
     this.props.closeMenu();
   }
   gotoSearchMusic() {
     console.log(this, "push route");
     this.props.pushRoute({
-      name:"search music",
-      component: SearchMusic
+      name:"searchMusic"
     });
     this.props.closeMenu();
   }
 }
+Menu.defaultProps = {pushRoute:function(){}};
 
-module.exports = Menu;
+export default Menu;

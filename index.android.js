@@ -9,13 +9,46 @@ var {
   StyleSheet,
   Text,
   View,
-  Navigator
+  Navigator,
+  BackAndroid
 } = React;
 
 import Login from "./js/components/login";
 import App from "./js/components/app";
 import Splash from "./js/components/splash";
 import UserAPI from "./js/apis/UserAPI";
+
+var _navigator;
+var PlayerFull = require("./js/components/music/playerFull");
+
+BackAndroid.addEventListener('hardwareBackPress', () => {
+  if (_navigator && _navigator.getCurrentRoutes().length > 1) {
+    _navigator.jumpBack();
+    return true;
+  }
+  return false;
+});
+
+var RouteMapper = function(route, navigationOperations, onComponentRef) {
+  _navigator = navigationOperations;
+  if (route.name === "splash") {
+    return (
+      <Splash navigator={navigationOperations} />
+    );
+  } else if (route.name === 'app') {
+    return (
+      <App navigator={navigationOperations} />
+    );
+  } else if (route.name === 'login') {
+    return (
+      <Login navigator={navigationOperations} />
+    );
+  } else if (route.name === 'player') {
+    return (
+      <PlayerFull navigator={navigationOperations} />
+    );
+  }
+}
 
 var HomyPiAndroid = React.createClass({
   componentWillMount: function() {
@@ -24,32 +57,25 @@ var HomyPiAndroid = React.createClass({
     }.bind(this));
   },
   render: function() {
-    var initialRoute = {name: "splash", component: Splash};
+    var initialRoute = {name: "splash"};
     return (
       <Navigator
         initialRoute={initialRoute}
-        renderScene={(route, navigator) => {
-            if (route.component) {
-              return React.createElement(route.component, { navigator });
-            } else {
-              return (<Text> {JSON.stringify(route)}</Text>);
-            }
-          }  
-        } 
+        configureScene={() => Navigator.SceneConfigs.FloatFromBottomAndroid}
+        renderScene={RouteMapper}
       ref="navigator" />
     );
   },
+
   onLoaded: function(token) {
     console.log("loaded", UserAPI);
     let newRoute;
-    
     if (token) {
-      newRoute = {name: 'app', component: App, index: 1};
+      _navigator.replace({name: "app"});
+      //newRoute = {name: 'app', component: App, index: 1};
     } else {
-      newRoute = {name: 'Login', component: Login,  index: 0};
-    }
-   if (newRoute) {
-      this.refs.navigator.replace(newRoute);
+      _navigator.replace({name: "login"});
+      //newRoute = {name: 'Login', component: Login,  index: 0};
     }
   },
   styles: StyleSheet.create({

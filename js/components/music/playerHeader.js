@@ -14,11 +14,12 @@ import PlayPause from './PlayPause';
 import PlaylistStore from '../../stores/PlaylistStore';
 import PlaylistActionCreators from '../../actions/PlaylistActionCreators';
 
+var _navigator;
+
 var RaspberryActionCreators = require("../../actions/RaspberryActionCreators");
 var RaspberryStore = require("../../stores/RaspberryStore");
 
 
-var PlayerFull = require("./playerFull");
 var PlayerHeader = React.createClass({
 
 	_onRaspberryChange() {
@@ -80,8 +81,6 @@ var PlayerHeader = React.createClass({
 	_showPlayer: function() {
 		this.props.navigator.push({
             name: 'player',
-            component: PlayerFull,
-            animation: Navigator.SceneConfigs.FloatFromBottom
         });
 	},
 	styles: StyleSheet.create({

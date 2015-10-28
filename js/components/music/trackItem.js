@@ -36,7 +36,6 @@ const styles = StyleSheet.create({
 let ArtistItem = React.createClass({
 	render: function() {
 		let {track} = this.props;
-		console.log(track);
 		return (
 			<View style={styles.container}>
 				<Image style={styles.cover} source={{uri: track.album.images[0].url}} />

@@ -6,7 +6,8 @@ var {
   View,
   TextInput,
   TouchableHighlight,
-  Navigator
+  Navigator,
+  BackAndroid
 } = React;
 var Home = require("./music/searchMusic");
 var PlayerHeader = require("./music/playerHeader");
@@ -20,10 +21,39 @@ var UserApi = require("../apis/UserAPI");
 
 var SocketConnection = require("../natives/SocketConnection");
 
+import MyArtists from "./music/myArtists";
+import SearchMusic from "./music/searchMusic";
 
+var _navigator;
 
+var RouteMapper = function(route, navigationOperations, onComponentRef) {
+  _navigator = navigationOperations;
+  if (route.name === 'home') {
+    return (
+      <Home navigator={navigationOperations} />
+    );
+  } else if (route.name === 'myArtists') {
+    return (
+      <MyArtists navigator={navigationOperations} />
+    );
+  } else if (route.name === 'searchMusic') {
+    return (
+      <SearchMusic navigator={navigationOperations} />
+    );
+  } else if (route.name === 'player') {
+    return (
+      <PlayerFull navigator={navigationOperations} />
+    );
+  }
+}
+BackAndroid.addEventListener('hardwareBackPress', () => {
+  if (_navigator && _navigator.getCurrentRoutes().length > 1) {
+    _navigator.pop();
+    return true;
+  }
+  return false;
+});
 var App = React.createClass({
-  mixins: [Subscribable.Mixin],
   getInitialState() {
     return {}
   },
@@ -32,9 +62,14 @@ var App = React.createClass({
     //this.addListenerOn(RCTDeviceEventEmitter, "socketService:binded", function() {
       Io.connect(UserApi.getToken());
     //});
+
   },
+  componentWillUnmount: function() {
+
+  },
+
   render: function() {
-    var initialRoute = {name: 'home', component: Home, index: 1};
+    var initialRoute = {name: 'home'};
     
     let nav = null;
     var menu = <Menu pushRoute={this._push} closeMenu={this.closeMenu} />;
@@ -46,28 +81,26 @@ var App = React.createClass({
           openDrawerOffset={100}>
           <TopMenu openMenu={this.openSideMenu} />
           <View style={this.styles.container}> 
-            <Navigator
+             <Navigator
               initialRoute={initialRoute}
-              renderScene={(route, navigator) => {
-                  nav = navigator;
-                  if (route.component) {
-                    return React.createElement(route.component, { navigator });
-                  } else {
-                    return (<Text> {JSON.stringify(route)}</Text>);
-                  }
-                }  
-              } 
-            ref="appNavigator" />
+              configureScene={() => Navigator.SceneConfigs.FadeAndroid}
+              renderScene={RouteMapper}
+              ref="appNavigator" />
 
             <View style={this.styles.player}>
-              <PlayerHeader navigator = {this.props.navigator} />
+              <PlayerHeader navigator={this.props.navigator} />
             </View>
           </View>
         </Drawer>
       );
   },
   _push: function(route) {
-    this.refs.appNavigator.push(route);
+    _navigator.push({name: route});
+    console.log("routes = ", this.refs.appNavigator.getCurrentRoutes());
+  },
+  _pop: function() {
+    console.log("pop => ", _navigator.getCurrentRoutes());
+    //_navigator.pop();
   },
   openSideMenu: function() {
     this.refs.sideMenu.open();
