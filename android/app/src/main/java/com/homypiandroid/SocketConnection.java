@@ -83,7 +83,6 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 	        	if(args.length > 0) {
 		            data = ((JSONObject) args[0]).toString();
 		        }
-		        Log.i(TAG, "emiting");
 	            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
       				.emit(event, data);
 	        }
@@ -96,6 +95,9 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 	}
 	public void emit(final String event, JSONObject obj) {
 		socketService.emit(event, obj);
+	}
+	public void emit(final String event) {
+		socketService.emit(event, new JSONObject());
 	}
 
 

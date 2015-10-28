@@ -47,7 +47,7 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
   private int icon = R.drawable.ic_play_circle_outline_grey600_36dp;
   private Notification notification;
 
-  private SocketConnection socketConnection;
+  protected static SocketConnection socketConnection;
 
   private Uri cover;
   private String playerStatus = "PAUSED";
@@ -63,7 +63,7 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
     super(reactContext);
     this.conte = reactContext;
     mActivity = activity;
-    this.socketConnection = socketConnection;
+    ToastModuleBis.socketConnection = socketConnection;
 
   	mNotificationManager = (NotificationManager) mActivity.getSystemService(Context.NOTIFICATION_SERVICE);
   	long when = System.currentTimeMillis();
@@ -76,10 +76,13 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
     BroadcastReceiver receiver = new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {
+
           if (intent.getAction().equals(KEY_PLAY)) {
-            sendEvent("java:player:play");
+            Log.i("PlayerNotification", "emit play");
+            ToastModuleBis.socketConnection.emit("player:resume");
           } else if (intent.getAction().equals(KEY_PAUSE)) {
-            sendEvent("java:player:pause");
+            Log.i("PlayerNotification", "emit pause");
+            ToastModuleBis.socketConnection.emit("player:pause");
           }
       }
     };
@@ -142,7 +145,7 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
 		} else {
 			contentView.setImageViewResource(R.id.play_pause, R.drawable.ic_play_circle_outline_grey600_36dp);
       Intent playIntent = new Intent(KEY_PLAY);
-      PendingIntent playPendingIntent = PendingIntent.getBroadcast(mActivity, 0, playIntent, 0);
+      PendingIntent playPendingIntent = PendingIntent.getBroadcast(mActivity, 1, playIntent, 0);
       contentView.setOnClickPendingIntent(R.id.play_pause, playPendingIntent);
 		}
 

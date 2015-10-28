@@ -88,6 +88,7 @@ public class SocketService extends Service {
 */
 	
 	public void emit(final String event, final String data) {
+		Log.i(TAG, "emit with string");
 		Log.i(TAG, "emit " + event);
 		if(data != null) {
 			Log.i(TAG, "with data " + data);
@@ -102,6 +103,7 @@ public class SocketService extends Service {
 		}
 	}
 	public void emit(final String event, JSONObject obj) {
+		Log.i(TAG, "emit with JSONObject");
 		mSocket.emit(event, obj);
 	}
 }
