@@ -25,7 +25,6 @@ const MyArtistsStore = assign({}, BaseStore, {
     let action = payload.action;
     switch(action.type) {
       case Constants.ActionTypes.SET_MY_ARTISTS:
-      console.log(action);
         let artists = action.artists || [];
         setMyArtists(artists);
         MyArtistsStore.emitChange();

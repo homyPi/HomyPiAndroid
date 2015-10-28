@@ -15,6 +15,7 @@ export default function(socket) {
 		PlaylistActionCreators.clear();
 	});
 	socket.on("playlist:playing:id", function(data) {
+		console.log(data);
 		PlaylistActionCreators.updatePlayingId(data.idPlaying);
 	});
 	socket.on("playlist:track:progress", function(data) {

@@ -75,14 +75,12 @@ class Menu extends Component {
     );
   }
   gotoMyArtists() {
-    console.log(this, "push route");
     this.props.pushRoute({
       name:"myArtists"
     });
     this.props.closeMenu();
   }
   gotoSearchMusic() {
-    console.log(this, "push route");
     this.props.pushRoute({
       name:"searchMusic"
     });

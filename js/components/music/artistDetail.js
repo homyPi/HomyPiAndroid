@@ -48,7 +48,6 @@ export default React.createClass({
 		)
 	},
 	_playAlbum (album) {
-		console.log("play", album);
 		Io.socket.emit("player:play:album", {id: album.id}); 
 	},
 	_playTrack(track) {

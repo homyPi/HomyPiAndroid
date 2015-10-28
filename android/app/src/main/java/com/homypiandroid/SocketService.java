@@ -54,7 +54,7 @@ public class SocketService extends Service {
 	public void createSocket(String serverUrl, String token) {
 		Log.i(TAG, "CreateSocket");
 		IO.Options opts = new IO.Options();
-		opts.forceNew = true;
+		opts.forceNew = false;
 		opts.query = "token=" + token;
  		try {
 			Log.i(TAG, "connecting to " + serverUrl);

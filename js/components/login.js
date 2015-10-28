@@ -47,8 +47,6 @@ var Login = React.createClass({
 	    UserAPI.login(this.state.username, this.state.password).then(function(token) {
         this.setState({res: token});
         if (token) {
-          console.log("go to app");
-          console.log(this.props);
           this.props.navigator.push({
             name: 'home',
             component: Home

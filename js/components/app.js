@@ -11,6 +11,9 @@ var {
 } = React;
 var Home = require("./music/searchMusic");
 var PlayerHeader = require("./music/playerHeader");
+var TrackSearch = require("./music/TrackSearch");
+var AlbumSearch = require("./music/AlbumSearch");
+
 var Drawer = require('react-native-drawer')
 var Menu = require("./menu");
 var TopMenu = require("./topMenu");
@@ -28,6 +31,7 @@ var _navigator;
 
 var RouteMapper = function(route, navigationOperations, onComponentRef) {
   _navigator = navigationOperations;
+  console.log("route = ", route);
   if (route.name === 'home') {
     return (
       <Home navigator={navigationOperations} />
@@ -40,9 +44,17 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
     return (
       <SearchMusic navigator={navigationOperations} />
     );
-  } else if (route.name === 'player') {
+  } else if (route.name === 'searchTracks') {
     return (
-      <PlayerFull navigator={navigationOperations} />
+      <TrackSearch search={route.search} navigator={navigationOperations} />
+    );
+  } else if (route.name === 'searchAlbums') {
+    return (
+      <AlbumSearch search={route.search} navigator={navigationOperations} />
+    );
+  } else if (route.name === 'searchArtists') {
+    return (
+      <AlbumSearch search={route.search} navigator={navigationOperations} />
     );
   }
 }
@@ -96,11 +108,8 @@ var App = React.createClass({
   },
   _push: function(route) {
     _navigator.push({name: route});
-    console.log("routes = ", this.refs.appNavigator.getCurrentRoutes());
   },
   _pop: function() {
-    console.log("pop => ", _navigator.getCurrentRoutes());
-    //_navigator.pop();
   },
   openSideMenu: function() {
     this.refs.sideMenu.open();

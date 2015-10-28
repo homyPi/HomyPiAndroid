@@ -24,7 +24,6 @@ export default {
 		});
 	},
 	getMyArtists() {
-		console.log("get my art");
 		return new Promise((resolve, reject) => {
 			fetch(config.server_url + "/api/users/me/artists?limit=25",
 				{

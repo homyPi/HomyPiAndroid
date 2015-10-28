@@ -12,6 +12,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import java.util.Map;
 import java.util.HashMap;
 import java.io.InputStream;
+import java.net.URL;
 
 import android.support.v4.app.NotificationCompat;
 
@@ -28,11 +29,15 @@ import android.widget.ImageButton;
 import android.view.View;
 import android.net.Uri;
 import android.util.Log;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 
 import io.socket.emitter.Emitter;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONArray;
+
 
 import com.homypiandroid.MainActivity;
 import com.homypiandroid.SocketConnection;
@@ -49,7 +54,7 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
 
   protected static SocketConnection socketConnection;
 
-  private Uri cover;
+  private String cover;
   private String playerStatus = "PAUSED";
   private String trackName = "";
   private String artists = "";
@@ -88,7 +93,28 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
     };
     mActivity.registerReceiver(receiver, filter);
 }
-
+  public static Bitmap getBitmapFromURL(String src) {
+      /*
+      try {
+          URL url = new URL(src);
+          HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+          connection.setDoInput(true);
+          connection.connect();
+          InputStream input = connection.getInputStream();
+          Bitmap myBitmap = BitmapFactory.decodeStream(input);
+          return myBitmap;
+      } catch (IOException e) {
+          // Log exception
+          return null;
+      }
+      */
+     try {
+     return BitmapFactory.decodeStream((InputStream)new URL(src).getContent());
+     } catch (Exception e) {
+                  e.printStackTrace();
+                  return null;
+            }
+  }
   @Override
   public String getName() {
     return "ToastModuleBis";
@@ -109,7 +135,7 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setCover(String coverUrl) {
-      cover = Uri.parse(coverUrl);
+      cover = coverUrl;
     }
 
     @ReactMethod
@@ -130,7 +156,7 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
   public void show() {
 		RemoteViews contentView = new RemoteViews(mActivity.getPackageName(), R.layout.player_notification);
     if (cover != null) {
-      contentView.setImageViewUri(R.id.notification_image, cover);
+      contentView.setImageViewBitmap(R.id.notification_image, getBitmapFromURL(cover));
     } else {
 		  contentView.setImageViewResource(R.id.notification_image, R.drawable.ic_play_circle_outline_grey600_36dp);
     }
@@ -167,6 +193,35 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
             try {
               JSONObject data = (JSONObject) args[0];
               setPlayerStatus(data.getString("status"));
+              show();
+            } catch (JSONException e) {
+              return;
+            }
+            show();
+          }
+    });
+    this.socketConnection.on("playlist:playing:id", new Emitter.Listener() {
+          @Override
+          public void call(final Object... args) {
+            try {
+              JSONObject data = (JSONObject) args[0];
+              JSONObject track = data.getJSONObject("track");
+              JSONArray  coverImages = track.getJSONObject("album").getJSONArray("images");
+              String coverUrl = null;
+              if (coverImages.length() > 0) {
+                coverUrl = coverImages.getJSONObject(1).getString("url");
+              }
+              JSONArray  artistsArray = track.getJSONArray("artists");
+              String artists = "";
+              for (int i = 0; i < artistsArray.length(); i++) {
+                artists += artistsArray.getJSONObject(i).getString("name") + "; ";
+              }
+
+              setTrackName(track.getString("name"));
+              setArtists(artists);
+              if (coverUrl != null) {
+                setCover(coverUrl);
+              }
               show();
             } catch (JSONException e) {
               return;

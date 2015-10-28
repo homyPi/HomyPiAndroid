@@ -8,6 +8,7 @@ var addListenerOn;
 export default {
 	addListenerOn: addListenerOn,
 	createSocket: function(serverUrl, token) {
+		console.log("creating socket with token", token);
 	    socket.createSocket(serverUrl, token);
 	    ToastModuleBis.setSocketListeners();
 	},
@@ -16,7 +17,6 @@ export default {
 			socket.on(event);
 			DeviceEventEmitter.addListener(event, function(data) {
 				var json;
-				console.log("got event " + event + " with data", data);
 				if(data) {
 					try {
 						json = JSON.parse(data);
@@ -30,14 +30,9 @@ export default {
 
 	},
 	emit(event, data) {
-		try {
-		console.log("emit '" + event + "'", data);
 		if (!data) {
 			return socket.emit(event, null);
 		}
 		return socket.emit(event, JSON.stringify(data));
-	} catch(e) {
-		console.log(e);
-	}
 	}
 };

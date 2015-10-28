@@ -14,6 +14,8 @@ module.exports = assign({}, EventEmitter.prototype, {
 
   // triggers change listener above, firing controller-view callback
   emitChange() {
+    try {
     this.emit(Constants.CHANGE_EVENT);
+     }catch(e){console.log(e);}
   }
 });

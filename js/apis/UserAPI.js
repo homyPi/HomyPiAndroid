@@ -24,7 +24,6 @@ var getToken = function() {
 var loadStoredToken = function(callback) {
 	AsyncStorage.getItem("homyToken", function(err, savedToken) {
 		setToken(savedToken);
-		console.log(token);
 		callback(err, token);
 	});
 };

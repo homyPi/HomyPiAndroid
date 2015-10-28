@@ -68,14 +68,11 @@ var HomyPiAndroid = React.createClass({
   },
 
   onLoaded: function(token) {
-    console.log("loaded", UserAPI);
     let newRoute;
     if (token) {
       _navigator.replace({name: "app"});
-      //newRoute = {name: 'app', component: App, index: 1};
     } else {
       _navigator.replace({name: "login"});
-      //newRoute = {name: 'Login', component: Login,  index: 0};
     }
   },
   styles: StyleSheet.create({

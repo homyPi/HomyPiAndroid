@@ -1,6 +1,7 @@
 import React from 'react-native';
 
-var {View, Image, Text, StyleSheet} = React;
+var {View, Image, Text, StyleSheet, TouchableWithoutFeedback} = React;
+import Io from '../../io';
 const Dimensions = require('Dimensions');
 const window = Dimensions.get('window');
 
@@ -25,10 +26,16 @@ const styles = StyleSheet.create({
 });
 
 class AlbumItem extends React.Component {
-	
+	constructor(props) {
+		super(props);
+		this.pressStart = 0;
+	}
 	render() {
 		let {album, playAlbum} = this.props;
 		return (
+			<TouchableWithoutFeedback
+                onPressIn={()=>{this.handlePressIn()}} 
+                onPressOut={()=>{this.handlePressOut()}}>
 			<View style={styles.container}>
 				<View style={styles.coverContainer}>
 					{(album.images.length && album.images[0].url)?
@@ -39,7 +46,19 @@ class AlbumItem extends React.Component {
 				</View>
 				<Text style={styles.artistName}>{album.name}</Text>
 			</View>
+			</TouchableWithoutFeedback>
 		)
+	}
+	handlePressIn() {
+		this.pressStart = Date.now();
+	}
+	handlePressOut() {
+		if(Date.now() - this.pressStart > 1500) {
+			this._playAlbum();
+		}
+	}
+	_playAlbum () {
+		Io.socket.emit("player:play:album", {id: this.props.album.id}); 
 	}
 
 }

@@ -16,7 +16,6 @@ export default {
 			});
 	},
 	updateState(socketId, status) {
-		console.log("updateState=>", status);
 		Dispatcher.handleViewAction({
 			type: Constants.RaspberryActionTypes.UPDATE_STATUS,
 			socketId: socketId,

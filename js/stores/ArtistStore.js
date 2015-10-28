@@ -28,7 +28,6 @@ const ArtistStore = assign({}, BaseStore, {
       case Constants.ActionTypes.SET_ARTIST:
         let newArtist = action.artist;
         setData(newArtist);
-        console.log(newArtist);
         ArtistStore.emitChange();
         break;
       default:

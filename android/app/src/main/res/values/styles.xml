@@ -4,12 +4,18 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
     </style>
-    <style name="NotificationText">
+    <style name="NotificationTrackTitle">
       <item name="android:textColor">?android:attr/textColorPrimaryInverse</item>
+      <item name="android:textSize">22sp</item> 
+    <item name="android:singleLine">true</item>
+    <item name="android:ellipsize">marquee</item>
     </style>
-    <style name="NotificationTitle">
+    <style name="NotificationTrackArtists">
       <item name="android:textColor">?android:attr/textColorPrimaryInverse</item>
       <item name="android:textStyle">bold</item>
+      <item name="android:textSize">20sp</item> 
+    <item name="android:singleLine">true</item>
+    <item name="android:ellipsize">marquee</item>
     </style>
 
 </resources>

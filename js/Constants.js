@@ -15,7 +15,10 @@ module.exports = {
     SET_MY_ARTISTS: null
   }),
   MusicSearchActionTypes: keyMirror({
-    SET_RESULTS: null
+    SET_RESULTS: null,
+    ADD_RESULTS: null,
+    CLEAR: null,
+    START_LOADING: null
   }),
   PlaylistActionTypes: keyMirror({
     SET_PLAYLIST: null,

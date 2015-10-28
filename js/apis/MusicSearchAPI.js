@@ -4,7 +4,7 @@ var config = require("../config.js");
 var superagent = require('superagent');
 
 export default {
-	search(request, type, nb) {
+	search(request, type, nb, offset) {
 		return new Promise((resolve, reject) => {
 			let url = config.server_url + "/api/modules/music/search?q=" + request;
 			if (type) {
@@ -13,8 +13,10 @@ export default {
 			if (nb) {
 				url += "&limit=" + nb
 			}
+			if (offset) {
+				url += "&offset=" + offset
+			}
 			url += "&source=spotify";
-			console.log(url);
 			superagent.get(url)
 				.set("Authorization", "Bearer " + UserAPI.getToken())
 				.end(function(err, res) {
