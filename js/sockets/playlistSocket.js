@@ -21,4 +21,7 @@ export default function(socket) {
 	socket.on("playlist:track:progress", function(data) {
 		PlaylistActionCreators.updateProgress(data.trackOffset_ms);
 	});
+	socket.on("playlist:track:progress", function(data) {
+		PlaylistActionCreators.updateProgress(data.trackOffset_ms);
+	});
 }

@@ -40,6 +40,9 @@ function removeRaspberry(socketId) {
   }
 }
 function updateStatus(socketId, status) {
+  if (selected && selected.socketId == socketId) {
+      selected.status = status;
+  }
   for(var i = 0; i < raspberries.length; i++) {
     if (raspberries[i].socketId == socketId) {
       raspberries[i].status = status;

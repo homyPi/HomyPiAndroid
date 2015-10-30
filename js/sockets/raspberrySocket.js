@@ -8,6 +8,7 @@ export default function(socket) {
     	RaspberryActionCreators.removeRaspberry(data.socketId);
     });
     socket.on("player:status:updated", function(data) {
+    	console.log("player:status:updated", data);
     	RaspberryActionCreators.updateState(data.socketId, data.status);
     });
 };

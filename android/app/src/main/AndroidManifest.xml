@@ -20,8 +20,6 @@
 
 
        <service android:name=".SocketService" />
-    </application>
-    
       <activity android:name=".PlayerNotification"
          android:label="Details of notification"
          android:parentActivityName=".MainActivity">
@@ -29,5 +27,7 @@
          android:name="android.support.PARENT_ACTIVITY"
          android:value=".MainActivity"/>
       </activity>
+    </application>
+    
 
 </manifest>

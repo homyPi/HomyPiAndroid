@@ -20,7 +20,8 @@ var RaspberryActionCreators = require("../../actions/RaspberryActionCreators");
 var RaspberryStore = require("../../stores/RaspberryStore");
 
 var PlayerFull = React.createClass({
-
+	getProgressInterval: null,
+	autoUpdateProgress: null,
 	_onRaspberryChange() {
 	    this.setState({
 	    	raspberries: RaspberryStore.getAll().raspberries,
@@ -50,24 +51,24 @@ var PlayerFull = React.createClass({
 	    RaspberryStore.addChangeListener(this._onRaspberryChange);
 	    PlaylistStore.addChangeListener(this._onPlaylistChange);
 	    
-		//this.setGetTrackProgressInterval();
+		this.setGetTrackProgressInterval();
 	},
 	componentWillUnmount() {
 	    RaspberryStore.removeChangeListener(this._onRaspberryChange);
 	    PlaylistStore.removeChangeListener(this._onPlaylistChange);
 	    if (this.getProgressInterval) {
-			//clearInterval(this.getProgressInterval);				this.getProgressInterval = null;
+			clearInterval(this.getProgressInterval);
+			this.getProgressInterval = null;
 		}
 		if (this.autoUpdateProgress) {
-			//clearInterval(this.autoUpdateProgress)
-			//this.autoUpdateProgress = null;
+			clearInterval(this.autoUpdateProgress);
+			this.autoUpdateProgress = null;
 		}
 	},
 	render: function() {
-		let {selectedRaspberry, playing} = this.state;
+		let {selectedRaspberry, playing, progress} = this.state;
 		var raspberry = selectedRaspberry;
 		let statusAction = null;
-		
 		return (
 			<View style={this.styles.container}>
 				<View style={this.styles.viewActions}>
@@ -89,7 +90,7 @@ var PlayerFull = React.createClass({
 					<Text style={this.styles.trackName}>{playing.name}</Text>
 					<Text style={this.styles.artists}>{playing.artists.map(function(artist) { return (artist.name + "; ")})}</Text>
 				</View>
-				<Progress />
+				<Progress value={progress.progressMs} min={0}  max={playing.durationMs} onSeekTrack={this._seek}/>
 				{
 					(raspberry)? (
 				<View style={this.styles.playerActions}>
@@ -115,6 +116,42 @@ var PlayerFull = React.createClass({
 				}
 			</View>
 		);
+	},
+	setGetTrackProgressInterval() {
+		if (this.state.selectedRaspberry && this.state.selectedRaspberry.status === "PLAYING") {
+			if (!this.getProgressInterval) {
+				console.log("!this.getProgressInterval");
+				Io.socket.emit("playlist:track:progress:get");
+				this.getProgressInterval = setInterval(function(){
+					console.log("WARN: getProgressInterval");
+					Io.socket.emit("playlist:track:progress:get");
+				}, 5000);
+			}
+			if (!this.autoUpdateProgress) {
+				console.log("!this.autoUpdateProgress");
+				this.autoUpdateProgress = setInterval(() => {
+					console.log("autoUpdateProgress");
+					var ms = this.state.progress.progressMs + 1000;
+					PlaylistActionCreators.updateProgress(ms);
+				}, 1000)
+			}
+		} else {
+			if (this.getProgressInterval) {
+				clearInterval(this.getProgressInterval);
+				this.getProgressInterval = null;
+			}
+			if (this.autoUpdateProgress) {
+				clearInterval(this.autoUpdateProgress)
+				this.autoUpdateProgress = null;
+			}
+		}
+	},
+	_seek(value, event) {
+		event.preventDefault();
+		event.stopPropagation();
+		console.log("seek it", value);
+		Io.socket.emit("player:seek", {progress_ms: value});
+		PlaylistActionCreators.updateProgress(value);
 	},
 	styles: StyleSheet.create({
 		container: {

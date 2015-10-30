@@ -9,10 +9,11 @@ var {
   Navigator,
   BackAndroid
 } = React;
-var Home = require("./music/searchMusic");
+var Home = require("./alarms/AlarmList");
 var PlayerHeader = require("./music/playerHeader");
 var TrackSearch = require("./music/TrackSearch");
 var AlbumSearch = require("./music/AlbumSearch");
+var AlarmList = require("./alarms/AlarmList");
 
 var Drawer = require('react-native-drawer')
 var Menu = require("./menu");
@@ -56,6 +57,8 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
     return (
       <AlbumSearch search={route.search} navigator={navigationOperations} />
     );
+  } else if (route.name === "alarms") {
+      <AlarmList navigator={navigationOperations} />
   }
 }
 BackAndroid.addEventListener('hardwareBackPress', () => {
@@ -107,7 +110,7 @@ var App = React.createClass({
       );
   },
   _push: function(route) {
-    _navigator.push({name: route});
+    _navigator.push(route);
   },
   _pop: function() {
   },
