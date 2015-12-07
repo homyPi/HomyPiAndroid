@@ -9,19 +9,19 @@ var {
   Navigator,
   BackAndroid
 } = React;
-var Home = require("./alarms/AlarmList");
-var PlayerHeader = require("./music/playerHeader");
-var TrackSearch = require("./music/TrackSearch");
-var AlbumSearch = require("./music/AlbumSearch");
-var AlarmList = require("./alarms/AlarmList");
+import Home from "./alarms/AlarmList";
+import PlayerHeader from "./music/playerHeader";
+import TrackSearch from "./music/TrackSearch";
+import AlbumSearch from "./music/AlbumSearch";
+import AlarmList from "./alarms/AlarmList";
 
-var Drawer = require('react-native-drawer')
-var Menu = require("./menu");
-var TopMenu = require("./topMenu");
+import Drawer from 'react-native-drawer';
+import Menu from "./menu";
+import TopMenu from "./topMenu";
 import RCTDeviceEventEmitter from 'RCTDeviceEventEmitter'
-var Io = require("../io");
+import Io from "../io";
 import Subscribable from "Subscribable";
-var UserApi = require("../apis/UserAPI");
+import UserApi from "../apis/UserAPI";
 
 var SocketConnection = require("../natives/SocketConnection");
 

@@ -24,6 +24,7 @@ public class CustomReactPackage implements ReactPackage {
 
     public CustomReactPackage(Activity activity) {
         mActivity = activity;
+        SocketConnection.activity = activity;
     }
 
 

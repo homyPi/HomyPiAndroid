@@ -113,5 +113,4 @@ const PlaylistStore = assign({}, BaseStore, {
     }
   })
 });
-
 export default PlaylistStore;

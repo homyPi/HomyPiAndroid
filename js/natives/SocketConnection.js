@@ -2,7 +2,7 @@ import {NativeModules, DeviceEventEmitter} from 'react-native';
 import RCTDeviceEventEmitter from 'RCTDeviceEventEmitter'
 import ToastModuleBis from './PlayerNotification';
 
-
+console.log(NativeModules);
 var socket = NativeModules.SocketConnection;
 var addListenerOn;
 export default {

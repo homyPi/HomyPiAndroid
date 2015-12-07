@@ -7,11 +7,11 @@ var {
   TextInput,
   TouchableHighlight
 } = React;
-var UserAPI = require("../apis/UserAPI");
-var UserStore = require("../stores/UserStore");
-var RouterActions = require("../actions/RouterActionCreator");
-
-var Home = require("./home");
+import UserAPI from "../apis/UserAPI";
+import UserStore from "../stores/UserStore";
+import RouterActions from "../actions/RouterActionCreator";
+console.log(UserAPI);
+import Home from "./home";
 
 var Login = React.createClass({
   getInitialState() {

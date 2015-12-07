@@ -11,6 +11,9 @@ const {
   TouchableHighlight
 } = React;
 
+import RaspberryActionCreators from "../actions/RaspberryActionCreators";
+import RaspberryStore from "../stores/RaspberryStore";
+
 
 const window = Dimensions.get('window');
 const uri = 'http://pickaface.net/includes/themes/clean/img/slide2.png';
@@ -49,8 +52,17 @@ const styles = StyleSheet.create({
 class Menu extends Component {
   constructor(props) {
     super(props);
-  }
 
+    this.onRaspberriesChange = function() {
+      console.log("onRaspberriesChange", RaspberryStore.getAll());
+    }
+  }
+  componentWillMount() {
+    //RaspberryActionCreators.getAll();
+  }
+  componentDidMount() {
+    RaspberryStore.addChangeListener(this.onRaspberriesChange);
+  }
   render() {
     return (
       <ScrollView style={styles.menu}>

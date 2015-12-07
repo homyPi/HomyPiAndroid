@@ -11,8 +11,10 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
+import com.homypiandroid.CustomReactPackage;
+import com.github.xinthink.rnmk.ReactMaterialKitPackage;
+
 public class MainActivity extends Activity implements DefaultHardwareBackBtnHandler {
-    private static Activity mCurrentActivity = null;
 
     private ReactInstanceManager mReactInstanceManager;
     private ReactRootView mReactRootView;
@@ -20,7 +22,6 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCurrentActivity = this;
         mReactRootView = new ReactRootView(this);
 
         mReactInstanceManager = ReactInstanceManager.builder()
@@ -28,6 +29,7 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
                 .setBundleAssetName("index.android.bundle")
                 .setJSMainModuleName("index.android")
                 .addPackage(new MainReactPackage())
+                .addPackage(new ReactMaterialKitPackage())
                 .addPackage(new CustomReactPackage(this))
                 .setUseDeveloperSupport(BuildConfig.DEBUG)
                 .setInitialLifecycleState(LifecycleState.RESUMED)
@@ -75,13 +77,7 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
         super.onResume();
 
         if (mReactInstanceManager != null) {
-            mReactInstanceManager.onResume(this);
+            mReactInstanceManager.onResume(this, this);
         }
-    }
-
-    public static Activity getActivity(){
-        Activity activity = new Activity();
-        activity = mCurrentActivity;
-        return activity;
     }
 }

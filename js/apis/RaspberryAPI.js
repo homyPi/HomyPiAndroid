@@ -13,11 +13,16 @@ export default {
   				.set('Accept', 'application/json')
 				.end(function(err, res) {
 					if(err) {
+						console.log("errrrr");
 						console.log(err.stack);
 						console.log(err);
 					} else {
-						console.log(res)
-						return resolve(JSON.parse(res.text).raspberries);
+						var parsed = JSON.parse(res.text);
+						if (parsed.status === "error") {
+							return reject(parsed.error);
+						} else {
+							return resolve(parsed.data.items);
+						}
 					}
 				});
 		});

@@ -34,19 +34,18 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 
  	boolean mBounded;
 	private ReactApplicationContext context;
-
+	public static Activity activity = null;
     private SocketService socketService;
 
 	ServiceConnection mConnection = new ServiceConnection() {
-
 	    public void onServiceDisconnected(ComponentName name) {
-	        Toast.makeText(MainActivity.getActivity(), "Service is disconnected", 1000).show();
+	        Toast.makeText(SocketConnection.activity, "Service is disconnected", 1000).show();
 	        mBounded = false;
 	        socketService = null;
 	    }
 
 	    public void onServiceConnected(ComponentName name, IBinder service) {
-	        Toast.makeText(MainActivity.getActivity(), "Service is connected", 1000).show();
+	        Toast.makeText(SocketConnection.activity, "Service is connected", 1000).show();
 	        mBounded = true;
 	        LocalBinder mLocalBinder = (LocalBinder)service;
 	        socketService = mLocalBinder.getServerInstance();

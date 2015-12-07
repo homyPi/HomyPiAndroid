@@ -16,8 +16,8 @@ import PlaylistActionCreators from '../../actions/PlaylistActionCreators';
 
 var _navigator;
 
-var RaspberryActionCreators = require("../../actions/RaspberryActionCreators");
-var RaspberryStore = require("../../stores/RaspberryStore");
+import RaspberryActionCreators from "../../actions/RaspberryActionCreators";
+import RaspberryStore from "../../stores/RaspberryStore";
 
 
 var PlayerHeader = React.createClass({

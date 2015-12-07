@@ -1,7 +1,7 @@
 import {NativeModules} from 'react-native';
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
-var PlaylistStore = require("../stores/PlaylistStore");
+import PlaylistStore from "../stores/PlaylistStore";
 var ToastModuleBis = NativeModules.ToastModuleBis
 var setPlaying = function() {
 	track = PlaylistStore.getAll().playing;
