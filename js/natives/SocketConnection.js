@@ -13,6 +13,7 @@ export default {
 	    ToastModuleBis.setSocketListeners();
 	},
 	connect: socket.connect,
+	clearEvents: socket.clearEvents,
 	on: function(event, callback) {
 			socket.on(event);
 			DeviceEventEmitter.addListener(event, function(data) {

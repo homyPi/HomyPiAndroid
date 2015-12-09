@@ -28,6 +28,9 @@ import com.homypiandroid.SocketService;
 import com.homypiandroid.SocketService.LocalBinder;
 
 
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 public class SocketConnection extends ReactContextBaseJavaModule {
 	private static final String TAG = "SocketConnection";
@@ -36,6 +39,8 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 	private ReactApplicationContext context;
 	public static Activity activity = null;
     private SocketService socketService;
+
+    private static Map<String, ArrayList<Emitter.Listener>> jsEvents = new HashMap<String, ArrayList<Emitter.Listener>>();
 
 	ServiceConnection mConnection = new ServiceConnection() {
 	    public void onServiceDisconnected(ComponentName name) {
@@ -68,13 +73,22 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 		socketService.connect();
 	}
 
+	@ReactMethod
+	public void clearEvents() {
+		for ( String event : jsEvents.keySet() ) {
+			for(Emitter.Listener callback: jsEvents.get(event)) {
+		    	socketService.off(event, callback);
+			}
+		}
+	}
+
 	public void on(String event, Emitter.Listener callback) {
 		socketService.on(event, callback);
 	}
 
 	@ReactMethod
 	public void on(final String event) {
-		socketService.on(event, new Emitter.Listener() {
+		Emitter.Listener callback = new Emitter.Listener() {
 	        @Override
 	        public void call(final Object... args) {
             Log.i(TAG, "got socket's event for JS");
@@ -85,7 +99,13 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 	            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
       				.emit(event, data);
 	        }
-	    });
+	    };
+		socketService.on(event, callback);
+		if (!jsEvents.containsKey(event)) {
+			jsEvents.put(event, new ArrayList<Emitter.Listener>());
+		}
+		jsEvents.get(event).add(callback);
+
 	}
 
 	@ReactMethod

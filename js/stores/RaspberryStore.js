@@ -2,92 +2,155 @@ import Dispatcher from '../Dispatcher';
 import Constants from '../Constants';
 import BaseStore from './BaseStore';
 import assign from 'object-assign';
-import PlayerNotification from "../natives/PlayerNotification";
 
 // data storage
 let raspberries = [];
 let selected = null;
-let selectedId = null;
+let selectedName = null;
+let selectedKey = null;
+var newRaspberryListeners = [];
+var removeRaspberryListeners = [];
+var onChangeRaspberryListeners = [];
 
 function selectDefault() {
-  if (!selected) {
-    if (raspberries.length) {
-      selectedId = raspberries[0].socketId;
-      selected = raspberries[0];
-    } else {
+  //var favName = localStorage.getItem('selectedRaspberry');
+  //var raspberry = getRaspberry(favName);
+  var raspberry = null;
+  if (raspberry && raspberry.state === "UP") {
+      selected = raspberry;
+      selectedName = favName;
+      selectedKey = getRaspberryKey(favName);
+  } else if (!selected) {
       selected = null;
-      selectedId = null;
+      selectedName = null;
+      selectedKey = null;
+    if (raspberries.length) {
+      for (var i = 0; i < raspberries.length; i++) {
+        if (raspberries[i].state === "UP") {
+          selectedName = raspberries[i].name;
+          selected = raspberries[i];
+          selectedKey = i;
+          break;
+        }
+      }
     }
   }
+  //localStorage.setItem('selectedRaspberry', selectedName);
 }
 function setRaspberries(list) {
-  raspberries = list;
+  raspberries = [];
+  for(var i = 0; i < list.length; i++) {
+    addRaspberry(list[i]);
+  }
   selectDefault();
 }
-function addRaspberry(rasp) {
-  raspberries.push(rasp);
+function setRaspberry(raspberry) {
+  var index = getRaspberryKey(raspberry.name);
+  if (index < 0) {
+    addRaspberry(raspberry)
+  } else {
+    raspberries[index] = raspberry;
+  }
 }
-function removeRaspberry(socketId) {
+function addRaspberry(rasp) {
+  var inList = getRaspberry(rasp.name);
+  if (!inList)
+    raspberries.push(rasp);
+}
+function removeRaspberry(name) {
   for(var i = 0; i < raspberries.length; i++) {
-    if (raspberries[i].socketId == socketId) {
+    if (raspberries[i].name == name) {
       raspberries.splice(i, 1);
     }
   }
-  if (socketId == selectedId) {
+  if (name == selectedName) {
     selected = null;
-    selectedId = null;
+    selectedName = null;
     selectDefault();
   }
 }
-function updateStatus(socketId, status) {
-  if (selected && selected.socketId == socketId) {
-      selected.status = status;
+function disableRaspberry(name) {
+  let rasp = getRaspberry(name);
+  if (rasp) {
+    rasp.status = "DOWN";
   }
-  for(var i = 0; i < raspberries.length; i++) {
-    if (raspberries[i].socketId == socketId) {
-      raspberries[i].status = status;
-      PlayerNotification.setPlayerStatus(status);
-      //PlayerNotification.show();
-    }
-  }
+
 }
+
 function setSelected(raspberry) {
   selected = null;
-  selectedId = raspberry.socketId;
+  selectedName = raspberry.name;
   for(var i = 0; i < raspberries.length; i++) {
-    if (raspberries[i].socketId == selectedId) {
+    if (raspberries[i].name == selectedName) {
       selected = raspberries[i];
+      selectedKey = i;
     }
   }
   if (!selected) {
      selectDefault();
   }
+  //localStorage.setItem('selectedRaspberry', selectedName);
 }
+
+function getRaspberry(name) {
+  if (!name) return;
+  for(var i = 0; i < raspberries.length; i++) {
+    if (raspberries[i].name === name) {
+      return raspberries[i];
+    }
+  }
+  return;
+}
+function getRaspberryKey(name) {
+  for(var i = 0; i < raspberries.length; i++) {
+    if (raspberries[i].name === name) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+function newModule(data) {
+  console.log("newModule", data);
+  console.log("raspberries", raspberries);
+  for(var i = 0; i < raspberries.length; i++) {
+      if (data.socketId ===  raspberries[i].socketId) {
+        raspberries[i].modules = raspberries[i].modules || {};
+        raspberries[i].modules[data.module] = data;
+      }
+  }
+}
+
+
 // Facebook style store creation.
 const RaspberryStore = assign({}, BaseStore, {
   getAll() {
     return {
       raspberries: raspberries,
-      selectedRaspberry: selected
+      selectedRaspberry: raspberries[selectedKey],
+      getRaspberry: getRaspberry
     };
   },
-
+  getRaspberry: getRaspberry,
   dispatcherIndex: Dispatcher.register(function(payload) {
     let action = payload.action;
     switch(action.type) {
       case Constants.RaspberryActionTypes.GET_ALL:
+        try {
         let list = action.list;
         setRaspberries(list);
-        RaspberryStore.emitChange();
+          RaspberryStore.emitChange();
+        } catch(e) {
+          console.log(e);
+          console.log(e.stack);
+        }
         break;
-      case Constants.RaspberryActionTypes.UPDATE_STATUS:
-        let socketIdUpdated = action.socketId;
-        let status = action.status;
-        updateStatus(socketIdUpdated, status);
+      case Constants.RaspberryActionTypes.GET:
+        setRaspberry(action.raspberry);
         RaspberryStore.emitChange();
         break;
       case Constants.RaspberryActionTypes.SET_SELECTED:
-        let selectedRaspberry = action.selectedRaspberry;
+        let selectedRaspberry = action.raspberry;
         setSelected(selectedRaspberry);
         RaspberryStore.emitChange();
         break;
@@ -98,8 +161,17 @@ const RaspberryStore = assign({}, BaseStore, {
         RaspberryStore.emitChange();
         break;
       case Constants.RaspberryActionTypes.REMOVE:
-        let socketIdRemoved = action.socketId;
-        removeRaspberry(socketIdRemoved);
+        let nameRemoved = action.name;
+        removeRaspberry(nameRemoved);
+        RaspberryStore.emitChange();
+        break;
+      case Constants.RaspberryActionTypes.DISABLE:
+        let nameDisable = action.name;
+        disableRaspberry(nameDisable);
+        RaspberryStore.emitChange();
+        break;
+      case Constants.RaspberryActionTypes.NEW_MODULE:
+        newModule(action.data);
         RaspberryStore.emitChange();
         break;
       default:

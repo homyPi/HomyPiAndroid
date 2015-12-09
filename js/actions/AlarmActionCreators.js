@@ -1,10 +1,15 @@
 import Dispatcher from '../Dispatcher';
 import Constants from '../Constants';
-import AlarmAPI from '../apis/AlarmAPI.jsx';
+import AlarmAPI from '../apis/AlarmAPI';
 
 export default {
-  loadAlarms() {
-    AlarmAPI.getAlarms().then(function(alarms){
+  clear() {
+    Dispatcher.handleViewAction({
+      type: Constants.ActionTypes.CLEAR
+    });
+  },
+  loadAlarms(raspberry) {
+    AlarmAPI.getAlarms(raspberry).then(function(alarms){
       Dispatcher.handleViewAction({
         type: Constants.ActionTypes.SET_ALARMS,
         alarms: alarms
@@ -15,7 +20,7 @@ export default {
   },
   deleteAlarm(alarm) {
     AlarmAPI.deleteAlarm(alarm).then(function(alarm) {
-Dispatcher.handleViewAction({
+    Dispatcher.handleViewAction({
         type: Constants.ActionTypes.DELETE_ALARM,
         alarm: alarm
       });
@@ -23,13 +28,14 @@ Dispatcher.handleViewAction({
       
     })
   },
-  addAlarm(alarm) {
+  addAlarm(raspberry, alarm) {
     Dispatcher.handleViewAction({
         type: Constants.ActionTypes.ADD_ALARM,
-        alarm: alarm
+        alarm: alarm,
+        raspberry: raspberry
       });
   },
-  editAlarm(alarm) {
+  editAlarm(raspberry, alarm) {
     let apiFunction;
     alarm.hours = alarm.date.getHours();
     alarm.minutes = alarm.date.getMinutes();
@@ -38,7 +44,7 @@ Dispatcher.handleViewAction({
     } else {
       apiFunction = AlarmAPI.updateAlarm;
     }
-    apiFunction(alarm).then(function() {
+    apiFunction(raspberry, alarm).then(function() {
       Dispatcher.handleViewAction({
         type: Constants.ActionTypes.UPDATE_ALARM,
         alarm: alarm

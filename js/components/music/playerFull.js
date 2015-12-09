@@ -10,58 +10,105 @@ var {
 const Dimensions = require('Dimensions');
 const window = Dimensions.get('window');
 
-var Io = require("../../io");
+import Io from "../../io";
+import PlaylistStore from '../../stores/PlaylistStore';
+import MusicStore from '../../stores/MusicStore';
+import PlaylistActionCreators from '../../actions/PlaylistActionCreators';
+import MusicActionCreators from '../../actions/MusicActionCreators';
+
+import PlayerActionCreators from '../../actions/PlayerActionCreators';
+import PlayerStore from '../../stores/PlayerStore';
+
 import Progress from './Progress';
 import PlayPause from './PlayPause';
-import PlaylistStore from '../../stores/PlaylistStore';
-import PlaylistActionCreators from '../../actions/PlaylistActionCreators';
-
-var RaspberryActionCreators = require("../../actions/RaspberryActionCreators");
-var RaspberryStore = require("../../stores/RaspberryStore");
 
 var PlayerFull = React.createClass({
-	getProgressInterval: null,
+getProgressInterval: null,
 	autoUpdateProgress: null,
-	_onRaspberryChange() {
-	    this.setState({
-	    	raspberries: RaspberryStore.getAll().raspberries,
-			selectedRaspberry : RaspberryStore.getAll().selectedRaspberry
-	    });
-	    this.setGetTrackProgressInterval();
-	},
 	_onPlaylistChange() {
 		this.setState({
 			playing: PlaylistStore.getAll().playing,
+			tracks: PlaylistStore.getAll().tracks,
 			progress: PlaylistStore.getAll().progress
 		});
-		this.setGetTrackProgressInterval();
+		//this.setGetTrackProgressInterval();
+	},
+	_onMusicChange() {
+		var sources = MusicStore.getAll().sources;
+		var musicSource, playlistSource;
+		if(sources.music.length) {
+			musicSource = sources.music[0];
+		}
+		if(sources.playlist.length) {
+			playlistSource = sources.playlist[0];
+		}
+		this.setState({
+			sources: sources,
+			musicSource: musicSource,
+			playlistSource: playlistSource,
+			volume: MusicStore.getAll().volume
+		});
+		
+	},
+	getPlaylist(pl) {
+		if (!pl) {
+			let {player} = this.state;
+		} else {
+			let player = pl;
+		}
+		if (!player) return;
+	   	PlaylistActionCreators.loadPlaylist(player);
+
 	},
 	getInitialState() {
-	   	RaspberryActionCreators.getAll();
-	   	PlaylistActionCreators.loadPlaylist();
+	   	MusicActionCreators.getSources();
+	   	var pl = PlayerStore.getAll().selected;
+		if (pl) {
+	   		this.getPlaylist(pl);
+		}
 	    return {
-	      raspberries: RaspberryStore.getAll().raspberries,
-	      selectedRaspberry : RaspberryStore.getAll().selectedRaspberry,
-	      playing: PlaylistStore.getAll().playing,
-	      progress: PlaylistStore.getAll().progress,
-	      extended: false
+	     	player: pl,
+	      	playing: PlaylistStore.getAll().playing,
+	      	tracks: PlaylistStore.getAll().tracks,
+	      	progress: PlaylistStore.getAll().progress,
+	      	sources: MusicStore.getAll().sources,
+	      	extended: false
 	    };
 	},
-	componentDidMount() {
-	    RaspberryStore.addChangeListener(this._onRaspberryChange);
+	_onPlayerChange() {
+		var player = PlayerStore.getAll().selected;
+		if (!player) {
+			this.setState({player : player});
+			return;
+		}
+		this.setState({
+	      	player : player,
+			tracks: PlaylistStore.getAll().tracks
+	    });
+	    //this.setGetTrackProgressInterval();
+	    this.getPlaylist();
+	},
+	componentWillMount() {
+		PlayerStore.addChangeListener(this._onPlayerChange);
 	    PlaylistStore.addChangeListener(this._onPlaylistChange);
-	    
-		this.setGetTrackProgressInterval();
+	    MusicStore.addChangeListener(this._onMusicChange);
+	    PlayerActionCreators.getAll();
+
+		//this.setGetTrackProgressInterval();
+	},
+	componentDidMount() {
+		
 	},
 	componentWillUnmount() {
-	    RaspberryStore.removeChangeListener(this._onRaspberryChange);
+	    PlayerStore.removeChangeListener(this._onPlayerChange);
 	    PlaylistStore.removeChangeListener(this._onPlaylistChange);
+	    MusicStore.removeChangeListener(this._onMusicChange);
 	    if (this.getProgressInterval) {
-			clearInterval(this.getProgressInterval);
+			clearInterval(this.getProgressInterval);				
 			this.getProgressInterval = null;
 		}
 		if (this.autoUpdateProgress) {
-			clearInterval(this.autoUpdateProgress);
+			clearInterval(this.autoUpdateProgress)
 			this.autoUpdateProgress = null;
 		}
 	},
@@ -91,31 +138,38 @@ var PlayerFull = React.createClass({
 					<Text style={this.styles.artists}>{playing.artists.map(function(artist) { return (artist.name + "; ")})}</Text>
 				</View>
 				<Progress value={progress.progressMs} min={0}  max={playing.durationMs} onSeekTrack={this._seek}/>
-				{
-					(raspberry)? (
 				<View style={this.styles.playerActions}>
 					<TouchableHighlight
 						style={this.styles.skip}
-						onPress={this._pause} >
+						onPress={() => this._previous()} >
 						<Image
 					        style={this.styles.skipImg}
 		              		resizeMode={Image.resizeMode.cover}
 					        source={require("image!ic_skip_previous_white_48dp")} />
 					</ TouchableHighlight>
-					<PlayPause raspberry={raspberry} style={this.styles.playPause} styleImg={this.styles.playPauseImg} />
+					<PlayPause player={player} style={this.styles.playPause} styleImg={this.styles.playPauseImg} />
 					<TouchableHighlight
 						style={this.styles.skip}
-						onPress={this._pause} >
+						onPress={() => {this._next()}} >
 						<Image
 					        style={this.styles.skipImg}
 		              		resizeMode={Image.resizeMode.contain}
 					        source={require("image!ic_skip_next_white_48dp")} />
 					</ TouchableHighlight>
 				</View>
-				): (<View style={this.styles.playerActions}></View>)
-				}
 			</View>
 		);
+	},
+	_previous() {
+		var player = PlayerStore.getAll().selected;
+		if (!player) return;
+		Io.socket.emit("player:previous", {name: player.name});
+	},
+	_next() {
+		let {player} = this.state;
+		console.log("next", player);
+		if (!player) return;
+		Io.socket.emit("player:next", {name: player.name});
 	},
 	setGetTrackProgressInterval() {
 		if (this.state.selectedRaspberry && this.state.selectedRaspberry.status === "PLAYING") {
@@ -149,8 +203,8 @@ var PlayerFull = React.createClass({
 	_seek(value, event) {
 		event.preventDefault();
 		event.stopPropagation();
-		console.log("seek it", value);
-		Io.socket.emit("player:seek", {progress_ms: value});
+		let {player} = this.state;
+		Io.socket.emit("player:seek", {player: {name: player.name}, progress_ms: value});
 		PlaylistActionCreators.updateProgress(value);
 	},
 	styles: StyleSheet.create({

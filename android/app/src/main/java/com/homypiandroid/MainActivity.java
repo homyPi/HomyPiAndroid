@@ -1,6 +1,7 @@
 package com.homypiandroid;
 
 import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 
@@ -13,8 +14,9 @@ import com.facebook.soloader.SoLoader;
 
 import com.homypiandroid.CustomReactPackage;
 import com.github.xinthink.rnmk.ReactMaterialKitPackage;
+import me.nucleartux.date.ReactDatePackage;
 
-public class MainActivity extends Activity implements DefaultHardwareBackBtnHandler {
+public class MainActivity extends FragmentActivity implements DefaultHardwareBackBtnHandler {
 
     private ReactInstanceManager mReactInstanceManager;
     private ReactRootView mReactRootView;
@@ -30,6 +32,7 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
                 .setJSMainModuleName("index.android")
                 .addPackage(new MainReactPackage())
                 .addPackage(new ReactMaterialKitPackage())
+                .addPackage(new ReactDatePackage(this))
                 .addPackage(new CustomReactPackage(this))
                 .setUseDeveloperSupport(BuildConfig.DEBUG)
                 .setInitialLifecycleState(LifecycleState.RESUMED)

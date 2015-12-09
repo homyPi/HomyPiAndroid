@@ -46,6 +46,10 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     fontSize: 18,
     fontWeight: '300'
+  },
+  raspberriesList: {
+    paddingTop: 10,
+    paddingBottom: 10
   }
 });
 
@@ -53,24 +57,55 @@ class Menu extends Component {
   constructor(props) {
     super(props);
 
-    this.onRaspberriesChange = function() {
-      console.log("onRaspberriesChange", RaspberryStore.getAll());
+    this.state = {
+      raspberries: [],
+      showRaspberriesList: true
+    }
+
+    this.onRaspberriesChange = () => {
+      this.setState({raspberries: RaspberryStore.getAll().raspberries});
     }
   }
   componentWillMount() {
-    //RaspberryActionCreators.getAll();
+    RaspberryActionCreators.getAll();
   }
   componentDidMount() {
     RaspberryStore.addChangeListener(this.onRaspberriesChange);
   }
+  renderRaspberriesList() {
+    let {raspberries, showRaspberriesList} = this.state;
+    console.log(raspberries);
+    if (showRaspberriesList) {
+      return raspberries.map((rasp) => {
+            return (
+              <TouchableHighlight
+                key={rasp.socketId}
+                onPress={() => {this._selectedPi(rasp)}} >
+                  <View><Text>{rasp.name}</Text></View>
+              </TouchableHighlight>
+            );
+          });
+    } else {
+      return;
+    }
+  }
   render() {
+    let {raspberries} = this.state;
+
     return (
       <ScrollView style={styles.menu}>
-        <View style={styles.avatarContainer}>
-          <Image
-            style={styles.avatar}
-            source={{ uri, }}/>
-          <Text style={styles.name}>Your name</Text>
+        <TouchableHighlight
+          onPress={this.toogleRaspberriesList.bind(this)} >
+          <View style={styles.avatarContainer}>
+            <Image
+              style={styles.avatar}
+              source={{ uri, }}/>
+            <Text style={styles.name}>Your name</Text>
+            
+          </View>
+        </TouchableHighlight>
+        <View style={styles.raspberriesList}>
+          {this.renderRaspberriesList()}
         </View>
 
         <TouchableHighlight
@@ -97,6 +132,14 @@ class Menu extends Component {
       name:"searchMusic"
     });
     this.props.closeMenu();
+  }
+  _selectedPi(pi) {
+    RaspberryActionCreators.setSelectedRaspberry(pi);
+  }
+  toogleRaspberriesList() {
+    let {showRaspberriesList} = this.state;
+    console.log("set showRaspberriesList to " + (!showRaspberriesList));
+    this.setState({showRaspberriesList: !showRaspberriesList});
   }
 }
 Menu.defaultProps = {pushRoute:function(){}};

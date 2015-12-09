@@ -20,14 +20,6 @@ module.exports = {
     CLEAR: null,
     START_LOADING: null
   }),
-  PlaylistActionTypes: keyMirror({
-    SET_PLAYLIST: null,
-    ADD_TRACK: null,
-    ADD_TRACKSET: null,
-    REMOVE_TRACK: null,
-    UPDATE_PLAYING_ID: null,
-    UPDATE_PROGRESS: null
-  }),
   UserActionTypes: keyMirror({
     LOGIN_SUCCESS: null
   }),
@@ -36,6 +28,31 @@ module.exports = {
     UPDATE_STATUS: null,
     NEW: null,
     REMOVE: null
+  }),
+  MusicSearchActionTypes: keyMirror({
+    SET_RESULTS: null
+  }),
+  MusicActionTypes: keyMirror({
+    SET_SOURCES: null,
+    SET_VOLUME: null,
+    SET_FAVORITE_MUSIC_SOURCES: null,
+    SET_FAVORITE_PLAYLIST_SOURCES: null
+  }),
+  PlaylistActionTypes: keyMirror({
+    SET_PLAYLIST: null,
+    ADD_TRACK: null,
+    ADD_TRACKSET: null,
+    REMOVE_TRACK: null,
+    UPDATE_PLAYING_ID: null,
+    UPDATE_PROGRESS: null
+  }),
+  PlayerActionTypes: keyMirror({
+    SET_LIST: null,
+    SET_PLAYER: null,
+    REMOVE_PLAYER: null,
+    UPDATE_STATUS: null,
+    SET_SELECTED: null,
+    SET_VOLUME: null
   }),
   RouterActionTypes: keyMirror({
     SET_ROUTE: null

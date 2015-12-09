@@ -2,10 +2,14 @@ import {NativeModules} from 'react-native';
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 import PlaylistStore from "../stores/PlaylistStore";
-var ToastModuleBis = NativeModules.ToastModuleBis
+import PlayerStore from '../stores/PlayerStore';
+var ToastModuleBis = NativeModules.ToastModuleBis;
+
 var setPlaying = function() {
 	track = PlaylistStore.getAll().playing;
 	if (track && track.name) {
+		player = PlayerStore.getAll().selected;
+		ToastModuleBis.setPlayerName(player.name)
 		ToastModuleBis.setTrackName(track.name);
 		if (track.artists) {
 			var artistsStr = "";

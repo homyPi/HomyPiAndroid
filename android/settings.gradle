@@ -4,4 +4,7 @@ def resolve(File dir) {
 }
 include ':app'
 include ':RNMaterialKit'
+include ':reactdate'
+
 project(':RNMaterialKit').projectDir = resolve file('../node_modules/react-native-material-kit/android')
+project(':reactdate').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-date')

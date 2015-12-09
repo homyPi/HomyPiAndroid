@@ -5,26 +5,27 @@ var {
   	TouchableHighlight
 } = React;
 
-var Io = require("../../io");
+import Io from "../../io";
 var PlayPause = React.createClass({
 
 
 	_playPause: function() {
-		let {raspberry} = this.props;
-		if (raspberry && raspberry.status === "PAUSED") {
-			Io.socket.emit("player:resume");
-		} else if (raspberry && raspberry.status === "PLAYING") {
-			Io.socket.emit("player:pause");
+		let {player} = this.props;
+		console.log(Io);
+		if (player && player.status === "PAUSED") {
+			Io.socket.emit("player:resume", {name: player.name});
+		} else if (player && player.status === "PLAYING") {
+			Io.socket.emit("player:pause", {name: player.name});
 		}
 	},
 	_pause: function() {
 	},
 	render: function() {
-		let {raspberry, style, styleImg} = this.props;
+		let {player, style, styleImg} = this.props;
 		var img = {url:"https://cdn3.iconfinder.com/data/icons/faticons/32/arrow-left-01-512.png"};
-		if (raspberry && raspberry.status === "PLAYING") {
+		if (player && player.status === "PLAYING") {
 			img = require("image!ic_pause_white_48dp");
-		} else if (raspberry && raspberry.status === "PAUSED") {
+		} else if (player && player.status === "PAUSED") {
 			img = require("image!ic_play_circle_outline_white_48dp");
 		}
 		return (

@@ -11,10 +11,11 @@
     "keymirror": "^0.1.1",
     "object-assign": "^4.0.1",
     "react-native": "^0.16.0",
+    "react-native-date": "^1.0.2",
+    "react-native-drawer": "^1.10.1",
     "react-native-grid-view": "^0.3.7",
     "react-native-icons": "^0.5.1",
     "react-native-material-kit": "^0.2.4",
-    "react-native-drawer": "^1.10.1",
     "superagent": "^1.4.0"
   }
 }

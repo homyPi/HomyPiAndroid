@@ -23,6 +23,7 @@ import java.util.HashMap;
 public class SocketService extends Service {
     private Socket mSocket;
 	private static final String TAG = "SocketService";
+	private static ArrayList<String> events = new ArrayList<String>();
 
     IBinder mBinder = new LocalBinder();
    
@@ -66,10 +67,20 @@ public class SocketService extends Service {
 	}
 	public void on(String event, Emitter.Listener callback) {
 		Log.i(TAG, "new event listener from java for " + event);
+		events.add(event);
 		mSocket.on(event, callback);
 	}
 
-	
+	public void clearEvents() {
+		for (String event: events) {
+			mSocket.off(event);
+		}
+	}
+
+	public void off(String event, Emitter.Listener callback) {
+		mSocket.off(event, callback);
+	}
+
 	public void connect() {
 		Log.i(TAG, "connecting to socket");
 		try {

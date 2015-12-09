@@ -15,12 +15,29 @@ export default {
 
 			});
 	},
-	updateState(socketId, status) {
-		Dispatcher.handleViewAction({
-			type: Constants.RaspberryActionTypes.UPDATE_STATUS,
-			socketId: socketId,
-			status: status
-      	});
+	get(name) {
+		RaspberryAPI.get(name)
+			.then(function(raspberry) {
+				Dispatcher.handleViewAction({
+			        type: Constants.RaspberryActionTypes.GET,
+			        raspberry: raspberry
+      			});
+			})
+			.catch(function(err) {
+
+			});
+	},
+	add(name) {
+		RaspberryAPI.add(name)
+			.then(function(raspberry) {
+				Dispatcher.handleViewAction({
+			        type: Constants.RaspberryActionTypes.RASPBERRY_ADDED,
+			        raspberry: raspberry
+      			});
+			})
+			.catch(function(err) {
+
+			});
 	},
 	setSelectedRaspberry(raspberry) {
 		Dispatcher.handleViewAction({
@@ -34,10 +51,23 @@ export default {
 			raspberry: raspberry
       	});
 	},
-	removeRaspberry(socketId) {
+	removeRaspberry(name) {
 		Dispatcher.handleViewAction({
 			type: Constants.RaspberryActionTypes.REMOVE,
-			socketId: socketId
+			name: name
       	});
+	},
+	disableRaspberry(name) {
+		Dispatcher.handleViewAction({
+			type: Constants.RaspberryActionTypes.DISABLE,
+			name: name
+      	});
+	},
+	newModule(data) {
+		Dispatcher.handleViewAction({
+			type: Constants.RaspberryActionTypes.NEW_MODULE,
+			data: data
+      	});
+
 	}
 }

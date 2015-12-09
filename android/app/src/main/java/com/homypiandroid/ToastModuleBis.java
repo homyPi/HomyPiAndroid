@@ -56,6 +56,7 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
 
   private String cover;
   private String playerStatus = "PAUSED";
+  private String playerName = "";
   private String trackName = "";
   private String artists = "";
 
@@ -81,13 +82,19 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
     BroadcastReceiver receiver = new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {
-
+          JSONObject json;
+          try {
+            json = new JSONObject();
+            json.put("name", playerName);
+          } catch(JSONException exception) {
+            return;
+          }
           if (intent.getAction().equals(KEY_PLAY)) {
             Log.i("PlayerNotification", "emit play");
-            ToastModuleBis.socketConnection.emit("player:resume");
+            ToastModuleBis.socketConnection.emit("player:resume", json);
           } else if (intent.getAction().equals(KEY_PAUSE)) {
             Log.i("PlayerNotification", "emit pause");
-            ToastModuleBis.socketConnection.emit("player:pause");
+            ToastModuleBis.socketConnection.emit("player:pause", json);
           }
       }
     };
@@ -138,6 +145,10 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
       cover = coverUrl;
     }
 
+    @ReactMethod
+    public void setPlayerName(String plName) {
+      playerName = plName;
+    }
     @ReactMethod
     public void setTrackName(String tN) {
       trackName = tN;

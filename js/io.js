@@ -13,7 +13,7 @@ export default {
     
     console.log("connect socket");
     SocketConnection.createSocket(config.server_url + "/", token);
-    
+    SocketConnection.clearEvents();
     SocketConnection.on("connect", function() {
       console.log("socket connected");
     });
