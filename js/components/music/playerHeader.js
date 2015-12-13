@@ -125,7 +125,6 @@ var PlayerHeader = React.createClass({
 		let playlistSourceMenu = sources.playlist.map(function(name) {
 			return { payload: name, text: name }
 		});
-		console.log("render playing = ", playing);
 		return (
 					<View style={this.styles.container}>
 						<TouchableHighlight

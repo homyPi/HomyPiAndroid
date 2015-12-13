@@ -58,7 +58,9 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
       <AlbumSearch search={route.search} navigator={navigationOperations} />
     );
   } else if (route.name === "alarms") {
+    return (
       <AlarmList navigator={navigationOperations} />
+    );
   }
 }
 BackAndroid.addEventListener('hardwareBackPress', () => {

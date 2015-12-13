@@ -15,20 +15,9 @@ class Progress extends React.Component {
 	setTouch(e) {
 	 	return true;
 	}
-	/*
-	updateProgress(evt) {
-		console.log("press");
-		console.log(evt.nativeEvent);
-		var x = evt.nativeEvent.locationX;
-
-		this.setState({progress: Math.round(x/ (window.width - 10)*100)})
-	}
-	*/
 	handleSeekTrack(e) {
-        let { onSeekTrack, soundCloudAudio } = this.props;
+        let { onSeekTrack} = this.props;
         const xPos = (e.nativeEvent.locationX - 10) / (window.width - 20);
-        //30130
-        //309731
         let value = Math.round(xPos * this.props.max);
         console.log(xPos, value);
         onSeekTrack && onSeekTrack.call(this, value, e);
@@ -50,8 +39,7 @@ class Progress extends React.Component {
 				marginLeft: 10,
 				height: 40,
 				width: window.width - 20,
-				paddingTop: 18,
-				backgroundColor: "#00ee00"
+				paddingTop: 18
 			},
 			backgroundBar: {
 				position: "absolute",

@@ -11,6 +11,7 @@ function addItem(_id, hours, minutes, enable=true, repeat=false) {
   let date = new Date();
   date.setHours(hours);
   date.setMinutes(minutes);
+  console.log("additem", {_id, hours, minutes, date, enable, repeat});
   _data.push({_id, hours, minutes, date, enable, repeat});
 }
 function setList(alarms) {
@@ -61,7 +62,7 @@ const AlarmStore = assign({}, BaseStore, {
     switch(action.type) {
       case Constants.ActionTypes.ALARM_ADDED:
         let alarm = action.alarm;
-        addItem(null,alarm.hours, alarm.minutes, alarm.enable);
+        addItem(alarm._id,alarm.hours, alarm.minutes, alarm.enable);
         _data.sort(compare);
         AlarmStore.emitChange();
         break;

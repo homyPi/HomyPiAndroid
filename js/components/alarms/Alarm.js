@@ -9,12 +9,18 @@ var {
 	View,
 	Text,
 	StyleSheet,
+	TouchableOpacity,
 	NativeModules
 } = React;
 var styles = {
 	container: {
 		flex: 1,
+		flexDirection: "column"
+	},
+	header: {
+		flex: 1,
 		flexDirection: "row"
+
 	},
 	leftContainer: {
 		flex:3
@@ -43,8 +49,7 @@ class Alarm extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			showBody: false,
-			enabled: props.alarm.enable
+			showBody: false
 		};		
 	}
 	toogleBody() {
@@ -52,12 +57,7 @@ class Alarm extends React.Component {
 	}
 	editAlarm() {
 		let {raspberry, alarm} = this.props;
-		NativeModules.DateAndroid.showTimepicker(function() {}, function(hour, minute) {
-			alarm.date = new Date();
-			alarm.date.setHours(hour);
-			alarm.date.setMinutes(minute);
-	      	AlarmActions.editAlarm(raspberry, alarm);
-		});
+		
 	}
 	componentDidMount() {
 		if (!this.props.alarm._id) {
@@ -69,19 +69,31 @@ class Alarm extends React.Component {
 		enableAlarm(alarm, value);
 		this.setState({enabled: value});
 	}
+	getBody() {
+		let {alarm} = this.props;
+		return (
+			<Text>Body!!</Text>
+		)
+	}
 	render() {
 		let {alarm} = this.props;
-		console.log(alarm);
 		return (
 			<View style={styles.container}>
-				<View style={styles.leftContainer}>
-					<Text style={styles.date}>{toString(alarm.hours, alarm.minutes)}</Text>
-				</View>
-				<View style={styles.rightContainer}>
-					<SwitchAndroid
-			            onValueChange={(value) => {this.enable(value)}}
-			            value={this.state.enabled} />
-		        
+				<TouchableOpacity
+					onPress={()=>{this.toogleBody()}} >
+					<View style={styles.header}>
+						<View style={styles.leftContainer}>
+							<Text style={styles.date}>{toString(alarm.hours, alarm.minutes)}</Text>
+						</View>
+						<View style={styles.rightContainer}>
+							<SwitchAndroid
+					            onValueChange={(value) => {this.enable(value)}}
+					            value={alarm.enable} />
+						</View>
+					</View>
+				</TouchableOpacity>
+				<View>
+					{(this.state.showBody)? this.getBody():null}
 				</View>
 			</View>
 		);

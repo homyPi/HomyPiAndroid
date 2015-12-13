@@ -59,7 +59,7 @@ class Menu extends Component {
 
     this.state = {
       raspberries: [],
-      showRaspberriesList: true
+      showRaspberriesList: false
     }
 
     this.onRaspberriesChange = () => {
@@ -110,6 +110,12 @@ class Menu extends Component {
 
         <TouchableHighlight
           style={styles.clickable}
+          onPress={this.gotoAlarms.bind(this)} >
+            <Text style={styles.item}>Alarms</Text>
+        </TouchableHighlight>
+
+        <TouchableHighlight
+          style={styles.clickable}
           onPress={this.gotoSearchMusic.bind(this)} >
             <Text style={styles.item}>Music</Text>
         </TouchableHighlight>
@@ -130,6 +136,12 @@ class Menu extends Component {
   gotoSearchMusic() {
     this.props.pushRoute({
       name:"searchMusic"
+    });
+    this.props.closeMenu();
+  }
+  gotoAlarms() {
+    this.props.pushRoute({
+      name:"alarms"
     });
     this.props.closeMenu();
   }

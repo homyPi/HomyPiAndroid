@@ -29,11 +29,14 @@ export default {
     })
   },
   addAlarm(raspberry, alarm) {
+    AlarmAPI.insertAlarm(raspberry, alarm).then(function(alarm) {
+      
     Dispatcher.handleViewAction({
         type: Constants.ActionTypes.ADD_ALARM,
         alarm: alarm,
         raspberry: raspberry
       });
+    })
   },
   editAlarm(raspberry, alarm) {
     let apiFunction;
@@ -54,13 +57,20 @@ export default {
     });
   },
   enableAlarm(alarm, enabled) {
+    alarm.enable = enabled;
+    console.log(alarm);
+    Dispatcher.handleViewAction({
+      type: Constants.ActionTypes.UPDATE_ALARM,
+      alarm: alarm
+    });
     AlarmAPI.enableAlarm(alarm, enabled).then(function() {
+      
+    }).catch(function(err) {
+      alarm.enable = !enabled;
       Dispatcher.handleViewAction({
         type: Constants.ActionTypes.UPDATE_ALARM,
         alarm: alarm
       });
-    }).catch(function(err) {
-      
     });
   }
 };

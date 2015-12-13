@@ -47,6 +47,7 @@ export default {
 				.send({ alarm: alarm, raspberry: raspberry })
 				.set("Authorization", "Bearer " + UserAPI.getToken())
 				.end(function(err, res) {
+					console.log(err, res);
 					if(err ) {
 						reject(err)
 					} else {

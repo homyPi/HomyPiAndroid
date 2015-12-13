@@ -16,6 +16,9 @@ const window = Dimensions.get('window');
 
 import MusicSearchStore from '../../stores/MusicSearchStore';
 import MusicSearchActions from '../../actions/MusicSearchActionCreators';
+
+import PlayerStore from "../../stores/PlayerStore"
+
 import ArtistItem from "./artistItem";
 import AlbumItem from "./albumItem";
 
@@ -60,7 +63,6 @@ const SingleColorSpinner = mdl.Spinner.singleColorSpinner()
 class SearchMusic extends React.Component {
 	constructor(props) {
 		super(props);
-		this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 		this.state = {
 			artists: MusicSearchStore.getAll().artists,
 			tracks: MusicSearchStore.getAll().tracks,
@@ -68,25 +70,36 @@ class SearchMusic extends React.Component {
 			loading: false,
 			search: this.props.search || "gorillaz"
 		};
-		if (this.state.search != "") {
-			this.state.loading = true;
-			this.handleSearch();
+		this._onChange = () => {
+			this.setState({
+			  artists: MusicSearchStore.getAll().artists,
+			  tracks: MusicSearchStore.getAll().tracks,
+			  albums: MusicSearchStore.getAll().albums,
+			  loading: MusicSearchStore.getAll().loading
+			});
 		}
+		this._onPlayerChange = () => {
+	    	this.setState({player: PlayerStore.getAll().selected});
+	    }
+
+	    this._handleSearch = () => {
+			let search =this.state.search;
+			this.setState({loading: true});
+			console.log("search ", search);
+			MusicSearchActions.search(this.state.search, null, 4);
+	    }
 	}
-	_onChange() {
-		this.setState({
-		  artists: MusicSearchStore.getAll().artists,
-		  tracks: MusicSearchStore.getAll().tracks,
-		  albums: MusicSearchStore.getAll().albums,
-		  loading: MusicSearchStore.getAll().loading
-		});
-	}
+	
   	componentDidMount() {
-	  	MusicSearchStore.addChangeListener(this._onChange.bind(this));
+	  	MusicSearchStore.addChangeListener(this._onChange);
+	  	PlayerStore.addChangeListener(this._onPlayerChange);
+    	if (this.state.search != "") {
+	    	this._handleSearch();
+	    }
   	}
   	componentWillUnmount() {
-		console.log("search UNMOUNTED");
-		MusicSearchStore.removeChangeListener(this._onChange.bind(this));
+    	MusicSearchStore.removeChangeListener(this._onChange);
+	  	PlayerStore.removeChangeListener(this._onPlayerChange);
   	}
 	render () {
 		let {search, loading} = this.state;
@@ -102,7 +115,7 @@ class SearchMusic extends React.Component {
 					  onChangeText={(search) => this.setState({search: search})} />
 					<TouchableOpacity
 						style={styles.searchButton}
-						onPress={this.handleSearch.bind(this)}>
+						onPress={this.handleSearch}>
 						<Image style={styles.searchButtonImg} resizeMode={Image.resizeMode.contain} source={require('image!ic_search')} />
 					</TouchableOpacity>
 			  	</View>
@@ -122,7 +135,7 @@ class SearchMusic extends React.Component {
 						  	<View>
 						  		{
 							  		tracks.items.slice(0,4).map(track => {
-							  			return (<Track key={track.id} track={track} playTrack={this._playTrack} addTrack={this._addTrackInPlaylist}/>);
+							  			return (<Track key={track._id} track={track} playTrack={this._playTrack} addTrack={this._addTrackInPlaylist}/>);
 							  		})
 							  	}
 							  	<TouchableOpacity
@@ -168,13 +181,13 @@ class SearchMusic extends React.Component {
 	
 	renderArtistItem(result) {
 		return (
-			<ArtistItem key={result._id} artist={result} playAlbum={this._playAlbum}/>
+			<ArtistItem key={result.id} artist={result} playAlbum={this._playAlbum}/>
 		);
   	}
 
 	renderAlbumItem(result) {
 		return (
-			<AlbumItem key={result._id} album={result} playAlbum={this._playAlbum}/>
+			<AlbumItem key={result.id} album={result} playAlbum={this._playAlbum}/>
 		);
   	}
   	_showMore(type) {
@@ -190,11 +203,6 @@ class SearchMusic extends React.Component {
   		}
   		this.props.navigator.push(route);
   	}
-	handleSearch() {
-		let search =this.state.search;
-		this.setState({loading: true});
-		MusicSearchActions.search(this.state.search, null, 4);
-	}
 }
 
 export default SearchMusic;

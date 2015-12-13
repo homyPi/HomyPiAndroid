@@ -4,7 +4,8 @@ var {
   Text,
   Image,
   View,
-  TouchableHighlight
+  TouchableHighlight,
+  TouchableWithoutFeedback
 } = React;
 
 const Dimensions = require('Dimensions');
@@ -21,9 +22,10 @@ import PlayerStore from '../../stores/PlayerStore';
 
 import Progress from './Progress';
 import PlayPause from './PlayPause';
+import Volume from "./Volume";
 
 var PlayerFull = React.createClass({
-getProgressInterval: null,
+	getProgressInterval: null,
 	autoUpdateProgress: null,
 	_onPlaylistChange() {
 		this.setState({
@@ -31,7 +33,7 @@ getProgressInterval: null,
 			tracks: PlaylistStore.getAll().tracks,
 			progress: PlaylistStore.getAll().progress
 		});
-		//this.setGetTrackProgressInterval();
+		this.setGetTrackProgressInterval();
 	},
 	_onMusicChange() {
 		var sources = MusicStore.getAll().sources;
@@ -72,7 +74,8 @@ getProgressInterval: null,
 	      	tracks: PlaylistStore.getAll().tracks,
 	      	progress: PlaylistStore.getAll().progress,
 	      	sources: MusicStore.getAll().sources,
-	      	extended: false
+	      	extended: false,
+	      	showVolumeBar: false
 	    };
 	},
 	_onPlayerChange() {
@@ -85,7 +88,7 @@ getProgressInterval: null,
 	      	player : player,
 			tracks: PlaylistStore.getAll().tracks
 	    });
-	    //this.setGetTrackProgressInterval();
+	    this.setGetTrackProgressInterval();
 	    this.getPlaylist();
 	},
 	componentWillMount() {
@@ -94,10 +97,13 @@ getProgressInterval: null,
 	    MusicStore.addChangeListener(this._onMusicChange);
 	    PlayerActionCreators.getAll();
 
-		//this.setGetTrackProgressInterval();
+		this.setGetTrackProgressInterval();
 	},
 	componentDidMount() {
 		
+	},
+	hideVolumeBar() {
+		this.setState({showVolumeBar: false});
 	},
 	componentWillUnmount() {
 	    PlayerStore.removeChangeListener(this._onPlayerChange);
@@ -113,10 +119,12 @@ getProgressInterval: null,
 		}
 	},
 	render: function() {
-		let {selectedRaspberry, playing, progress} = this.state;
+		let {selectedRaspberry, playing, progress, showVolumeBar} = this.state;
 		var raspberry = selectedRaspberry;
 		let statusAction = null;
 		return (
+			<TouchableWithoutFeedback
+				onPress={() => this.hideVolumeBar()}>
 			<View style={this.styles.container}>
 				<View style={this.styles.viewActions}>
 					<TouchableHighlight
@@ -156,8 +164,14 @@ getProgressInterval: null,
 		              		resizeMode={Image.resizeMode.contain}
 					        source={require("image!ic_skip_next_white_48dp")} />
 					</ TouchableHighlight>
+					<Volume 
+						value={player.volume || 0}
+						setVolume={(value)=>this._setVolume(value)}
+						showVolumeBar={showVolumeBar}
+						toogleVolumeBar={()=>{this.setState({showVolumeBar: !showVolumeBar})}} />
 				</View>
 			</View>
+			</TouchableWithoutFeedback>
 		);
 	},
 	_previous() {
@@ -167,27 +181,22 @@ getProgressInterval: null,
 	},
 	_next() {
 		let {player} = this.state;
-		console.log("next", player);
 		if (!player) return;
 		Io.socket.emit("player:next", {name: player.name});
 	},
 	setGetTrackProgressInterval() {
-		if (this.state.selectedRaspberry && this.state.selectedRaspberry.status === "PLAYING") {
+		if (this.state.player && this.state.player.status === "PLAYING") {
 			if (!this.getProgressInterval) {
-				console.log("!this.getProgressInterval");
 				Io.socket.emit("playlist:track:progress:get");
 				this.getProgressInterval = setInterval(function(){
-					console.log("WARN: getProgressInterval");
 					Io.socket.emit("playlist:track:progress:get");
 				}, 5000);
 			}
 			if (!this.autoUpdateProgress) {
-				console.log("!this.autoUpdateProgress");
-				this.autoUpdateProgress = setInterval(() => {
-					console.log("autoUpdateProgress");
+				this.autoUpdateProgress = setInterval(function() {
 					var ms = this.state.progress.progressMs + 1000;
 					PlaylistActionCreators.updateProgress(ms);
-				}, 1000)
+				}.bind(this), 1000)
 			}
 		} else {
 			if (this.getProgressInterval) {
@@ -200,9 +209,14 @@ getProgressInterval: null,
 			}
 		}
 	},
+	_setVolume(value) {
+		this.setState({volume: value});
+		let {player} = this.state;
+		console.log("player:volume:set", {player: {name: player.name}, volume: value});
+		Io.socket.emit("player:volume:set", {player: {name: player.name}, volume: value});
+		PlayerActionCreators.setVolume(player.name, value);
+	},
 	_seek(value, event) {
-		event.preventDefault();
-		event.stopPropagation();
 		let {player} = this.state;
 		Io.socket.emit("player:seek", {player: {name: player.name}, progress_ms: value});
 		PlaylistActionCreators.updateProgress(value);
@@ -276,7 +290,6 @@ getProgressInterval: null,
 			width: 50,
 			height: 50
 		}
-
 	})
 });
 

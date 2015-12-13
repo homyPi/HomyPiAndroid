@@ -1,5 +1,8 @@
 import React from 'react-native';
 import {MKButton} from 'react-native-material-kit';
+
+var RefreshableListView = require('react-native-refreshable-listview')
+
 const Dimensions = require('Dimensions');
 const window = Dimensions.get('window');
 
@@ -13,12 +16,16 @@ import Alarm from "./Alarm";
 var {
 	View,
 	StyleSheet,
-	Text
+	Text,
+	ListView,
+	PullToRefreshViewAndroid,
+	NativeModules
 } = React;
 var styles = new StyleSheet({
 	container: {
 		flex: 1,
-		height: (window.height - 75)
+		height: (175),
+    	backgroundColor: '#CCCCCC'
 	}
 });
 
@@ -34,13 +41,26 @@ const ColoredFab = MKButton.coloredFab()
 class AlarmList extends React.Component {
 	constructor(props) {
 		super(props);
+		let ds = new ListView.DataSource({
+			rowHasChanged: function (r1, r2) {
+				return true;
+			}
+		});
+		let alarms = AlarmStore.getAll().alarms;
 		this.state = {
 			raspberry: RaspberryStore.getAll().selectedRaspberry,
-			alarms: AlarmStore.getAll().alarms
+			alarms: alarms,
+			alarmsDs: ds.cloneWithRows(alarms),
+			refreshing: false
 		};
 
 		this._onAlarmsChanged = () => {
-			this.setState({alarms: AlarmStore.getAll().alarms});
+			let alarms = AlarmStore.getAll().alarms;
+			this.setState({
+				alarms: alarms,
+				alarmsDs: this.state.alarmsDs.cloneWithRows(alarms),
+				isRefreshing: false
+			});
 		}
 		this._raspberryChanged = () => {
 			this.setState({raspberry: RaspberryStore.getAll().selectedRaspberry});
@@ -53,25 +73,32 @@ class AlarmList extends React.Component {
 			let {raspberry} = this.state;
 			if (raspberry) {
     			AlarmActions.loadAlarms(raspberry);
+    			this.setState({isRefreshing: true});
 			}
 		}
-		this._loadAlarms();
 	}
 	componentDidMount() {
 		AlarmStore.addChangeListener(this._onAlarmsChanged)
 		RaspberryStore.addChangeListener(this._raspberryChanged);
+		this._loadAlarms();
 	}
 	componentWillUnmount() {
 		AlarmStore.removeChangeListener(this._onAlarmsChanged)
 		RaspberryStore.removeChangeListener(this._raspberryChanged);
 	}
 	render() {
-		let {raspberry, alarms} = this.state;
+		let {raspberry, alarms, alarmsDs} = this.state;
 		return (
+			
 			<View style={styles.container}>
-				{alarms.map((alarm) => {
-					return (<Alarm key={alarm._id} raspberry={raspberry} alarm={alarm} enableAlarm={this.enableAlarm}/>);
-				})}
+			    <PullToRefreshViewAndroid
+			  	  style={styles.container}
+			  	  refreshing={this.state.isRefreshing}
+			  	  onRefresh={this._loadAlarms} >
+					<ListView
+					  dataSource={alarmsDs}
+					  renderRow={(alarm) => <Alarm key={alarm._id} raspberry={raspberry} alarm={alarm} enableAlarm={this.enableAlarm}/>}/>
+				</PullToRefreshViewAndroid>
 				<ColoredFab
   					onPress={() => {this._addAlarm()}}>
 					<Text> + </Text>
@@ -81,7 +108,13 @@ class AlarmList extends React.Component {
 	}
 	_addAlarm() {
 	    let {raspberry} = this.state;
-	    AlarmActions.addAlarm(raspberry, {hours: 8, minutes:0});
+	    NativeModules.DateAndroid.showTimepicker(function() {}, function(hour, minute) {
+			let alarm = {hours: hour, minutes: minute, enable: true, repeat: false};
+	    	alarm.date = new Date();
+			alarm.date.setHours(hour);
+			alarm.date.setMinutes(minute);
+	    	AlarmActions.addAlarm(raspberry, alarm);
+		});
 	}
 
 }
