@@ -5,18 +5,23 @@ var socket;
 var config = require("./config.js");
 import playlistSocket from "./sockets/playlistSocket"
 import raspberrySocket from "./sockets/raspberrySocket"
+import Settings from "./settings";
 
 import SocketConnection from './natives/SocketConnection';
 
 export default {
-  connect(token) {
+  connect(token, connectedCallback, disconnectedCallback) {
     
     console.log("connect socket");
-    SocketConnection.createSocket(config.server_url + "/", token);
+    SocketConnection.createSocket(Settings.getServerUrl() + "/", token);
     SocketConnection.clearEvents();
-    SocketConnection.on("connect", function() {
-      console.log("socket connected");
-    });
+    if (connectedCallback && typeof connectedCallback === "function") {
+      SocketConnection.on("connect", connectedCallback);
+      SocketConnection.on("reconnect", connectedCallback);
+    }
+    if (disconnectedCallback && typeof disconnectedCallback === "function") {
+      SocketConnection.on("disconnect", disconnectedCallback);
+    }
     playlistSocket(SocketConnection);
     raspberrySocket(SocketConnection);
     

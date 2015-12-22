@@ -1,14 +1,14 @@
 import UserAPI from "../apis/UserAPI"
+import Settings from "../settings";
 var superagent = require('superagent');
-var config = require("../config.js");
 
-var serverUrl = (config.server_url || "") + "/api/modules/music";
+var serverUrl = "/api/modules/music";
 
 
 export default {
 	getSources() {
 		return new Promise((resolve, reject) => {
-			let url = serverUrl + "/sources";
+			let url = Settings.getServerUrl() + serverUrl + "/sources";
 			superagent.get(url)
 				.set("Authorization", "Bearer " + UserAPI.getToken())
 				.end(function(err, res) {
@@ -22,7 +22,7 @@ export default {
 	},
 	updateFavoriteMusicSource(musicSource) {
 		return new Promise((resolve, reject) => {
-			let url = serverUrl + "/sources/music";
+			let url = Settings.getServerUrl() + serverUrl + "/sources/music";
 			superagent.post(url)
 				.send({'source': musicSource})
 				.set("Authorization", "Bearer " + UserAPI.getToken())
@@ -37,7 +37,7 @@ export default {
 	},
 	updateFavoritePlaylistSource(playlistSource) {
 		return new Promise((resolve, reject) => {
-			let url = serverUrl + "/sources/playlist";
+			let url = Settings.getServerUrl() + serverUrl + "/sources/playlist";
 			superagent.post(url)
 				.send({'source': playlistSource})
 				.set("Authorization", "Bearer " + UserAPI.getToken())

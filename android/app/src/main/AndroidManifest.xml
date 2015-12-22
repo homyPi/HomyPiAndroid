@@ -21,11 +21,7 @@
 
        <service android:name=".SocketService" />
       <activity android:name=".PlayerNotification"
-         android:label="Details of notification"
-         android:parentActivityName=".MainActivity">
-         <meta-data
-         android:name="android.support.PARENT_ACTIVITY"
-         android:value=".MainActivity"/>
+         android:label="Details of notification">
       </activity>
     </application>
     

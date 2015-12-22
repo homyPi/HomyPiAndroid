@@ -91,16 +91,13 @@ var PlayerFull = React.createClass({
 	    this.setGetTrackProgressInterval();
 	    this.getPlaylist();
 	},
-	componentWillMount() {
+	componentDidMount() {
 		PlayerStore.addChangeListener(this._onPlayerChange);
 	    PlaylistStore.addChangeListener(this._onPlaylistChange);
 	    MusicStore.addChangeListener(this._onMusicChange);
 	    PlayerActionCreators.getAll();
 
 		this.setGetTrackProgressInterval();
-	},
-	componentDidMount() {
-		
 	},
 	hideVolumeBar() {
 		this.setState({showVolumeBar: false});

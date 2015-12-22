@@ -6,6 +6,7 @@ import android.os.IBinder;
 import android.os.Binder;
 import android.widget.Toast;
 import android.util.Log;
+import android.os.Handler;
 
 
 import io.socket.emitter.Emitter;
@@ -21,9 +22,12 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class SocketService extends Service {
+	public static final long PING_DELAY = 300000; //5 min
+
     private Socket mSocket;
 	private static final String TAG = "SocketService";
 	private static ArrayList<String> events = new ArrayList<String>();
+	protected static final Handler pinger = new Handler();
 
     IBinder mBinder = new LocalBinder();
    
@@ -55,7 +59,8 @@ public class SocketService extends Service {
 	public void createSocket(String serverUrl, String token) {
 		Log.i(TAG, "CreateSocket");
 		IO.Options opts = new IO.Options();
-		opts.forceNew = false;
+        opts.forceNew = true;
+        opts.reconnection = true;
 		opts.query = "token=" + token;
  		try {
 			Log.i(TAG, "connecting to " + serverUrl);
@@ -85,10 +90,41 @@ public class SocketService extends Service {
 		Log.i(TAG, "connecting to socket");
 		try {
 			mSocket.connect();
+			final Socket sock = mSocket;
+			mSocket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+				@Override
+				public void call(Object... args) {
+				    pinger.postDelayed(new Runnable()
+				    {
+				        private long time = 0;
+
+				        @Override
+				        public void run()
+				        {
+				            time += PING_DELAY;
+				            Log.i(TAG, "ping server");
+				            sock.emit("ping");
+				            pinger.postDelayed(this, PING_DELAY);
+				        }
+				    }, PING_DELAY);	// ping every PING_DELAY ms
+				}
+			});
+			mSocket.on("ping:received" , new Emitter.Listener() {
+				@Override
+				public void call(Object... args) {
+				    Log.i(TAG, "server pinged back");
+
+				}
+			});
 		} catch(Exception e) {
     		Log.e(TAG, "Caught Exception: " + e.getMessage());
 
 		}
+	}
+
+	public void startPing() {
+		
+		
 	}
 
 	/*

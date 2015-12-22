@@ -1,4 +1,5 @@
 var Io = require('../io.js');
+import Settings from "../settings";
 
 var config = require("../config.js");
 var AsyncStorage = require('react-native').AsyncStorage;
@@ -6,14 +7,11 @@ var AsyncStorage = require('react-native').AsyncStorage;
 
 var token = null;
 
+
+
 var setToken = function(newToken) {
 	token = newToken;
-	try {
-		//Io.connect(token);
-	} catch(e) {
-		console.log(e);
-	}
-	AsyncStorage.setItem("homyToken", token);
+	AsyncStorage.setItem("homyToken", token)
     //localStorage.setItem('token', token);
 }
 
@@ -33,8 +31,9 @@ export default {
 	loadStoredToken: loadStoredToken,
 	getToken: getToken,
 	login(username, password) {
+		console.log("login with ", username, password, " to ", Settings.getServerUrl() + "/api/users/login");
 		return new Promise(function(resolve, reject) {
-			fetch(config.server_url + "/api/users/login",
+			fetch(Settings.getServerUrl() + "/api/users/login",
 				{
 					method: "POST",
 				    body: JSON.stringify({ username: username, password: password }),
@@ -43,6 +42,7 @@ export default {
 					    'Content-Type': 'application/json'
 					}
 				}).then(function(response) {
+					console.log("post login =>", response);
 					return response.json();
 				}).then(function(json) {
 					setToken(json.token);
@@ -52,5 +52,9 @@ export default {
 					return reject(err);
 				});
 			});
+	},
+	logout: function() {
+		setToken("");
+		console.log("out: ", token);
 	}
 };

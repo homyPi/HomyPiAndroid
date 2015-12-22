@@ -1,13 +1,13 @@
 import UserAPI from "./UserAPI.js"
+import Settings from "../settings";
 
-var config = require("../config.js");
 var superagent = require('superagent');
-var serverUrl = (config.server_url || "") + "/api/modules/music/players";
+var serverUrl = "/api/modules/music/players";
 
 export default {
 	getAll() {
 		return new Promise((resolve, reject) => {
-			let url = serverUrl;
+			let url = Settings.getServerUrl() + serverUrl;
 			superagent.get(url)
 				.set("Authorization", "Bearer " + UserAPI.getToken())
 				.end(function(err, res) {

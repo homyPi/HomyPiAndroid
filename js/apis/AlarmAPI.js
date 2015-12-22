@@ -1,18 +1,16 @@
 import UserAPI from "./UserAPI.js"
+import Settings from "../settings";
 
-var config = require("../config.js");
 var superagent = require('superagent');
-var serverUrl = config.server_url + "/api/modules/alarms";
+var serverUrl = "/api/modules/alarms";
 
 export default {
 	getAlarms(raspberry) {
 		return new Promise((resolve, reject) => {
-			let url = serverUrl + "/raspberries/" + raspberry.name;
-			console.log("LOAD ALARMS ", url)
+			let url =  Settings.getServerUrl() + serverUrl + "/raspberries/" + raspberry.name;
 			superagent.get(url)
 				.set("Authorization", "Bearer " + UserAPI.getToken())
 				.end(function(err, res) {
-					console.log("AAAALARMS", err, res);
 					if(err || !res.text) {
 						return reject(err)
 					} else {
@@ -28,7 +26,7 @@ export default {
 	},
 	deleteAlarm(alarm) {
 		return new Promise((resolve, reject) => {
-			let url = serverUrl + "/" + alarm._id;
+			let url = Settings.getServerUrl() + serverUrl + "/" + alarm._id;
 			superagent.delete(url)
 				.set("Authorization", "Bearer " + UserAPI.getToken())
 				.end(function(err, res) {

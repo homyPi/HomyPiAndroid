@@ -25,12 +25,10 @@ module.exports = {
   }),
   RaspberryActionTypes: keyMirror({
     GET_ALL: null,
+    GET: null,
     UPDATE_STATUS: null,
     NEW: null,
     REMOVE: null
-  }),
-  MusicSearchActionTypes: keyMirror({
-    SET_RESULTS: null
   }),
   MusicActionTypes: keyMirror({
     SET_SOURCES: null,

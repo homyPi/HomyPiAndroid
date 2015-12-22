@@ -32,7 +32,6 @@ var _navigator;
 
 var RouteMapper = function(route, navigationOperations, onComponentRef) {
   _navigator = navigationOperations;
-  console.log("route = ", route);
   if (route.name === 'home') {
     return (
       <Home navigator={navigationOperations} />
@@ -75,6 +74,7 @@ var App = React.createClass({
     return {}
   },
   componentWillMount: function() {
+    console.log("connect socket");
     //SocketConnection.addListenerOn = this.addListenerOn;
     //this.addListenerOn(RCTDeviceEventEmitter, "socketService:binded", function() {
       Io.connect(UserApi.getToken());
@@ -86,10 +86,10 @@ var App = React.createClass({
   },
 
   render: function() {
-    var initialRoute = {name: 'home'};
+    var initialRoute = {name: 'searchMusic'};
     
     let nav = null;
-    var menu = <Menu pushRoute={this._push} closeMenu={this.closeMenu} />;
+    var menu = <Menu pushRoute={this._push} closeMenu={this.closeMenu} logout={() => this._logout()}/>;
     return (
         <Drawer 
           content={menu}
@@ -115,6 +115,9 @@ var App = React.createClass({
     _navigator.push(route);
   },
   _pop: function() {
+  },
+  _logout: function() {
+    this.props.logout();
   },
   openSideMenu: function() {
     this.refs.sideMenu.open();

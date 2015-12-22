@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: window.width,
     height: window.height,
-    backgroundColor: 'gray',
+    backgroundColor: '#f2f2f2',
     padding: 20,
   },
   avatarContainer: {
@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
+    backgroundColor: "#4285f4",
     flex: 1,
   },
   name: {
@@ -43,13 +44,19 @@ const styles = StyleSheet.create({
   },
   item: {
     paddingTop: 10,
-    paddingBottom: 10,
+    paddingBottom: 7,
     fontSize: 18,
     fontWeight: '300'
   },
   raspberriesList: {
     paddingTop: 10,
-    paddingBottom: 10
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#dddddd"
+
+  },
+  raspItem: {
+    fontSize: 18
   }
 });
 
@@ -58,12 +65,16 @@ class Menu extends Component {
     super(props);
 
     this.state = {
-      raspberries: [],
+      raspberries: RaspberryStore.getAll().raspberries || [],
+      selectedRasp: RaspberryStore.getAll().selectedRaspberry || {},
       showRaspberriesList: false
     }
 
     this.onRaspberriesChange = () => {
-      this.setState({raspberries: RaspberryStore.getAll().raspberries});
+      this.setState({
+        raspberries: RaspberryStore.getAll().raspberries,
+        selectedRasp: RaspberryStore.getAll().selectedRaspberry
+      });
     }
   }
   componentWillMount() {
@@ -72,25 +83,32 @@ class Menu extends Component {
   componentDidMount() {
     RaspberryStore.addChangeListener(this.onRaspberriesChange);
   }
+  componentWillUnmount() {
+    RaspberryStore.removeChangeListener(this.onRaspberriesChange);
+  }
   renderRaspberriesList() {
     let {raspberries, showRaspberriesList} = this.state;
-    console.log(raspberries);
     if (showRaspberriesList) {
-      return raspberries.map((rasp) => {
-            return (
-              <TouchableHighlight
-                key={rasp.socketId}
-                onPress={() => {this._selectedPi(rasp)}} >
-                  <View><Text>{rasp.name}</Text></View>
+      let raspItems = raspberries.map((rasp) => {
+          return (
+            <TouchableHighlight
+              key={rasp.socketId}
+              onPress={() => {this._selectedPi(rasp)}} >
+                <View><Text style={styles.raspItem}>{rasp.name}</Text></View>
               </TouchableHighlight>
-            );
-          });
+          );
+        });
+      return (
+        <View style={styles.raspberriesList}>
+          { raspItems }
+        </View>
+        );
     } else {
       return;
     }
   }
   render() {
-    let {raspberries} = this.state;
+    let {raspberries, selectedRasp} = this.state;
 
     return (
       <ScrollView style={styles.menu}>
@@ -100,13 +118,12 @@ class Menu extends Component {
             <Image
               style={styles.avatar}
               source={{ uri, }}/>
-            <Text style={styles.name}>Your name</Text>
+            <Text style={styles.name}>{selectedRasp.name}</Text>
             
           </View>
         </TouchableHighlight>
-        <View style={styles.raspberriesList}>
-          {this.renderRaspberriesList()}
-        </View>
+        
+        {this.renderRaspberriesList()}
 
         <TouchableHighlight
           style={styles.clickable}
@@ -123,6 +140,10 @@ class Menu extends Component {
         <TouchableHighlight
               onPress={() => {this.gotoMyArtists() }} >
           <Text style={styles.item}>My artists</Text>
+        </TouchableHighlight>
+        <TouchableHighlight
+              onPress={this.props.logout} >
+          <Text style={styles.item}>Logout</Text>
         </TouchableHighlight>
       </ScrollView>
     );
@@ -150,7 +171,6 @@ class Menu extends Component {
   }
   toogleRaspberriesList() {
     let {showRaspberriesList} = this.state;
-    console.log("set showRaspberriesList to " + (!showRaspberriesList));
     this.setState({showRaspberriesList: !showRaspberriesList});
   }
 }

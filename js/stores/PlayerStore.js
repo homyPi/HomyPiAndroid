@@ -103,6 +103,7 @@ const PlayerStore = assign({}, BaseStore, {
         break;
       case Constants.PlayerActionTypes.SET_SELECTED:
         setSelected(action.name);
+        console.log("selected : ", selected);
         PlayerStore.emitChange();
         break;
       case Constants.PlayerActionTypes.SET_PLAYER:

@@ -83,9 +83,8 @@ class SearchMusic extends React.Component {
 	    }
 
 	    this._handleSearch = () => {
-			let search =this.state.search;
+			let search = this.state.search;
 			this.setState({loading: true});
-			console.log("search ", search);
 			MusicSearchActions.search(this.state.search, null, 4);
 	    }
 	}
@@ -115,7 +114,7 @@ class SearchMusic extends React.Component {
 					  onChangeText={(search) => this.setState({search: search})} />
 					<TouchableOpacity
 						style={styles.searchButton}
-						onPress={this.handleSearch}>
+						onPress={this._handleSearch}>
 						<Image style={styles.searchButtonImg} resizeMode={Image.resizeMode.contain} source={require('image!ic_search')} />
 					</TouchableOpacity>
 			  	</View>

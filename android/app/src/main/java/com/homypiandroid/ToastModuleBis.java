@@ -101,26 +101,12 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
     mActivity.registerReceiver(receiver, filter);
 }
   public static Bitmap getBitmapFromURL(String src) {
-      /*
-      try {
-          URL url = new URL(src);
-          HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-          connection.setDoInput(true);
-          connection.connect();
-          InputStream input = connection.getInputStream();
-          Bitmap myBitmap = BitmapFactory.decodeStream(input);
-          return myBitmap;
-      } catch (IOException e) {
-          // Log exception
-          return null;
-      }
-      */
-     try {
-     return BitmapFactory.decodeStream((InputStream)new URL(src).getContent());
-     } catch (Exception e) {
-                  e.printStackTrace();
-                  return null;
-            }
+    try {
+      return BitmapFactory.decodeStream((InputStream)new URL(src).getContent());
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
   }
   @Override
   public String getName() {
@@ -238,6 +224,21 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
               return;
             }
             show();
+          }
+    });
+    this.socketConnection.on("modules:remove:player", new Emitter.Listener() {
+          @Override
+          public void call(final Object... args) {
+            try {
+              JSONObject data = (JSONObject) args[0];
+              JSONObject raspberry = data.getJSONObject("raspberry");
+              String name = raspberry.getString("name");
+              if (playerName.equals(name) && mNotificationManager != null) {
+                mNotificationManager.cancel(NOTIFICATION_ID);
+              }
+            } catch (JSONException e) {
+              return;
+            }
           }
     });
   }

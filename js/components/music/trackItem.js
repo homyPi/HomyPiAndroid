@@ -2,6 +2,7 @@ import React from "react-native";
 let {View, Text, StyleSheet, Image, TouchableOpacity} = React;
 
 import Io from '../../io';
+import PlayerStore from '../../stores/PlayerStore';
 
 const styles = StyleSheet.create({
 	container: {
@@ -33,7 +34,17 @@ const styles = StyleSheet.create({
 	}
 });
 
-let ArtistItem = React.createClass({
+let TrackItem = React.createClass({
+	_onPlayerChange() {
+		this.player = PlayerStore.getAll().selected;
+	},
+	componentDidMount() {
+		PlayerStore.addChangeListener(this._onPlayerChange);
+		this.player = PlayerStore.getAll().selected;
+	},
+	componentWillUnmount() {
+	    PlayerStore.removeChangeListener(this._onPlayerChange);
+	},
 	render: function() {
 		let {track} = this.props;
 		return (
@@ -58,7 +69,8 @@ let ArtistItem = React.createClass({
 		);
 	},
 	_playTrack: function() {
-		Io.socket.emit("player:play:track", {"source": "spotify", "uri": this.props.track.uri});
-	},
+		if(!this.player) return;
+		Io.socket.emit("player:play:track", {player: {name: this.player.name}, "track": {"source": "spotify", "uri": this.props.track.uri}});
+	}
 });
-export default  ArtistItem;
+export default  TrackItem;

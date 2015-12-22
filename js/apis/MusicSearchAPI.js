@@ -1,15 +1,15 @@
-
 import UserAPI from "./UserAPI.js"
-var config = require("../config.js");
+import Settings from "../settings";
+
 var superagent = require('superagent');
-var serverUrl = (config.server_url || "") + "/api/modules/music";
+var serverUrl = "/api/modules/music";
 
 
 export default {
 	search(request, type, source, nb, offset) {
 		return new Promise((resolve, reject) => {
 			console.log("in api");
-			let url = serverUrl + "/search?q=" + request;
+			let url = Settings.getServerUrl() + serverUrl + "/search?q=" + request;
 			if (type) {
 				url += "&type=" + type;
 			}
@@ -21,9 +21,11 @@ export default {
 			}
 			source = source || "spotify";
 			url += "&source=" + source;
+			console.log("search " + url);
 			superagent.get(url)
 				.set("Authorization", "Bearer " + UserAPI.getToken())
 				.end(function(err, res) {
+					console.log(err, res);
 					if(err || !res.body) {
 						return reject(err)
 					} else {

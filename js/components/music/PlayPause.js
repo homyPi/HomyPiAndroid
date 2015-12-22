@@ -11,9 +11,12 @@ var PlayPause = React.createClass({
 
 	_playPause: function() {
 		let {player} = this.props;
-		console.log(Io);
+		console.log(Io, player);
 		if (player && player.status === "PAUSED") {
+			console.log("emit player:resume");
+			try {
 			Io.socket.emit("player:resume", {name: player.name});
+		} catch(e) {console.log(e)}
 		} else if (player && player.status === "PLAYING") {
 			Io.socket.emit("player:pause", {name: player.name});
 		}

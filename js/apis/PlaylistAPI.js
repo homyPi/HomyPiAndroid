@@ -1,14 +1,13 @@
-
 import UserAPI from "./UserAPI.js"
+import Settings from "../settings";
 
-var config = require("../config.js");
 var superagent = require('superagent');
-var serverUrl = (config.server_url || "") + "/api/modules/music/playlists";
+var serverUrl = "/api/modules/music/playlists";
 
 export default {
 	loadPlaylist(raspberry) {
 		return new Promise((resolve, reject) => {
-			var url = serverUrl + "/" + raspberry.name;
+			var url = Settings.getServerUrl() + serverUrl + "/" + raspberry.name;
 			superagent.get(url)
 				.set("Authorization", "Bearer " + UserAPI.getToken())
 				.end(function(err, res) {

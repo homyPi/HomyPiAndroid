@@ -1,12 +1,12 @@
 import UserAPI from "./UserAPI"
+import Settings from "../settings";
 
-var config = require("../config.js");
 var superagent = require('superagent');
 
 export default {
 	getAll() {
 		return new Promise((resolve, reject) => {
-			let url = config.server_url + "/api/raspberries/";
+			let url = Settings.getServerUrl() + "/api/raspberries/";
 			console.log(url);
 			superagent.get(url)
 				.set("Authorization", "Bearer " + UserAPI.getToken())

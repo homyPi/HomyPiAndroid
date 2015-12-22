@@ -2,6 +2,8 @@ import React from 'react-native';
 
 var {View, Image, Text, StyleSheet, TouchableWithoutFeedback} = React;
 import Io from '../../io';
+import PlayerStore from '../../stores/PlayerStore';
+
 const Dimensions = require('Dimensions');
 const window = Dimensions.get('window');
 
@@ -29,6 +31,18 @@ class AlbumItem extends React.Component {
 	constructor(props) {
 		super(props);
 		this.pressStart = 0;
+
+		this._onPlayerChange = () => {
+			this.player = PlayerStore.getAll().selected;
+		}
+	}
+	
+	componentDidMount() {
+		PlayerStore.addChangeListener(this._onPlayerChange);
+		this.player = PlayerStore.getAll().selected;
+	}
+	componentWillUnmount() {
+	    PlayerStore.removeChangeListener(this._onPlayerChange);
 	}
 	render() {
 		let {album, playAlbum} = this.props;
@@ -58,7 +72,11 @@ class AlbumItem extends React.Component {
 		}
 	}
 	_playAlbum () {
-		Io.socket.emit("player:play:album", {id: this.props.album.id}); 
+		if(!this.player) return;
+		Io.socket.emit("player:play:album", {
+			player: {name: this.player.name},
+			id: this.props.album.id
+		}); 
 	}
 
 }

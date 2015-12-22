@@ -17,6 +17,7 @@ import Login from "./js/components/login";
 import App from "./js/components/app";
 import Splash from "./js/components/splash";
 import UserAPI from "./js/apis/UserAPI";
+import Settings from "./js/settings";
 
 var _navigator;
 var PlayerFull = require("./js/components/music/playerFull");
@@ -36,12 +37,15 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
       <Splash navigator={navigationOperations} />
     );
   } else if (route.name === 'app') {
+    console.log("return app:", (
+      <App navigator={navigationOperations} logout={route.logout}/>
+    ))
     return (
-      <App navigator={navigationOperations} />
+      <App navigator={navigationOperations} logout={route.logout}/>
     );
   } else if (route.name === 'login') {
     return (
-      <Login navigator={navigationOperations} />
+      <Login navigator={navigationOperations} onLoggedIn={route.onLoggedIn}/>
     );
   } else if (route.name === 'player') {
     return (
@@ -52,8 +56,14 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
 
 var HomyPiAndroid = React.createClass({
   componentWillMount: function() {
-    UserAPI.loadStoredToken(function(err, token) {
-      this.onLoaded(token);
+    Settings.loadStoredServerUrl(function(err, url) {
+      if (url) {
+        UserAPI.loadStoredToken(function(err, token) {
+          this.onLoaded(token);
+        }.bind(this));
+      } else {
+        _navigator.replace({name: "login"});
+      }
     }.bind(this));
   },
   render: function() {
@@ -66,13 +76,29 @@ var HomyPiAndroid = React.createClass({
       ref="navigator" />
     );
   },
-
+  _logout: function() {
+    UserAPI.logout();
+    _navigator.replace({
+      name: "login",
+      onLoggedIn: () => this.onLoggedIn()
+    });
+  },
+  onLoggedIn: function() {
+    try {
+    _navigator.replace({
+      name: "app", logout: () => this._logout()
+    });
+  }catch(e) {console.log(e);console.log(e.stack)}
+  },
   onLoaded: function(token) {
     let newRoute;
+    console.log(token);
     if (token) {
-      _navigator.replace({name: "app"});
+      this.onLoggedIn();
     } else {
-      _navigator.replace({name: "login"});
+      _navigator.replace({name: "login", 
+        onLoggedIn: () => this.onLoggedIn()
+      });
     }
   },
   styles: StyleSheet.create({

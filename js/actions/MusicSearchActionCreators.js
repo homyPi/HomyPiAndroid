@@ -6,9 +6,9 @@ import MusicSearchAPI from '../apis/MusicSearchAPI.js';
 var running = {};
 
 export default {
-	search(query) {
+	search(query, type) {
 		console.log("search ", query);
-		MusicSearchAPI.search(query)
+		MusicSearchAPI.search(query, type)
 			.then(function(results) {
 				Dispatcher.handleViewAction({
 			        type: Constants.MusicSearchActionTypes.SET_RESULTS,
@@ -25,11 +25,6 @@ export default {
 			return;
 		}
 		running[key] = true;
-		/*
-		Dispatcher.handleViewAction({
-			type: Constants.MusicSearchActionTypes.START_LOADING
-		});
-*/
 		MusicSearchAPI.search(query, type, null, nb, offset)
 			.then(function(results) {
 				delete running[key];
@@ -39,7 +34,8 @@ export default {
 			    });
 			})
 			.catch(function(err) {
-				
+				console.log("error in MusicSearchAPI.search");
+				console.log(err);
 			});
 	}
 }

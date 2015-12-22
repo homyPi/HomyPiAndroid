@@ -18,6 +18,8 @@ import MusicStore from '../../stores/MusicStore';
 import PlaylistActionCreators from '../../actions/PlaylistActionCreators';
 import MusicActionCreators from '../../actions/MusicActionCreators';
 
+import RaspberryStore from '../../stores/RaspberryStore';
+
 import PlayerActionCreators from '../../actions/PlayerActionCreators';
 import PlayerStore from '../../stores/PlayerStore';
 
@@ -26,6 +28,26 @@ var PlayerHeader = React.createClass({
 
 	getProgressInterval: null,
 	autoUpdateProgress: null,
+	getInitialState() {
+	    return {
+	     	player: null,
+	      	playing: PlaylistStore.getAll().playing,
+	      	tracks: PlaylistStore.getAll().tracks,
+	      	progress: PlaylistStore.getAll().progress,
+	      	sources: MusicStore.getAll().sources,
+	      	extended: false
+	    };
+	},
+	_onRaspberryChange() {
+		setTimeout(function() {
+			let rasp = RaspberryStore.getAll().selectedRaspberry;
+			if (!rasp) {
+				PlayerActionCreators.setSelected(null);
+			} else {
+				PlayerActionCreators.setSelected(rasp.name);
+			}
+		});
+	},
 	_onPlaylistChange() {
 		this.setState({
 			playing: PlaylistStore.getAll().playing,
@@ -57,25 +79,11 @@ var PlayerHeader = React.createClass({
 	   	PlaylistActionCreators.loadPlaylist(player);
 
 	},
-	getInitialState() {
-	   	MusicActionCreators.getSources();
-	   	var pl = PlayerStore.getAll().selected;
-		if (pl) {
-	   		this.getPlaylist();
-		}
-	    return {
-	     	player: pl,
-	      	playing: PlaylistStore.getAll().playing,
-	      	tracks: PlaylistStore.getAll().tracks,
-	      	progress: PlaylistStore.getAll().progress,
-	      	sources: MusicStore.getAll().sources,
-	      	extended: false
-	    };
-	},
 	_onPlayerChange() {
 		var player = PlayerStore.getAll().selected;
+		console.log("player change to ", player);
 		if (!player) {
-			this.setState({player : player});
+			this.setState({player : null});
 			return;
 		}
 		this.setState({
@@ -85,7 +93,8 @@ var PlayerHeader = React.createClass({
 	    //this.setGetTrackProgressInterval();
 	    this.getPlaylist();
 	},
-	componentWillMount() {
+	componentDidMount() {
+		RaspberryStore.addChangeListener(this._onRaspberryChange);
 		PlayerStore.addChangeListener(this._onPlayerChange);
 	    PlaylistStore.addChangeListener(this._onPlaylistChange);
 	    MusicStore.addChangeListener(this._onMusicChange);
@@ -93,11 +102,11 @@ var PlayerHeader = React.createClass({
 
 		//this.setGetTrackProgressInterval();
 	},
-	componentDidMount() {
-		
-	},
 	componentWillUnmount() {
+	    RaspberryStore.removeChangeListener(this._onRaspberryChange);
+		PlayerStore.removeChangeListener(this._onPlayerChange);
 	    PlaylistStore.removeChangeListener(this._onPlaylistChange);
+	    MusicStore.removeChangeListener(this._onMusicChange);
 	    if (this.getProgressInterval) {
 			clearInterval(this.getProgressInterval);				
 			this.getProgressInterval = null;

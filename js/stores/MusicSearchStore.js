@@ -12,13 +12,17 @@ function pushAll(target, values) {
   }
 }
 
-function setList(resTracks, resAlbums, resArtists) {
+function setList(resTracks = _data.tracks, resAlbums = _data.albums, resArtists = _data.artists) {
+  console.log("SET RES = ", resTracks, resAlbums, resArtists)
   _data = {albums: resAlbums, tracks: resTracks, artists: resArtists};
 }
 function addToList(resTracks, resAlbums, resArtists) {
-  pushAll(_data.tracks.items, resTracks.items);
-  pushAll(_data.albums.items, resAlbums.items);
-  pushAll(_data.artists.items, resArtists.items);
+  if (resTracks)
+    pushAll(_data.tracks.items, resTracks.items);
+  if (resAlbums)
+    pushAll(_data.albums.items, resAlbums.items);
+  if (resArtists)
+    pushAll(_data.artists.items, resArtists.items);
 }
 // Facebook style store creation.
 const MusicSearchStore = assign({}, BaseStore, {
@@ -48,7 +52,7 @@ const MusicSearchStore = assign({}, BaseStore, {
         tracks = action.results.tracks;
         albums = action.results.albums;
         artists = action.results.artists;
-        setList(tracks ||{items: []}, albums ||{items: []}, artists ||{items: []});
+        setList(tracks, albums, artists);
         loading = false;
         MusicSearchStore.emitChange();
         break;
