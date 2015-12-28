@@ -12,6 +12,10 @@ var {
   Navigator,
   BackAndroid
 } = React;
+import { Provider } from 'react-redux'
+
+import configureStore from './js/configureStore'
+const store = configureStore();
 
 import Login from "./js/components/login";
 import App from "./js/components/app";
@@ -69,11 +73,14 @@ var HomyPiAndroid = React.createClass({
   render: function() {
     var initialRoute = {name: "splash"};
     return (
-      <Navigator
-        initialRoute={initialRoute}
-        configureScene={() => Navigator.SceneConfigs.FloatFromBottomAndroid}
-        renderScene={RouteMapper}
-      ref="navigator" />
+
+      <Provider store={store}>
+        <Navigator
+          initialRoute={initialRoute}
+          configureScene={() => Navigator.SceneConfigs.FloatFromBottomAndroid}
+          renderScene={RouteMapper}
+        ref="navigator" />
+      </Provider>
     );
   },
   _logout: function() {

@@ -1,4 +1,5 @@
 var React = require('react-native');
+import { connect } from 'react-redux';
 var {
   AppRegistry,
   StyleSheet,
@@ -9,6 +10,9 @@ var {
   Navigator,
   BackAndroid
 } = React;
+
+
+
 import Home from "./alarms/AlarmList";
 import PlayerHeader from "./music/playerHeader";
 import TrackSearch from "./music/TrackSearch";

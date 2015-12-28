@@ -1,4 +1,5 @@
 var React = require('react-native');
+import { connect } from 'react-redux';
 
 const Dimensions = require('Dimensions');
 const {
@@ -14,6 +15,7 @@ const {
 import RaspberryActionCreators from "../actions/RaspberryActionCreators";
 import RaspberryStore from "../stores/RaspberryStore";
 
+import {fetchAll as fetchAllRaspberries, selectedRaspberry} from "../actions/RaspberryActions";
 
 const window = Dimensions.get('window');
 const uri = 'http://pickaface.net/includes/themes/clean/img/slide2.png';
@@ -65,29 +67,16 @@ class Menu extends Component {
     super(props);
 
     this.state = {
-      raspberries: RaspberryStore.getAll().raspberries || [],
-      selectedRasp: RaspberryStore.getAll().selectedRaspberry || {},
       showRaspberriesList: false
     }
-
-    this.onRaspberriesChange = () => {
-      this.setState({
-        raspberries: RaspberryStore.getAll().raspberries,
-        selectedRasp: RaspberryStore.getAll().selectedRaspberry
-      });
-    }
-  }
-  componentWillMount() {
-    RaspberryActionCreators.getAll();
   }
   componentDidMount() {
-    RaspberryStore.addChangeListener(this.onRaspberriesChange);
-  }
-  componentWillUnmount() {
-    RaspberryStore.removeChangeListener(this.onRaspberriesChange);
+     const { dispatch } = this.props
+    dispatch(fetchAllRaspberries())
   }
   renderRaspberriesList() {
-    let {raspberries, showRaspberriesList} = this.state;
+    let {showRaspberriesList} = this.state;
+    let {raspberries} = this.props;
     if (showRaspberriesList) {
       let raspItems = raspberries.map((rasp) => {
           return (
@@ -108,7 +97,7 @@ class Menu extends Component {
     }
   }
   render() {
-    let {raspberries, selectedRasp} = this.state;
+    let {selectedRaspberry, raspberries} = this.props;
 
     return (
       <ScrollView style={styles.menu}>
@@ -118,7 +107,7 @@ class Menu extends Component {
             <Image
               style={styles.avatar}
               source={{ uri, }}/>
-            <Text style={styles.name}>{selectedRasp.name}</Text>
+            <Text style={styles.name}>{(selectedRaspberry)?selectedRaspberry.name: "None"}</Text>
             
           </View>
         </TouchableHighlight>
@@ -167,7 +156,8 @@ class Menu extends Component {
     this.props.closeMenu();
   }
   _selectedPi(pi) {
-    RaspberryActionCreators.setSelectedRaspberry(pi);
+    //RaspberryActionCreators.setSelectedRaspberry(pi);
+    this.props.dispatch(selectedRaspberry(pi))
   }
   toogleRaspberriesList() {
     let {showRaspberriesList} = this.state;
@@ -176,4 +166,18 @@ class Menu extends Component {
 }
 Menu.defaultProps = {pushRoute:function(){}};
 
-export default Menu;
+function mapStateToProps(state) {
+  const { selectedRaspberry, raspberries } = state
+  const {
+    items
+  } = raspberries || {
+    items: []
+  }
+  return {
+    selectedRaspberry,
+    raspberries: items
+  }
+}
+
+// Wrap the component to inject dispatch and state into it
+export default connect(mapStateToProps)(Menu)
