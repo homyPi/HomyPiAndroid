@@ -5,8 +5,8 @@ let {
 	Text
 } = React;
 
-import MusicSearchStore from '../../stores/MusicSearchStore';
-import MusicSearchActions from '../../actions/MusicSearchActionCreators';
+import { connect } from 'react-redux';
+import { search } from "../../actions/MusicSearchActions";
 
 import ArtistItem from "./artistItem";
 var GridView = require('react-native-grid-view');
@@ -23,26 +23,11 @@ var load = false;
 class AlbumSearch extends Component {
 	constructor(props) {
 		super(props);
-  
-		this.state = {
-			artists: {items: []}
-		}
-	}
-	_onChange() {
-		this.setState({
-			artists: MusicSearchStore.getAll().artists
-		});
-		load = false;
 	}
 	componentDidMount() {
-	  	MusicSearchStore.addChangeListener(()=>{this._onChange()});
-	  	MusicSearchActions.searchMore(this.props.search, "album", 15)
-  	}
-  	componentWillUnmount() {
-		MusicSearchStore.removeChangeListener(()=>{this._onChange()});
-  	}
+	  	this.props.dispatch(search(this.props.search, "artist", 15));
+	  }
 	render() {
-		let {artists, ds} = this.state;
 		return (
 			<GridView
 				style={styles.artistsGrid}
@@ -61,14 +46,20 @@ class AlbumSearch extends Component {
 		);
   	}
 	_loadMore() {
-		if(!load) {
-			MusicSearchActions.searchMore(this.props.search, "artist", 15, this.state.artists.items.length);
-			load = true;
+		let {isFetching, items} = this.props.searchTracks;
+		console.log("load more?", (!isFetching));
+		if(!isFetching) {
+			this.props.dispatch(search(this.props.search, "artist", 15, items.length));
 		}
 	}
 }
 AlbumSearch.defaultProps = {
 	search: ""
 }
+function mapStateToProps(state) {
+	return {
+		searchArtists: state.searchArtists
+	};
+}
 
-export default AlbumSearch;
+export default connect(mapStateToProps)(AlbumSearch);

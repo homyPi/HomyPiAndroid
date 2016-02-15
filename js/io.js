@@ -1,6 +1,5 @@
 var React = require("react-native");
 window.navigator.userAgent = "react-native";
-var io = require('socket.io-client/socket.io');
 var socket;
 var config = require("./config.js");
 import playlistSocket from "./sockets/playlistSocket"
@@ -26,7 +25,6 @@ export default {
     raspberrySocket(SocketConnection);
     
     SocketConnection.connect();
-    this.socket = SocketConnection;
   },
-  socket: socket
+  socket: SocketConnection
 }

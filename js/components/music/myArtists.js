@@ -1,8 +1,6 @@
 import React from "react-native";
 let {View, ListView, StyleSheet, ScrollView} = React;
 var GridView = require('react-native-grid-view');
-import MyArtistsStore from '../../stores/MyArtistsStore';
-import MyArtistsActions from '../../actions/MyArtistsActionCreators';
 import ArtistItem from "./artistItem";
 
 const Dimensions = require('Dimensions');

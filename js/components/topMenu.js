@@ -4,8 +4,7 @@ let {Text, View, Image, StyleSheet, TouchableOpacity} = React;
 const styles = StyleSheet.create({
 	container: {
 		height: 40,
-		backgroundColor: "#4285f4",
-    	elevation: 10
+		backgroundColor: "#4285f4"
 	},
 	menuButton: {
 		marginTop: 5,

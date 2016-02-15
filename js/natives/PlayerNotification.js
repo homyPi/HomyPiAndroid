@@ -3,29 +3,40 @@ var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 import PlaylistStore from "../stores/PlaylistStore";
 import PlayerStore from '../stores/PlayerStore';
-var ToastModuleBis = NativeModules.ToastModuleBis;
+let PlayerNotification = NativeModules.ToastModuleBis;
 
-var setPlaying = function() {
-	track = PlaylistStore.getAll().playing;
+let unsubscribe;
+
+var setPlaying = function(player, track) {
+	console.log("update notif ", player, track);
 	if (track && track.name) {
-		player = PlayerStore.getAll().selected;
-		ToastModuleBis.setPlayerName(player.name)
-		ToastModuleBis.setTrackName(track.name);
+		PlayerNotification.setPlayerName(player.name);
+		PlayerNotification.setTrackName(track.name);
 		if (track.artists) {
 			var artistsStr = "";
 			track.artists.forEach(function(artist) {
 				artistsStr += artist.name + "; ";
 			});
-			ToastModuleBis.setArtists(artistsStr);
+			PlayerNotification.setArtists(artistsStr);
 		}
 		if (track.album && track.album.images &&
 			track.album.images.length) {
-			ToastModuleBis.setCover(track.album.images[0].url);
+			PlayerNotification.setCover(track.album.images[0].url);
 		}
-		ToastModuleBis.show();
+		PlayerNotification.show();
 	}
 };
-PlaylistStore.addChangeListener(setPlaying);
-setPlaying();
+export function subscribe(newStore) {
+	if (unsubscribe) unsubscribe();
+	store = newStore;
+	currentState = store.getState().playlist;
+	store.subscribe(() => {
+    	let nextState = store.getState().playlist;
+    	if (currentState.playing !== nextState.playing) {
+    		setPlaying(store.getState().player, nextState.playing);
+    	}
+    	currentState = nextState;
+	});
+}
 
-export default ToastModuleBis;
+export default PlayerNotification;

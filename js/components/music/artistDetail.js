@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react-native";
 import ArtistStore from '../../stores/ArtistStore';
 import ArtistActions from '../../actions/ArtistActionCreators';
 

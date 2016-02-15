@@ -7,11 +7,13 @@ var {
   TextInput,
   TouchableHighlight
 } = React;
-import UserAPI from "../apis/UserAPI";
+import { connect } from 'react-redux';
+//import UserAPI from "../apis/UserAPI";
 import Settings from "../settings";
-import UserStore from "../stores/UserStore";
+//import UserStore from "../stores/UserStore";
 import RouterActions from "../actions/RouterActionCreator";
 import {MKTextField, MKButton} from "react-native-material-kit";
+import {login as requestLogin} from "../actions/UserActions";
 
 import Home from "./home";
 
@@ -41,10 +43,7 @@ var Login = React.createClass({
     var serverurl = Settings.getServerUrl()
     return {
       urlValid: Settings.isValidUrl(serverurl),
-      url: serverurl,
-      username: "",
-      password: "",
-      res: ""
+      url: serverurl
     }
   },
   componentDidMount() {
@@ -56,6 +55,15 @@ var Login = React.createClass({
     });
   },
   render: function() {
+    let {user} = this.props;
+    let status = "Idle";
+    if (user.isFetching) {
+      status = "Fetching";
+    } else if(user.hasFailed) {
+      status = user.error;
+    } else if (user.token) {
+      status = "got token: for " + " with" + user.token;
+    }
     return (
           <View style={this.styles.container}>
           <Textfield 
@@ -65,7 +73,7 @@ var Login = React.createClass({
               console.log("valid? :", Settings.isValidUrl(text));
               this.setState({url: text, urlValid: Settings.isValidUrl(text)})
             }
-          }/>
+          } />
             <TextInput
               onChangeText={(text) => this.setState({username: text})}
               value={this.state.username}/>
@@ -82,25 +90,14 @@ var Login = React.createClass({
             <LoginButton
               enabled={this.state.urlValid && (this.state.username != "") && (this.state.password != "")}
               onPress={this._login} />
-            <Text>res = {this.state.res}</Text>
+            <Text>Status = {status}</Text>
           </View>
       );
   },
   _login: function() {
     Settings.setServerUrl(this.state.url);
-    this.setState({res: "sending req to " + this.state.url});
-      try {
-	    UserAPI.login(this.state.username, this.state.password).then(function(token) {
-        
-          console.log(this.props);
-        if (token) {
-          this.props.onLoggedIn();
-        } else {
-        }
-	    }.bind(this)).catch(function(error) {
-	      this.setState({res: JSON.stringify(error)});
-	    });
-    } catch (e) {console.log(e); this.setState({res: JSON.stringify(e)});}
+    let {username, password} = this.state;
+    this.props.dispatch(requestLogin(username, password, this.props.onLoggedIn));
   },
   styles: StyleSheet.create({
     container: {
@@ -120,5 +117,11 @@ var Login = React.createClass({
     }
   })
 });
+function mapStateToProps(state) {
+  let {user} = state;
+  return {
+    user
+  }
+}
 
-module.exports = Login;
+export default connect(mapStateToProps)(Login)

@@ -8,16 +8,15 @@ var {
 	ListView,
 	TouchableOpacity
 } = React;
-
 import {MKTextField, MKColor, mdl}  from "react-native-material-kit";
+
+import { connect } from 'react-redux';
+import { search } from "../../actions/MusicSearchActions";
+
+import Io from '../../io';
 
 const Dimensions = require('Dimensions');
 const window = Dimensions.get('window');
-
-import MusicSearchStore from '../../stores/MusicSearchStore';
-import MusicSearchActions from '../../actions/MusicSearchActionCreators';
-
-import PlayerStore from "../../stores/PlayerStore"
 
 import ArtistItem from "./artistItem";
 import AlbumItem from "./albumItem";
@@ -60,49 +59,41 @@ const styles = {
 }
 const SingleColorSpinner = mdl.Spinner.singleColorSpinner()
   .build();
+
 class SearchMusic extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			artists: MusicSearchStore.getAll().artists,
-			tracks: MusicSearchStore.getAll().tracks,
-			albums: MusicSearchStore.getAll().albums,
-			loading: false,
-			search: this.props.search || "gorillaz"
+			search: this.props.searchMusic.query || "gorillaz"
 		};
-		this._onChange = () => {
-			this.setState({
-			  artists: MusicSearchStore.getAll().artists,
-			  tracks: MusicSearchStore.getAll().tracks,
-			  albums: MusicSearchStore.getAll().albums,
-			  loading: MusicSearchStore.getAll().loading
-			});
+	    this._handleSearch = (init = false) => {
+	    	if (init && this.props.searchMusic.albums.items.length &&
+	    		this.props.searchMusic.artists.items.length &&
+	    		this.props.searchMusic.tracks.items.length)
+	    		return;
+			let query = this.props.searchMusic.query;
+			this.props.dispatch(search(this.props.user, query, null, 4));
+	    }
+	    this._playTrack = track => {
+			let {player} = this.props;
+			if (!player) {
+				console.log("Missing player!!", player);
+			}
+			console.log("play track on ", player);
+			Io.socket.emit("player:play:track", {player: {name: player.name}, "track": {"source": "spotify", "uri": track.uri}});
 		}
-		this._onPlayerChange = () => {
-	    	this.setState({player: PlayerStore.getAll().selected});
-	    }
-
-	    this._handleSearch = () => {
-			let search = this.state.search;
-			this.setState({loading: true});
-			MusicSearchActions.search(this.state.search, null, 4);
-	    }
 	}
 	
   	componentDidMount() {
-	  	MusicSearchStore.addChangeListener(this._onChange);
-	  	PlayerStore.addChangeListener(this._onPlayerChange);
-    	if (this.state.search != "") {
-	    	this._handleSearch();
+    	if (this.props.searchMusic.query != "") {
+	    	this._handleSearch(true);
 	    }
   	}
   	componentWillUnmount() {
-    	MusicSearchStore.removeChangeListener(this._onChange);
-	  	PlayerStore.removeChangeListener(this._onPlayerChange);
   	}
 	render () {
-		let {search, loading} = this.state;
-		console.log(this.state);
+		let {search} = this.state;
+		let {isFetching} = this.props.searchMusic;
 		return (
 			<View style={styles.container}>
 				<View style={styles.form}>
@@ -118,18 +109,19 @@ class SearchMusic extends React.Component {
 						<Image style={styles.searchButtonImg} resizeMode={Image.resizeMode.contain} source={require('image!ic_search')} />
 					</TouchableOpacity>
 			  	</View>
-			  	{(loading)? this.getLoadingView(): this.getResultsView()}
+			  	{(isFetching)? this.getLoadingView(): this.getResultsView()}
 			</View>
 		);
 	}
 	getResultsView() {
-		let {artists, tracks, albums} = this.state;
+		let {artists, tracks, albums} = this.props.searchMusic;
 		return (
 			<View>
 			  	<ScrollView
 					automaticallyAdjustContentInsets={true}
 					horizontal={false}
 					style={[styles.scrollView]}>
+							
 							<Text style={styles.title}>Tracks</Text>
 						  	<View>
 						  		{
@@ -173,7 +165,7 @@ class SearchMusic extends React.Component {
 			</View>
 		)
 	}
-
+	
 	getLoadingView() {
 		return (<SingleColorSpinner/>);
 	}
@@ -204,4 +196,13 @@ class SearchMusic extends React.Component {
   	}
 }
 
-export default SearchMusic;
+function mapStateToProps(state) {
+	let {user, searchMusic, player} = state;
+	return {
+		user,
+		searchMusic,
+		player
+	};
+}
+
+export default connect(mapStateToProps)(SearchMusic);

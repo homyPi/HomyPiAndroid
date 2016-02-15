@@ -1,10 +1,11 @@
-import PlaylistActionCreators from '../actions/PlaylistActionCreators';
-import PlayerActionCreators from '../actions/PlayerActionCreators';
+//import PlaylistActionCreators from '../actions/PlaylistActionCreators';
+//import PlayerActionCreators from '../actions/PlayerActionCreators';
+
+
+var store = null;
 
 export default function(socket) {
-    socket.on("player:status:updated", function(data) {
-	    PlayerActionCreators.updateState(data.name, data.status);
-    });
+    /*
     socket.on("playlist:track:added", function(data) {
     	if (data.track) {
 			PlaylistActionCreators.addTrack(data.track);
@@ -39,4 +40,5 @@ export default function(socket) {
 	socket.on("player:volume:isSet", function(data) {
 		PlayerActionCreators.setVolume(data.player.name, data.volume);
 	});
+	*/
 }

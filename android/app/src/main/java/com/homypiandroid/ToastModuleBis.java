@@ -55,6 +55,7 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
   protected static SocketConnection socketConnection;
 
   private String cover;
+  private String currentCoverUrl = "";
   private String playerStatus = "PAUSED";
   private String playerName = "";
   private String trackName = "";
@@ -207,6 +208,8 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
               String coverUrl = null;
               if (coverImages.length() > 0) {
                 coverUrl = coverImages.getJSONObject(1).getString("url");
+                if (currentCoverUrl.equals(coverUrl))
+                  coverUrl = null;
               }
               JSONArray  artistsArray = track.getJSONArray("artists");
               String artists = "";

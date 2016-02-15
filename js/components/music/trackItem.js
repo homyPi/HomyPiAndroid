@@ -1,7 +1,6 @@
 import React from "react-native";
 let {View, Text, StyleSheet, Image, TouchableOpacity} = React;
 
-import Io from '../../io';
 import PlayerStore from '../../stores/PlayerStore';
 
 const styles = StyleSheet.create({
@@ -35,25 +34,15 @@ const styles = StyleSheet.create({
 });
 
 let TrackItem = React.createClass({
-	_onPlayerChange() {
-		this.player = PlayerStore.getAll().selected;
-	},
-	componentDidMount() {
-		PlayerStore.addChangeListener(this._onPlayerChange);
-		this.player = PlayerStore.getAll().selected;
-	},
-	componentWillUnmount() {
-	    PlayerStore.removeChangeListener(this._onPlayerChange);
-	},
 	render: function() {
-		let {track} = this.props;
+		let {track, playTrack} = this.props;
 		return (
 			<View style={styles.container}>
 				<Image style={styles.cover} source={{uri: track.album.images[0].url}} />
 				<View style={styles.trackInfo}>
 					<TouchableOpacity
 							style={styles.trackInfo}
-							onPress={this._playTrack}>
+							onPress={ () => playTrack(track) }>
 						
 						<Text style={styles.title}>{track.name}</Text>
 						<View style={styles.trackData}>
@@ -67,10 +56,6 @@ let TrackItem = React.createClass({
 				</View>
 			</View>
 		);
-	},
-	_playTrack: function() {
-		if(!this.player) return;
-		Io.socket.emit("player:play:track", {player: {name: this.player.name}, "track": {"source": "spotify", "uri": this.props.track.uri}});
 	}
 });
 export default  TrackItem;

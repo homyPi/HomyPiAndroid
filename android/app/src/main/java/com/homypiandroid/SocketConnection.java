@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import android.app.Activity;
@@ -31,6 +32,7 @@ import com.homypiandroid.SocketService.LocalBinder;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.UUID;
 
 public class SocketConnection extends ReactContextBaseJavaModule {
 	private static final String TAG = "SocketConnection";
@@ -40,7 +42,7 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 	public static Activity activity = null;
     private SocketService socketService;
 
-    private static Map<String, ArrayList<Emitter.Listener>> jsEvents = new HashMap<String, ArrayList<Emitter.Listener>>();
+    private static ArrayList<SocketListener> jsEvents = new ArrayList<SocketListener>();
 
 	ServiceConnection mConnection = new ServiceConnection() {
 	    public void onServiceDisconnected(ComponentName name) {
@@ -74,11 +76,16 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
+	public void off(String id) {
+		SocketListener listener = SocketListener.findInList(jsEvents, id);
+		if (listener != null)
+			listener.unlink(socketService);
+	}
+
+	@ReactMethod
 	public void clearEvents() {
-		for ( String event : jsEvents.keySet() ) {
-			for(Emitter.Listener callback: jsEvents.get(event)) {
-		    	socketService.off(event, callback);
-			}
+		for ( SocketListener listener : jsEvents) {
+			listener.unlink(socketService);
 		}
 	}
 
@@ -87,25 +94,10 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 	}
 
 	@ReactMethod
-	public void on(final String event) {
-		Emitter.Listener callback = new Emitter.Listener() {
-	        @Override
-	        public void call(final Object... args) {
-            Log.i(TAG, "got socket's event for JS");
-	        	String data = null;
-	        	if(args.length > 0) {
-		            data = ((JSONObject) args[0]).toString();
-		        }
-	            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-      				.emit(event, data);
-	        }
-	    };
-		socketService.on(event, callback);
-		if (!jsEvents.containsKey(event)) {
-			jsEvents.put(event, new ArrayList<Emitter.Listener>());
-		}
-		jsEvents.get(event).add(callback);
-
+	public void on(final String event, Callback callback) {
+		SocketListener listener = new SocketListener(event, context);
+		jsEvents.add(listener);
+		callback.invoke(listener.link(socketService));
 	}
 
 	@ReactMethod
@@ -124,6 +116,59 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 	@Override
 	public String getName() {
     	return "SocketConnection";
+	}
+
+
+}
+
+class SocketListener {
+	private static final String TAG = "SocketConnection";
+	private String id;
+	private String event;
+	private Emitter.Listener callback;
+
+	public SocketListener(String event, ReactApplicationContext context) {
+		this.id = UUID.randomUUID().toString();
+		this.event = event;
+		this.callback = createCallback(event, context);
+	}
+	public String link(SocketService socketService) {
+		Log.i(TAG, "Listening to event " + this.event);
+		socketService.on(this.event, this.callback);
+		return this.id;
+	}
+
+	public String unlink(SocketService socketService) {
+		Log.i(TAG, "Removing listener for event " + this.event);
+		socketService.off(this.event, this.callback);
+		return this.id;
+	}
+
+	private Emitter.Listener createCallback(final String event, final ReactApplicationContext context) {
+		return new Emitter.Listener() {
+	        @Override
+	        public void call(final Object... args) {
+            Log.i(TAG, "got socket's event for JS");
+	        	String data = null;
+	        	if(args.length > 0) {
+		            data = ((JSONObject) args[0]).toString();
+		        }
+	            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+      				.emit(event, data);
+	        }
+	    };
+	}
+
+	public String getId() {
+		return this.id;
+	}
+
+	public static SocketListener findInList(ArrayList<SocketListener> list, String id) {
+		for(SocketListener inList: list) {
+			if (inList.getId().equals(id))
+				return inList;
+		}
+		return null;
 	}
 
 

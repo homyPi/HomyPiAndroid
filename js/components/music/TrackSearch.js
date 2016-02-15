@@ -8,10 +8,10 @@ let {
 	Image
 } = React;
 
-import {MKTextField, MKColor, MKButton}  from "react-native-material-kit";
+import { connect } from 'react-redux';
+import { search } from "../../actions/MusicSearchActions";
 
-import MusicSearchStore from '../../stores/MusicSearchStore';
-import MusicSearchActions from '../../actions/MusicSearchActionCreators';
+import {MKTextField, MKColor, MKButton}  from "react-native-material-kit";
 
 import Track from "./trackItem";
 
@@ -43,35 +43,23 @@ class TrackSearch extends Component {
 	constructor(props) {
 		super(props);
   		this.state = {
-			search: props.search || "",
-			results: MusicSearchStore.getAll().tracks || {items: []},
-			ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+			search: props.search || ""
 		}
-
+		this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+		
 		this._handleSearch = () => {
-			let search =this.state.search;
-			this.setState({loading: true});
-			MusicSearchActions.search(this.props.search, "track", 15)
+	  		this.props.dispatch(search(this.props.search, "track", 15));
 	    }
-		this._onChange = () => {
-			this.setState({
-				results: MusicSearchStore.getAll().tracks,
-				ds: this.state.ds.cloneWithRows(MusicSearchStore.getAll().tracks.items)
-			});
-			load = false;
-		}
 	}
 	componentDidMount() {
-	  	MusicSearchStore.addChangeListener(this._onChange);
 	  	if (this.state.search) {
 	  		this._handleSearch();
 	  	}
   	}
-  	componentWillUnmount() {
-		MusicSearchStore.removeChangeListener(this._onChange);
-  	}
 	render() {
-		let {results, ds, search} = this.state;
+		let {search} = this.state;
+		let {items} = this.props.searchTracks;
+		this.ds = this.ds.cloneWithRows(items);
 		return (
 			<View style={styles.container}>
 				<View style={styles.searchForm}>
@@ -83,29 +71,35 @@ class TrackSearch extends Component {
 						onChangeText={(search) => this.setState({search: search})} />
 					<TouchableOpacity
 						style={styles.searchButton}
-					  onPress={() => this.handleSearch() }>
+					  onPress={() => this._handleSearch() }>
 						<Image style={styles.searchButtonImg} resizeMode={Image.resizeMode.contain} source={require('image!ic_search')} />
 					</TouchableOpacity>
 				</View>
 				<ListView
 					style={styles.scrollView}
-	      			dataSource={ds}
+	      			dataSource={this.ds}
 	      			horizontal={false}
-	      			renderRow={(track)=> <Track key={track.id} /> }
+	      			renderRow={(track)=> <Track track={track} key={track.id} /> }
 	      			onEndReached={()=>{this._loadMore()}} />
 			</View>	
 		);
 	}
 
 	_loadMore() {
-		if(!load) {
-			MusicSearchActions.searchMore(this.props.search, "track", 15, this.state.results.items.length);
-			load = true;
+		let {isFetching, items} = this.props.searchTracks;
+		console.log("load more?", (!isFetching));
+		if(!isFetching) {
+			this.props.dispatch(search(this.props.search, "track", 15, items.length));
 		}
 	}
 }
 TrackSearch.defaultProps = {
 	search: ""
 }
+function mapStateToProps(state) {
+	return {
+		searchTracks: state.searchTracks
+	};
+}
 
-export default TrackSearch;
+export default connect(mapStateToProps)(TrackSearch);

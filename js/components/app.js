@@ -23,7 +23,6 @@ import Drawer from 'react-native-drawer';
 import Menu from "./menu";
 import TopMenu from "./topMenu";
 import RCTDeviceEventEmitter from 'RCTDeviceEventEmitter'
-import Io from "../io";
 import Subscribable from "Subscribable";
 import UserApi from "../apis/UserAPI";
 
@@ -78,12 +77,6 @@ var App = React.createClass({
     return {}
   },
   componentWillMount: function() {
-    console.log("connect socket");
-    //SocketConnection.addListenerOn = this.addListenerOn;
-    //this.addListenerOn(RCTDeviceEventEmitter, "socketService:binded", function() {
-      Io.connect(UserApi.getToken());
-    //});
-
   },
   componentWillUnmount: function() {
 

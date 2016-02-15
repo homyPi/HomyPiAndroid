@@ -1,25 +1,31 @@
-import { combineReducers } from 'redux'
 import { 
 	REQUEST_ALL, RECEIVE_ALL,
 	SELECTED_RASPBERRY, SELECTED_DEFAULT
 
 } from '../actions/RaspberryActions'
 
+const defaultRaspberry = {
+	_id: null,
+	ip: null,
+	modules: [],
+	name: null,
+	socketId: null,
+	state: "DOWN"
+};
 
-function selectedRaspberry(raspberry = null, action) {
-	switch(action.type) {
+
+
+function selectedRaspberry(state = defaultRaspberry, action) {
+	switch (action.type) {
 		case SELECTED_RASPBERRY:
-			return Object.assign({}, raspberry, action.raspberry)
-		case SELECTED_DEFAULT:
-			let defaultRasp = null;
-			let {items} = raspberries(undefined, {});
-			if (items.length) {
-				defaultRasp = items[0];
-			}
-			return Object.assign({}, raspberry, defaultRasp)
+			return {...state, ...action.raspberry};
 		default:
-			return raspberry;
+			return state;
 	}
+}
+
+function raspberry(state = defaultRaspberry, action) {
+
 }
 
 function raspberries(state = {
@@ -29,24 +35,22 @@ function raspberries(state = {
 }, action) {
 	switch (action.type) {
 		case REQUEST_ALL:
-			return Object.assign({}, state, {
-	        	isFetching: true
-	      	});
+			return {...state, isFetching: true};
     	case RECEIVE_ALL:
-      		return Object.assign({}, state, {
+      		return {...state,
         		isFetching: false,
         		didInvalidate: false,
         		items: action.items,
         		lastUpdated: action.receivedAt
-     		});
+     		};
+     	case SELECTED_RASPBERRY:
+			return {...state, ...action.raspberry};
      	default:
-     		return state;
+     		return {...state};
 	}
 }
 
-const raspberriesReducer = combineReducers({
-  raspberries,
-  selectedRaspberry
-});
-
-export default raspberriesReducer;
+export default {
+  selectedRaspberry,
+  raspberries
+};

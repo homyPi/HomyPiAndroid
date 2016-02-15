@@ -20,6 +20,7 @@ var getToken = function() {
 };
 
 var loadStoredToken = function(callback) {
+	gggg=fez
 	AsyncStorage.getItem("homyToken", function(err, savedToken) {
 		setToken(savedToken);
 		callback(err, token);
@@ -48,9 +49,10 @@ export default {
 					setToken(json.token);
 					return resolve(json.token);
 				}).catch(function(err) {
-					console.log("login...", err);
+					console.log("login...", err, arguments);
+					console.log(err.stack);
 					return reject(err);
-				});
+				}).done();
 			});
 	},
 	logout: function() {

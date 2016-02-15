@@ -1,6 +1,6 @@
 import React from 'react-native';
 
-import AlarmActions from '../../actions/AlarmActionCreators';
+import {MKButton, MKColor} from 'react-native-material-kit';
 
 var SwitchAndroid = require('SwitchAndroid');
 
@@ -70,9 +70,24 @@ class Alarm extends React.Component {
 		this.setState({enabled: value});
 	}
 	getBody() {
-		let {alarm} = this.props;
+		let {alarm, deleteAlarm} = this.props;
+		console.log(this.props);
 		return (
-			<Text>Body!!</Text>
+			<MKButton
+			  backgroundColor={MKColor.Teal}
+			  shadowRadius={2}
+			  shadowOffset={{width:0, height:2}}
+			  shadowOpacity={.7}
+			  shadowColor="black"
+			  onPress={() => {
+			    deleteAlarm(alarm)
+			  }}
+			  >
+			  <Text pointerEvents="none"
+			        style={{color: 'white', fontWeight: 'bold',}}>
+			    Delete
+			  </Text>
+			</MKButton>
 		)
 	}
 	render() {

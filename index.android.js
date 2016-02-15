@@ -12,19 +12,24 @@ var {
   Navigator,
   BackAndroid
 } = React;
-import { Provider } from 'react-redux'
-
+import { Provider } from "react-redux"
 import configureStore from './js/configureStore'
 const store = configureStore();
+
+
+
+import {setStore} from "./js/onSelectedRaspberryChange";
+setStore(store);
+import {subscribe} from "./js/natives/PlayerNotification";
+subscribe(store);
 
 import Login from "./js/components/login";
 import App from "./js/components/app";
 import Splash from "./js/components/splash";
-import UserAPI from "./js/apis/UserAPI";
-import Settings from "./js/settings";
+//import UserAPI from "./js/apis/UserAPI";
 
 var _navigator;
-var PlayerFull = require("./js/components/music/playerFull");
+import PlayerFull from "./js/components/music/playerFull";
 
 BackAndroid.addEventListener('hardwareBackPress', () => {
   if (_navigator && _navigator.getCurrentRoutes().length > 1) {
@@ -38,12 +43,9 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
   _navigator = navigationOperations;
   if (route.name === "splash") {
     return (
-      <Splash navigator={navigationOperations} />
+      <Splash navigator={navigationOperations} onLoggedIn={route.onLoggedIn} />
     );
   } else if (route.name === 'app') {
-    console.log("return app:", (
-      <App navigator={navigationOperations} logout={route.logout}/>
-    ))
     return (
       <App navigator={navigationOperations} logout={route.logout}/>
     );
@@ -59,19 +61,8 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
 }
 
 var HomyPiAndroid = React.createClass({
-  componentWillMount: function() {
-    Settings.loadStoredServerUrl(function(err, url) {
-      if (url) {
-        UserAPI.loadStoredToken(function(err, token) {
-          this.onLoaded(token);
-        }.bind(this));
-      } else {
-        _navigator.replace({name: "login"});
-      }
-    }.bind(this));
-  },
-  render: function() {
-    var initialRoute = {name: "splash"};
+    render: function() {
+      var initialRoute = {name: "splash", onLoggedIn: this.onLoggedIn};
     return (
 
       <Provider store={store}>
@@ -127,47 +118,5 @@ var HomyPiAndroid = React.createClass({
     },
   })
 });
-
-var Player = React.createClass({
-  render: function() {
-    return (
-          <View style={this.styles.container}>
-            <Text style={this.styles.play}>play</Text>
-            <View style={this.styles.trackData}>
-              <Text style={this.styles.trackName}>track name</Text>
-              <Text style={this.styles.artists}>artist 1, arist 2</Text>
-            </View>
-          </View>
-      );
-  },
-  styles: StyleSheet.create({
-    container: {
-      backgroundColor: "#aa0000",
-      position: "absolute",
-      bottom: 0,
-      height: 60,
-      left: 0,
-      right: 0,
-      flexDirection: "row",
-      alignItems: "center"
-    },
-    play: {
-      flex: 1,
-    },
-    trackData: {
-      flex:4,
-      flexDirection: "column"
-    },
-    trackName: {
-      flex:1
-    },
-    artists: {
-      flex:1
-    }
-
-
-  })
-});
-
 
 AppRegistry.registerComponent('HomyPiAndroid', () => HomyPiAndroid);

@@ -4,26 +4,44 @@ var {
   	Image,
   	TouchableHighlight
 } = React;
+import { setPlayer } from "../../actions/PlayerActions";
 
 import Io from "../../io";
-var PlayPause = React.createClass({
+class PlayPause extends React.Component {
+	constructor(props) {
+		super(props);
 
-
-	_playPause: function() {
-		let {player} = this.props;
-		console.log(Io, player);
-		if (player && player.status === "PAUSED") {
-			console.log("emit player:resume");
-			try {
-			Io.socket.emit("player:resume", {name: player.name});
-		} catch(e) {console.log(e)}
-		} else if (player && player.status === "PLAYING") {
-			Io.socket.emit("player:pause", {name: player.name});
+		this.statusUpdated = data => {
+			let { player, dispatch } = this.props;
+		    if (data.name === player.name)
+			    dispatch(setPlayer(data));
 		}
-	},
-	_pause: function() {
-	},
-	render: function() {
+		this._playPause = () => {
+			let {player} = this.props;
+			console.log(Io, player);
+			if (player && player.status === "PAUSED") {
+				console.log("emit player:resume");
+				try {
+				Io.socket.emit("player:resume", {name: player.name});
+			} catch(e) {console.log(e)}
+			} else if (player && player.status === "PLAYING") {
+				Io.socket.emit("player:pause", {name: player.name});
+			}
+		}
+	}
+	componentDidMount() {
+		this.socket();
+	}
+	componentWillUnount() {
+		Io.off("player:status:updated", this.statusUpdated);
+	}
+	socket() {
+		Io.socket.on("player:status:updated", this.statusUpdated);
+	}
+	
+	_pause() {
+	}
+	render() {
 		let {player, style, styleImg} = this.props;
 		var img = {url:"https://cdn3.iconfinder.com/data/icons/faticons/32/arrow-left-01-512.png"};
 		if (player && player.status === "PLAYING") {
@@ -43,5 +61,5 @@ var PlayPause = React.createClass({
 		);
 	}
 
-});
+};
 module.exports = PlayPause;

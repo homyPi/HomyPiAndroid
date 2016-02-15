@@ -1,16 +1,24 @@
-import { createStore, applyMiddleware } from 'redux'
+import { createStore, applyMiddleware, compose } from 'redux'
 import thunkMiddleware from 'redux-thunk'
 import createLogger from 'redux-logger'
 
-import raspberriesReducer from './reducers/raspberriesReducer'
 
-const loggerMiddleware = createLogger()
+import freezeState from 'redux-freeze-state';
+import reducers from './reducers'
 
-const createStoreWithMiddleware = applyMiddleware(
-  thunkMiddleware,
-  loggerMiddleware
-)(createStore)
+import cMiddlewares from "./middlewares";
+const loggerMiddleware = createLogger();
 
+
+
+const middlewares = [thunkMiddleware, loggerMiddleware, cMiddlewares.authMiddleware, cMiddlewares.getPlayerOnRaspberryChange];
+console.log(middlewares);
 export default function configureStore(initialState) {
-  return createStoreWithMiddleware(raspberriesReducer, initialState)
+	const finalCreateStore = compose(
+    applyMiddleware(...middlewares)
+  )(createStore);
+
+  const store = finalCreateStore(freezeState(reducers), initialState);
+
+  return store;
 }

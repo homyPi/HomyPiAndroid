@@ -39,7 +39,7 @@ export default {
 		});
 	},
 	insertAlarm(raspberry, alarm) {
-		let url = serverUrl + "/";
+		let url = Settings.getServerUrl() + serverUrl + "/";
 		return new Promise((resolve, reject) => {
 			superagent.post(url)
 				.send({ alarm: alarm, raspberry: raspberry })
@@ -63,7 +63,7 @@ export default {
 	updateAlarm(alarm) {
 		alarm.raspberry = raspberry;
 		return new Promise((resolve, reject) => {
-			var url = serverUrl + "/" + alarm._id;
+			var url = Settings.getServerUrl() + serverUrl + "/" + alarm._id;
 			superagent.put(url)
 				.send({
 						hours: alarm.hours,
@@ -81,7 +81,7 @@ export default {
 	},
 	enableAlarm(alarm, enabled) {
 		return new Promise(function(resolve, reject) {
-			var url = serverUrl + "/" + alarm._id;
+			var url = Settings.getServerUrl() + serverUrl + "/" + alarm._id;
 			console.log(url);
 			superagent.put(url)
 				.send({ enable: enabled})

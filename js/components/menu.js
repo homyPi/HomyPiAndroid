@@ -12,8 +12,6 @@ const {
   TouchableHighlight
 } = React;
 
-import RaspberryActionCreators from "../actions/RaspberryActionCreators";
-import RaspberryStore from "../stores/RaspberryStore";
 
 import {fetchAll as fetchAllRaspberries, selectedRaspberry} from "../actions/RaspberryActions";
 
@@ -71,8 +69,8 @@ class Menu extends Component {
     }
   }
   componentDidMount() {
-     const { dispatch } = this.props
-    dispatch(fetchAllRaspberries())
+     const { dispatch, user } = this.props
+    dispatch(fetchAllRaspberries(user))
   }
   renderRaspberriesList() {
     let {showRaspberriesList} = this.state;
@@ -156,7 +154,6 @@ class Menu extends Component {
     this.props.closeMenu();
   }
   _selectedPi(pi) {
-    //RaspberryActionCreators.setSelectedRaspberry(pi);
     this.props.dispatch(selectedRaspberry(pi))
   }
   toogleRaspberriesList() {
@@ -167,17 +164,13 @@ class Menu extends Component {
 Menu.defaultProps = {pushRoute:function(){}};
 
 function mapStateToProps(state) {
-  const { selectedRaspberry, raspberries } = state
-  const {
-    items
-  } = raspberries || {
-    items: []
-  }
+  const { raspberries, selectedRaspberry, user } = state
+  const { items } = raspberries;
   return {
     selectedRaspberry,
+    user,
     raspberries: items
   }
 }
 
-// Wrap the component to inject dispatch and state into it
 export default connect(mapStateToProps)(Menu)

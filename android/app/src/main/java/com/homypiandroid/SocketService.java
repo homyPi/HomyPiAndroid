@@ -58,6 +58,12 @@ public class SocketService extends Service {
 
 	public void createSocket(String serverUrl, String token) {
 		Log.i(TAG, "CreateSocket");
+		if (mSocket != null) {
+			if (mSocket.connected())
+				return;
+			else
+				mSocket.disconnect();
+		}
 		IO.Options opts = new IO.Options();
         opts.forceNew = true;
         opts.reconnection = true;
