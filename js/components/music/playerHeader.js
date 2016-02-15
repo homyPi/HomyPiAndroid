@@ -1,4 +1,4 @@
-var React = require('react-native');
+var React = require("react-native");
 var {
   TouchableHighlight,
   StyleSheet,
@@ -8,11 +8,11 @@ var {
   Navigator
 } = React;
 
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import {subscribe, unsubscribe} from "../../onSelectedRaspberryChange";
 import { getPlayer, clear, playing } from "../../actions/PlayerActions";
 
-import PlayPause from './PlayPause';
+import PlayPause from "./PlayPause";
 import Io from "../../io";
 var _navigator;
 
@@ -75,22 +75,24 @@ var PlayerHeader = React.createClass({
 	},
 	_showPlayer: function() {
 		this.props.navigator.push({
-            name: 'player',
+            name: "player",
         });
 	},
 	styles: StyleSheet.create({
 		container: {
+			height: 50,
 			alignItems: "center",
-			flex: 1,
 			flexDirection: "row",
-			backgroundColor: "#263238"
+			backgroundColor: "#263238",
+			paddingLeft: 0
 		},
 		coverContainer: {
-			flex: 0.15,
-			height: 50
+			flex: 0.15
 		},
 		cover: {
-			height: 50
+			height: 50,
+			width: 50,
+			justifyContent: "flex-start"
 		},
 		trackInfoHighlight: {
 			flex: 0.5,

@@ -5,14 +5,14 @@ let {
 	Text
 } = React;
 
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import { search } from "../../actions/MusicSearchActions";
 
 import ArtistItem from "./artistItem";
-var GridView = require('react-native-grid-view');
+var GridView = require("react-native-grid-view");
 
-const Dimensions = require('Dimensions');
-const window = Dimensions.get('window');
+const Dimensions = require("Dimensions");
+const window = Dimensions.get("window");
 
 const styles = {
 	scrollView: {
@@ -25,7 +25,7 @@ class AlbumSearch extends Component {
 		super(props);
 	}
 	componentDidMount() {
-	  	this.props.dispatch(search(this.props.search, "artist", 15));
+	  	this.props.dispatch(search(this.props.user, this.props.search, "artist", 15));
 	  }
 	render() {
 		return (
@@ -47,9 +47,9 @@ class AlbumSearch extends Component {
   	}
 	_loadMore() {
 		let {isFetching, items} = this.props.searchTracks;
-		console.log("load more?", (!isFetching));
+		let {dispatch, user} = this.props;
 		if(!isFetching) {
-			this.props.dispatch(search(this.props.search, "artist", 15, items.length));
+			dispatch(search(user, this.props.search, "artist", 15, items.length));
 		}
 	}
 }
@@ -57,8 +57,10 @@ AlbumSearch.defaultProps = {
 	search: ""
 }
 function mapStateToProps(state) {
+	let {user, searchArtists} = state;
 	return {
-		searchArtists: state.searchArtists
+		searchArtists,
+		user
 	};
 }
 

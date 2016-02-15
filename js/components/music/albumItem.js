@@ -1,17 +1,16 @@
-import React from 'react-native';
+import React from "react-native";
 
 var {View, Image, Text, StyleSheet, TouchableWithoutFeedback} = React;
-import Io from '../../io';
-import PlayerStore from '../../stores/PlayerStore';
+import Io from "../../io";
 
-const Dimensions = require('Dimensions');
-const window = Dimensions.get('window');
+const Dimensions = require("Dimensions");
+const window = Dimensions.get("window");
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-    	alignItems: 'center',
-    	flexDirection: 'column'
+    	alignItems: "center",
+    	flexDirection: "column"
 	},
 	cover: {
 		height: 125,
@@ -32,20 +31,10 @@ class AlbumItem extends React.Component {
 		super(props);
 		this.pressStart = 0;
 
-		this._onPlayerChange = () => {
-			this.player = PlayerStore.getAll().selected;
-		}
 	}
 	
-	componentDidMount() {
-		PlayerStore.addChangeListener(this._onPlayerChange);
-		this.player = PlayerStore.getAll().selected;
-	}
-	componentWillUnmount() {
-	    PlayerStore.removeChangeListener(this._onPlayerChange);
-	}
 	render() {
-		let {album, playAlbum} = this.props;
+		let {album} = this.props;
 		return (
 			<TouchableWithoutFeedback
                 onPressIn={()=>{this.handlePressIn()}} 
@@ -68,15 +57,20 @@ class AlbumItem extends React.Component {
 	}
 	handlePressOut() {
 		if(Date.now() - this.pressStart > 1500) {
-			this._playAlbum();
+			console.log("play album");
+			this.playAlbum();
 		}
 	}
-	_playAlbum () {
-		if(!this.player) return;
+	playAlbum() {
+		console.log("play with ", this.props);
+		let {album, player} = this.props;
+		if (!player) return;
 		Io.socket.emit("player:play:album", {
-			player: {name: this.player.name},
-			id: this.props.album.id
-		}); 
+			player,
+			album: {
+				id: album.id
+			}
+		});
 	}
 
 }

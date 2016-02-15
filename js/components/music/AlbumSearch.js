@@ -5,15 +5,15 @@ let {
 	Text
 } = React;
 
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import { search } from "../../actions/MusicSearchActions";
 
 
 import AlbumItem from "./albumItem";
-var GridView = require('react-native-grid-view');
+var GridView = require("react-native-grid-view");
 
-const Dimensions = require('Dimensions');
-const window = Dimensions.get('window');
+const Dimensions = require("Dimensions");
+const window = Dimensions.get("window");
 
 const styles = {
 	scrollView: {
@@ -24,7 +24,10 @@ var load = false;
 class AlbumSearch extends Component {
 	constructor(props) {
 		super(props);
-  
+  		
+  		this._playAlbum = album => {
+  			console.log("play ", album);
+  		}
 	}
 	componentDidMount() {
 	  	this.props.dispatch(search(this.props.search, "album", 15));

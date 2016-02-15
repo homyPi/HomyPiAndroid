@@ -10,19 +10,19 @@ var {
 } = React;
 import {MKTextField, MKColor, mdl}  from "react-native-material-kit";
 
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import { search } from "../../actions/MusicSearchActions";
 
-import Io from '../../io';
+import Io from "../../io";
 
-const Dimensions = require('Dimensions');
-const window = Dimensions.get('window');
+const Dimensions = require("Dimensions");
+const window = Dimensions.get("window");
 
 import ArtistItem from "./artistItem";
 import AlbumItem from "./albumItem";
 
 import Track from "./trackItem";
-var GridView = require('react-native-grid-view');
+var GridView = require("react-native-grid-view");
 
 
 const styles = {
@@ -34,10 +34,10 @@ const styles = {
 		flex:0.15
 	},
 	searchButtonImg: {
-		width: 40
+		height: 40,
+		alignSelf: "center"
 	},
 	form: {
-		flex: 1,
 		flexDirection: "row",
 		alignItems: "center"
 	},
@@ -50,7 +50,7 @@ const styles = {
 		paddingBottom: 15
 	},
 	scrollView: {
-		height: (window.height - 200)
+		height: (window.height - 150)
   	},
   	moreButton: {
   		height: 75,
@@ -106,7 +106,7 @@ class SearchMusic extends React.Component {
 					<TouchableOpacity
 						style={styles.searchButton}
 						onPress={this._handleSearch}>
-						<Image style={styles.searchButtonImg} resizeMode={Image.resizeMode.contain} source={require('image!ic_search')} />
+						<Image style={styles.searchButtonImg} resizeMode={Image.resizeMode.contain} source={require("image!ic_search")} />
 					</TouchableOpacity>
 			  	</View>
 			  	{(isFetching)? this.getLoadingView(): this.getResultsView()}
@@ -117,6 +117,7 @@ class SearchMusic extends React.Component {
 		let {artists, tracks, albums} = this.props.searchMusic;
 		return (
 			<View>
+
 			  	<ScrollView
 					automaticallyAdjustContentInsets={true}
 					horizontal={false}
@@ -131,7 +132,7 @@ class SearchMusic extends React.Component {
 							  	}
 							  	<TouchableOpacity
 							  		style={styles.moreButton}
-							  		onPress={()=>{this._showMore('tracks')}} >
+							  		onPress={()=>{this._showMore("tracks")}} >
 							  		<Text>More</Text>
 							  	</TouchableOpacity>
 							</View>
@@ -140,12 +141,12 @@ class SearchMusic extends React.Component {
 							   		style={styles.albumsGrid}
 									items={albums.items.slice(0,4)}
 									itemsPerRow={2}
-									renderItem={this.renderAlbumItem}
+									renderItem={this.renderAlbumItem.bind(this)}
 									scrollEnabled={false}
 									onEndReached={this.onEndReached} />
 							<TouchableOpacity
 								style={styles.moreButton}
-								onPress={()=>{this._showMore('albums')}} >
+								onPress={()=>{this._showMore("albums")}} >
 							  		<Text>More</Text>
 							</TouchableOpacity>
 						<Text style={styles.title}>Artists</Text>
@@ -158,7 +159,7 @@ class SearchMusic extends React.Component {
 									onEndReached={this.onEndReached} />
 							<TouchableOpacity
 								style={styles.moreButton}
-								onPress={()=>{this._showMore('artists')}} >
+								onPress={()=>{this._showMore("artists")}} >
 							  		<Text>More</Text>
 							</TouchableOpacity>
 				</ScrollView>
@@ -178,7 +179,7 @@ class SearchMusic extends React.Component {
 
 	renderAlbumItem(result) {
 		return (
-			<AlbumItem key={result.id} album={result} playAlbum={this._playAlbum}/>
+			<AlbumItem key={result.id} album={result} player={this.props.player}/>
 		);
   	}
   	_showMore(type) {

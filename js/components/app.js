@@ -122,15 +122,17 @@ var App = React.createClass({
   closeMenu: function() {
     this.refs.sideMenu.close()
   },
-  styles: StyleSheet.create({
+  styles: {
     container: {
       flex: 1,
-      backgroundColor: '#FAFAFA'
+      backgroundColor: "#FAFAFA"
     },
     player: {
-      height: 65
+      height: 75,
+      backgroundColor: "#263238",
+      marginLeft: 0 
     }
-  })
+  }
 });
 
 module.exports = App;

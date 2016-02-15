@@ -8,29 +8,33 @@ let {
 	Image
 } = React;
 
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import { search } from "../../actions/MusicSearchActions";
 
 import {MKTextField, MKColor, MKButton}  from "react-native-material-kit";
 
 import Track from "./trackItem";
 
-const Dimensions = require('Dimensions');
-const window = Dimensions.get('window');
+const Dimensions = require("Dimensions");
+const window = Dimensions.get("window");
 
 const styles = {
 	container: {
     	flex: 1
   	},
-  	searchForm: {
-  		flexDirection: "row",
-  		height: 40
-  	},
+	searchButton: {
+		flex:0.15
+	},
+	searchButtonImg: {
+		height: 40,
+		alignSelf: "center"
+	},
+	form: {
+		flexDirection: "row",
+		alignItems: "center"
+	},
 	input: {
 		flex:1
-	},
-	searchButton: {
-		flex: .25
 	},
 	scrollView: {
   	},
@@ -48,7 +52,7 @@ class TrackSearch extends Component {
 		this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
 		
 		this._handleSearch = () => {
-	  		this.props.dispatch(search(this.props.search, "track", 15));
+	  		this.props.dispatch(search(this.props.user, this.props.search, "track", 15));
 	    }
 	}
 	componentDidMount() {
@@ -62,7 +66,7 @@ class TrackSearch extends Component {
 		this.ds = this.ds.cloneWithRows(items);
 		return (
 			<View style={styles.container}>
-				<View style={styles.searchForm}>
+				<View style={styles.form}>
 					<MKTextField
 						style={styles.input}
 						tintColor={MKColor.Blue}
@@ -72,7 +76,7 @@ class TrackSearch extends Component {
 					<TouchableOpacity
 						style={styles.searchButton}
 					  onPress={() => this._handleSearch() }>
-						<Image style={styles.searchButtonImg} resizeMode={Image.resizeMode.contain} source={require('image!ic_search')} />
+						<Image style={styles.searchButtonImg} resizeMode={Image.resizeMode.contain} source={require("image!ic_search")} />
 					</TouchableOpacity>
 				</View>
 				<ListView
@@ -87,9 +91,9 @@ class TrackSearch extends Component {
 
 	_loadMore() {
 		let {isFetching, items} = this.props.searchTracks;
-		console.log("load more?", (!isFetching));
+		let {dispatch, user} = this.props;
 		if(!isFetching) {
-			this.props.dispatch(search(this.props.search, "track", 15, items.length));
+			dispatch(search(user, this.props.search, "track", 15, items.length));
 		}
 	}
 }
@@ -97,8 +101,10 @@ TrackSearch.defaultProps = {
 	search: ""
 }
 function mapStateToProps(state) {
+	let {user, searchTracks} = state;
 	return {
-		searchTracks: state.searchTracks
+		searchTracks,
+		user
 	};
 }
 

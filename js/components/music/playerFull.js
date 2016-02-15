@@ -9,7 +9,6 @@ let {
 } = React;
 
 import { connect } from "react-redux";
-import {subscribe, unsubscribe} from "../../onSelectedRaspberryChange";
 import { getPlayer, setPlayer } from "../../actions/PlayerActions";
 
 const Dimensions = require("Dimensions");
@@ -104,22 +103,12 @@ class PlayerFull extends React.Component {
 		this.onProgress = data => console.log(data);
 
 	}
-	_getPlayer(raspberry) {
-		if (raspberry) {
-			let {user, dispatch} = this.props;
-			dispatch(getPlayer(user, raspberry));
-		}
-	}
 	componentDidMount() {
-		//subscribe(this._getPlayer);
-		console.log(Io.socket.on);
 		Io.socket.on("playlist:track:progress", this.onProgress);
 		this.setGetTrackProgressInterval();
 	}
 	componentWillUnmount() {
-		console.log("player full will unmount");
 		Io.socket.off("playlist:track:progress", this.onProgress);
-		//unsubscribe(this._getPlayer);
 		if (this.getProgressInterval) {
 			clearInterval(this.getProgressInterval);				
 			this.getProgressInterval = null;

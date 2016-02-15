@@ -1,8 +1,8 @@
-import React from 'react-native';
+import React from "react-native";
 
-import {MKButton, MKColor} from 'react-native-material-kit';
+import {MKButton, MKColor} from "react-native-material-kit";
 
-var SwitchAndroid = require('SwitchAndroid');
+var SwitchAndroid = require("SwitchAndroid");
 
 
 var {
@@ -12,6 +12,7 @@ var {
 	TouchableOpacity,
 	NativeModules
 } = React;
+
 var styles = {
 	container: {
 		flex: 1,
@@ -84,7 +85,7 @@ class Alarm extends React.Component {
 			  }}
 			  >
 			  <Text pointerEvents="none"
-			        style={{color: 'white', fontWeight: 'bold',}}>
+			        style={{color: "white", fontWeight: 'bold',}}>
 			    Delete
 			  </Text>
 			</MKButton>

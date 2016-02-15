@@ -22,13 +22,13 @@ var {
 	PullToRefreshViewAndroid,
 	NativeModules
 } = React;
-var styles = new StyleSheet({
+var styles = {
 	container: {
 		flex: 1,
 		height: (175),
-    	backgroundColor: '#CCCCCC'
+    	backgroundColor: "#CCCCCC"
 	}
-});
+};
 
 const ColoredFab = MKButton.coloredFab()
   .withStyle({
@@ -48,15 +48,17 @@ class AlarmList extends React.Component {
 			}
 		});
 		this.enableAlarm = (alarm, value) => {
-			this.props.dispatch(setEnable(alarm, value));
+			let {user, dispatch} = this.props;
+			dispatch(setEnable(user, alarm, value));
 		}
 		this.deleteAlarm = alarm => {
-			this.props.dispatch(removeAlarm(alarm))
+			let {user, dispatch} = this.props;
+			dispatch(removeAlarm(user, alarm))
 		}
 		this._loadAlarms = (selected)  => {
-			let {selectedRaspberry, dispatch} = this.props;
+			let {selectedRaspberry, dispatch, user} = this.props;
 			if (selected || selectedRaspberry) {
-    			dispatch(fetchAll(selected || selectedRaspberry));
+    			dispatch(fetchAll(user, selected || selectedRaspberry));
 			}
 		}
 	}
@@ -89,22 +91,23 @@ class AlarmList extends React.Component {
 		);
 	}
 	_addAlarm() {
-	    let {selectedRaspberry, dispatch} = this.props;
+	    let {selectedRaspberry, dispatch, user} = this.props;
 	    NativeModules.DateAndroid.showTimepicker(function() {}, function(hour, minute) {
 			let alarm = {hours: hour, minutes: minute, enable: true, repeat: false};
 	    	alarm.date = new Date();
 			alarm.date.setHours(hour);
 			alarm.date.setMinutes(minute);
-	    	dispatch(addAlarm(selectedRaspberry, alarm));
+	    	dispatch(addAlarm(user, selectedRaspberry, alarm));
 		});
 	}
 
 }
 function mapStateToProps(state) {
-  const { alarms, raspberries } = state
+  const { alarms, selectedRaspberry, user } = state
   const { items } = alarms
   return {
-  	selectedRaspberry: raspberries.selectedRaspberry,
+  	user,
+  	selectedRaspberry,
   	...alarms,
     alarms: items
   }

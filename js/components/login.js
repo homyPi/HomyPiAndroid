@@ -17,12 +17,12 @@ import {login as requestLogin} from "../actions/UserActions";
 
 import Home from "./home";
 
-var styles = new StyleSheet({
+var styles = {
   textfieldWithFloatingLabel: {
     height: 38,  // have to do it on iOS
     marginTop: 10,
   }
-})
+};
 
 const Textfield = MKTextField.textfieldWithFloatingLabel()
   .withPlaceholder('Server Url')
