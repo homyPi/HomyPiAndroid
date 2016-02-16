@@ -1,8 +1,6 @@
 import {NativeModules} from 'react-native';
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
-import PlaylistStore from "../stores/PlaylistStore";
-import PlayerStore from '../stores/PlayerStore';
 let PlayerNotification = NativeModules.ToastModuleBis;
 
 let unsubscribe;

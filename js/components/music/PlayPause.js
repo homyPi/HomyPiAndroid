@@ -1,21 +1,16 @@
-import React from 'react-native';
+import React from "react-native";
 var {
 	View,
   	Image,
   	TouchableHighlight
 } = React;
-import { setPlayer } from "../../actions/PlayerActions";
+import { setPlayer, status as setPlayerStatus } from "../../actions/PlayerActions";
 
 import Io from "../../io";
 class PlayPause extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.statusUpdated = data => {
-			let { player, dispatch } = this.props;
-		    if (data.name === player.name)
-			    dispatch(setPlayer(data));
-		}
 		this._playPause = () => {
 			let {player} = this.props;
 			console.log(Io, player);
@@ -28,15 +23,6 @@ class PlayPause extends React.Component {
 				Io.socket.emit("player:pause", {name: player.name});
 			}
 		}
-	}
-	componentDidMount() {
-		this.socket();
-	}
-	componentWillUnount() {
-		Io.off("player:status:updated", this.statusUpdated);
-	}
-	socket() {
-		Io.socket.on("player:status:updated", this.statusUpdated);
 	}
 	
 	_pause() {

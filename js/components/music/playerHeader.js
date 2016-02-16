@@ -10,7 +10,6 @@ var {
 
 import { connect } from "react-redux";
 import {subscribe, unsubscribe} from "../../onSelectedRaspberryChange";
-import { getPlayer, clear, playing } from "../../actions/PlayerActions";
 
 import PlayPause from "./PlayPause";
 import Io from "../../io";
@@ -19,31 +18,13 @@ var _navigator;
 
 
 var PlayerHeader = React.createClass({
-	_getPlayer(raspberry) {
-		if (raspberry) {
-			let {user, dispatch} = this.props;
-			dispatch(getPlayer(user, raspberry));
-		}
+	getInitialState() {
+		return {showPlayerPause: true}
 	},
 	componentDidMount() {
-		let {dispatch} = this.props;
-		subscribe(this._getPlayer);
-		Io.socket.on("playlist:playing:id", data => {
-			if (data.raspberry === this.props.player.name)
-				dispatch(playing(data.track))
-
-		});
-		Io.socket.on("playlist:track:clear", data => {
-			if (data.raspberry === this.props.player.name)
-			    dispatch(clear(data));
-		});
 		
 	},
 	componentWillUnmount() {
-		unsubscribe(this._getPlayer);
-
-		Io.off("playlist:playing:id");
-		Io.off("playlist:track:clear");
 	},
 	render: function() {
 		let {
@@ -69,14 +50,19 @@ var PlayerHeader = React.createClass({
 								<Text numberOfLines={1} style={this.styles.artists}>{playing.artists.map(function(artist) { return (artist.name + "; ")})}</Text>
 							</View>
 						</TouchableHighlight>
-						<PlayPause dispatch={this.props.dispatch} player={player} style={{}} styleImg={{width:35, height:35}} />
+						{(this.state.showPlayerPause)?<PlayPause dispatch={this.props.dispatch} player={player} style={{}} styleImg={{width:35, height:35}} />: null}
 					</View>
 		);
 	},
 	_showPlayer: function() {
+		this.setState({showPlayerPause: false});
 		this.props.navigator.push({
             name: "player",
+            onClosing: this.playerClosed.bind(this)
         });
+	},
+	playerClosed() {
+		this.setState({showPlayerPause: true});
 	},
 	styles: StyleSheet.create({
 		container: {

@@ -3,6 +3,7 @@ package com.homypiandroid;
 
 
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -32,6 +33,7 @@ import android.util.Log;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import io.socket.client.Socket;
 
 import io.socket.emitter.Emitter;
 import org.json.JSONException;
@@ -42,7 +44,7 @@ import org.json.JSONArray;
 import com.homypiandroid.MainActivity;
 import com.homypiandroid.SocketConnection;
 
-public class ToastModuleBis extends ReactContextBaseJavaModule {
+public class ToastModuleBis extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
   private ReactApplicationContext conte;
   private Activity mActivity = null;
@@ -61,6 +63,60 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
   private String trackName = "";
   private String artists = "";
 
+  private Emitter.Listener onDisconnected = new Emitter.Listener() {
+      @Override
+      public void call(final Object... args) {
+        dismiss();
+      }
+  };
+
+  private Emitter.Listener onStatusUpdated = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+          Log.i("PlayerNotification", "got socket's event player:status:updated");
+          try {
+            JSONObject data = (JSONObject) args[0];
+            setPlayerStatus(data.getString("status"));
+            show();
+          } catch (JSONException e) {
+            return;
+          }
+          show();
+        }
+  };
+
+  private Emitter.Listener onPlayingUpdated = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+          try {
+            JSONObject data = (JSONObject) args[0];
+            JSONObject track = data.getJSONObject("track");
+            JSONArray  coverImages = track.getJSONObject("album").getJSONArray("images");
+            String coverUrl = null;
+            if (coverImages.length() > 0) {
+              coverUrl = coverImages.getJSONObject(1).getString("url");
+              if (currentCoverUrl.equals(coverUrl))
+                coverUrl = null;
+            }
+            JSONArray  artistsArray = track.getJSONArray("artists");
+            String artists = "";
+            for (int i = 0; i < artistsArray.length(); i++) {
+              artists += artistsArray.getJSONObject(i).getString("name") + "; ";
+            }
+
+            setTrackName(track.getString("name"));
+            setArtists(artists);
+            if (coverUrl != null) {
+              setCover(coverUrl);
+            }
+            show();
+          } catch (JSONException e) {
+            return;
+          }
+          show();
+        }
+  };
+
 
   public static final String KEY_PLAY = "com.homypiandroid.ToastModuleBis.PLAY";
   public static final String KEY_PAUSE = "com.homypiandroid.ToastModuleBis.PAUSE";
@@ -71,14 +127,13 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
     this.conte = reactContext;
     mActivity = activity;
     ToastModuleBis.socketConnection = socketConnection;
-
   	mNotificationManager = (NotificationManager) mActivity.getSystemService(Context.NOTIFICATION_SERVICE);
   	long when = System.currentTimeMillis();
   	notification = new Notification(icon, "wubba lubba dub dub", when);
     IntentFilter filter = new IntentFilter();
     filter.addAction(KEY_PLAY);
     filter.addAction(KEY_PAUSE);
-  // Add other actions as needed
+    reactContext.addLifecycleEventListener(this);
 
     BroadcastReceiver receiver = new BroadcastReceiver() {
       @Override
@@ -182,53 +237,19 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
 
 		mNotificationManager.notify(NOTIFICATION_ID, notification);
 	}
+
+  public void dismiss() {
+    if (mNotificationManager != null)
+      mNotificationManager.cancel(NOTIFICATION_ID);
+  }
+
   @ReactMethod
   public void setSocketListeners() {
-    this.socketConnection.on("player:status:updated", new Emitter.Listener() {
-          @Override
-          public void call(final Object... args) {
-            Log.i("PlayerNotification", "got socket's event player:status:updated");
-            try {
-              JSONObject data = (JSONObject) args[0];
-              setPlayerStatus(data.getString("status"));
-              show();
-            } catch (JSONException e) {
-              return;
-            }
-            show();
-          }
-    });
-    this.socketConnection.on("playlist:playing:id", new Emitter.Listener() {
-          @Override
-          public void call(final Object... args) {
-            try {
-              JSONObject data = (JSONObject) args[0];
-              JSONObject track = data.getJSONObject("track");
-              JSONArray  coverImages = track.getJSONObject("album").getJSONArray("images");
-              String coverUrl = null;
-              if (coverImages.length() > 0) {
-                coverUrl = coverImages.getJSONObject(1).getString("url");
-                if (currentCoverUrl.equals(coverUrl))
-                  coverUrl = null;
-              }
-              JSONArray  artistsArray = track.getJSONArray("artists");
-              String artists = "";
-              for (int i = 0; i < artistsArray.length(); i++) {
-                artists += artistsArray.getJSONObject(i).getString("name") + "; ";
-              }
-
-              setTrackName(track.getString("name"));
-              setArtists(artists);
-              if (coverUrl != null) {
-                setCover(coverUrl);
-              }
-              show();
-            } catch (JSONException e) {
-              return;
-            }
-            show();
-          }
-    });
+    Log.i("PlayerNotification", "In setSocketListeners");
+    onDestroy();
+    this.socketConnection.on(Socket.EVENT_DISCONNECT, this.onDisconnected);
+    this.socketConnection.on("player:status:updated", this.onStatusUpdated);
+    this.socketConnection.on("playlist:playing:id", this.onPlayingUpdated);
     this.socketConnection.on("modules:remove:player", new Emitter.Listener() {
           @Override
           public void call(final Object... args) {
@@ -244,5 +265,25 @@ public class ToastModuleBis extends ReactContextBaseJavaModule {
             }
           }
     });
+  }
+  public void onDestroy() {
+    Log.i("PlayerNotification", "DESTORYING!");
+    this.socketConnection.off(Socket.EVENT_DISCONNECT, this.onDisconnected);
+    this.socketConnection.off("player:status:updated", this.onStatusUpdated);
+    this.socketConnection.off("playlist:playing:id", this.onPlayingUpdated);
+
+  }
+  @Override
+  public void onHostResume() {
+      // Actvity `onResume`
+  }
+
+  @Override
+  public void onHostPause() {
+      // Actvity `onPause`
+  }
+  @Override
+  public void onHostDestroy() {
+    onDestroy();
   }
 }

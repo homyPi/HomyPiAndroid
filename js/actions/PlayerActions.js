@@ -5,6 +5,7 @@ const PLAYER_API = "/api/modules/music/players";
 const PLAYLIST_API = "/api/modules/music/playlists";
 
 export const SET_PLAYER = "SET_PLAYER";
+export const SET_STATUS = "SET_STATUS";
 export const SET_PLAYLIST = "SET_PLAYLIST";
 
 export const SET_PLAYING = "SET_PLAYING_IN_PLAYLIST";
@@ -34,6 +35,15 @@ export function playing(trackPlaying) {
 	return {
 		type: SET_PLAYING,
 		playing: trackPlaying
+	}
+}
+
+
+export function status(status) {
+		    	console.log("SET_STATUS");
+	return {
+		type: SET_STATUS,
+		status
 	}
 }
 

@@ -1,10 +1,22 @@
-//import PlaylistActionCreators from '../actions/PlaylistActionCreators';
-//import PlayerActionCreators from '../actions/PlayerActionCreators';
+import { setPlayer, status as setPlayerStatus } from "../actions/PlayerActions";
+import { getPlayer, clear, playing } from "../actions/PlayerActions";
 
 
-var store = null;
 
-export default function(socket) {
+export default function(socket, store) {
+	socket.on("player:status:updated", function(data) {
+		if (store.getState().player && (store.getState().player.name === data.name))
+			store.dispatch(setPlayerStatus(data.status));
+	});
+	socket.on("playlist:playing:id", data => {
+		if (data.raspberry === store.getState().player.name)
+			store.dispatch(playing(data.track))
+
+	});
+	socket.on("playlist:track:clear", data => {
+		if (data.raspberry === store.getState().player.name)
+		    store.dispatch(clear(data));
+	});
     /*
     socket.on("playlist:track:added", function(data) {
     	if (data.track) {

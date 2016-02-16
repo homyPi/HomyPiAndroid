@@ -1,7 +1,6 @@
 import React from "react-native";
 let {View, Text, StyleSheet, Image, TouchableOpacity} = React;
 
-import PlayerStore from '../../stores/PlayerStore';
 
 const styles = StyleSheet.create({
 	container: {
@@ -30,11 +29,41 @@ const styles = StyleSheet.create({
 	artistsNames: {
 		flex: 1,
 		fontSize: 12
+	},
+	dropDown: {
+		position: "absolute",
+		right: 0,
+		top: 30,
+		width: 100,
+		height: 300,
+		backgroundColor: "#e9e9e9",
+		transform: [{'translate':[0,0,1]}] 
 	}
 });
 
-let TrackItem = React.createClass({
-	render: function() {
+class TrackItem extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			showMenu: false
+		};
+
+		this.showMenu = () => {
+			this.setState({showMenu: true});
+		}
+	}
+	renderMenu() {
+		return null;
+		if (this.state.showMenu) {
+			return (
+				<View style={styles.dropDown} >
+					<Text>Hello</Text>
+				</View>
+			);
+		}
+		return null;
+	}
+	render() {
 		let {track, playTrack} = this.props;
 		return (
 			<View style={styles.container}>
@@ -54,8 +83,15 @@ let TrackItem = React.createClass({
 						</View>
 					</TouchableOpacity>
 				</View>
+				<TouchableOpacity
+					style={styles.menuButton}
+					onPress={this.showMenu} >
+					<Text>menu</Text>
+				</TouchableOpacity>
+				{this.renderMenu()}
 			</View>
 		);
 	}
-});
+};
+
 export default  TrackItem;

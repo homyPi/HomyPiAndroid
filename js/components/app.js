@@ -1,5 +1,5 @@
-var React = require('react-native');
-import { connect } from 'react-redux';
+var React = require("react-native");
+import { connect } from "react-redux";
 var {
   AppRegistry,
   StyleSheet,
@@ -19,10 +19,10 @@ import TrackSearch from "./music/TrackSearch";
 import AlbumSearch from "./music/AlbumSearch";
 import AlarmList from "./alarms/AlarmList";
 
-import Drawer from 'react-native-drawer';
+import Drawer from "react-native-drawer";
 import Menu from "./menu";
 import TopMenu from "./topMenu";
-import RCTDeviceEventEmitter from 'RCTDeviceEventEmitter'
+import RCTDeviceEventEmitter from "RCTDeviceEventEmitter"
 import Subscribable from "Subscribable";
 import UserApi from "../apis/UserAPI";
 
@@ -35,27 +35,27 @@ var _navigator;
 
 var RouteMapper = function(route, navigationOperations, onComponentRef) {
   _navigator = navigationOperations;
-  if (route.name === 'home') {
+  if (route.name === "home") {
     return (
       <Home navigator={navigationOperations} />
     );
-  } else if (route.name === 'myArtists') {
+  } else if (route.name === "myArtists") {
     return (
       <MyArtists navigator={navigationOperations} />
     );
-  } else if (route.name === 'searchMusic') {
+  } else if (route.name === "searchMusic") {
     return (
       <SearchMusic navigator={navigationOperations} />
     );
-  } else if (route.name === 'searchTracks') {
+  } else if (route.name === "searchTracks") {
     return (
       <TrackSearch search={route.search} navigator={navigationOperations} />
     );
-  } else if (route.name === 'searchAlbums') {
+  } else if (route.name === "searchAlbums") {
     return (
       <AlbumSearch search={route.search} navigator={navigationOperations} />
     );
-  } else if (route.name === 'searchArtists') {
+  } else if (route.name === "searchArtists") {
     return (
       <AlbumSearch search={route.search} navigator={navigationOperations} />
     );
@@ -65,7 +65,7 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
     );
   }
 }
-BackAndroid.addEventListener('hardwareBackPress', () => {
+BackAndroid.addEventListener("hardwareBackPress", () => {
   if (_navigator && _navigator.getCurrentRoutes().length > 1) {
     _navigator.pop();
     return true;
@@ -83,7 +83,7 @@ var App = React.createClass({
   },
 
   render: function() {
-    var initialRoute = {name: 'searchMusic'};
+    var initialRoute = {name: "searchMusic"};
     
     let nav = null;
     var menu = <Menu pushRoute={this._push} closeMenu={this.closeMenu} logout={() => this._logout()}/>;
@@ -91,6 +91,7 @@ var App = React.createClass({
         <Drawer 
           content={menu}
           ref="sideMenu"
+          openDrawerThreshold={0.35}
           tweenHandler={Drawer.tweenPresets.parallax}
           openDrawerOffset={100}>
           <TopMenu openMenu={this.openSideMenu} />

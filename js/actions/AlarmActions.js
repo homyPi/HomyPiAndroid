@@ -44,6 +44,7 @@ export function updated(data) {
 export function fetchAll(user, raspberry) {
   if (!user || !user.token) throw new Error("missing user or token");
   return dispatch => {
+    if (!raspberry || !raspberry.name) return new Error("missing raspberry name");
     dispatch(requestAll())
     return fetch(Settings.getServerUrl() + API + "/raspberries/" + raspberry.name, {
       headers: {

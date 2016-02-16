@@ -95,13 +95,20 @@ class PlayerFull extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-	      	showVolumeBar: false
+	      	showVolumeBar: false,
+	      	progress: 0
 	    };
 		this.getProgressInterval = null;
 		this.autoUpdateProgress = null;
 
-		this.onProgress = data => console.log(data);
-
+		this.onProgress = data => {
+			console.log(data);
+			this.setState({progress: data.trackOffset_ms});
+		}
+		this.hidePlayer = () => {
+			props.onClosing()
+			props.navigator.pop();
+		}
 	}
 	componentDidMount() {
 		Io.socket.on("playlist:track:progress", this.onProgress);
@@ -147,7 +154,7 @@ class PlayerFull extends React.Component {
 				<View style={styles.viewActions}>
 					<TouchableHighlight
 					style={styles.viewActionsButtons}
-		              onPress={this.props.navigator.pop} >
+		              onPress={this.closePlayer} >
 						<Image
 				        style={styles.hidePlayer}
 	              		resizeMode={Image.resizeMode.contain}
@@ -163,7 +170,7 @@ class PlayerFull extends React.Component {
 					<Text style={styles.trackName}>{playing.name}</Text>
 					<Text style={styles.artists}>{playing.artists.map(function(artist) { return (artist.name + "; ")})}</Text>
 				</View>
-				<Progress value={player.progress} min={0}  max={playing.durationMs} onSeekTrack={this._seek}/>
+				<Progress value={this.state.progress} min={0}  max={playing.duration_ms} onSeekTrack={this._seek}/>
 				<View style={styles.playerActions}>
 					<TouchableHighlight
 						style={styles.skip}
@@ -203,25 +210,31 @@ class PlayerFull extends React.Component {
 		if (!player) return;
 		Io.socket.emit("player:next", {name: player.name});
 	}
+
+	setProgressInterval() {
+		if (!this.getProgressInterval) {
+			Io.socket.emit("playlist:track:progress:get");
+			this.getProgressInterval = setInterval(function(){
+				Io.socket.emit("playlist:track:progress:get");
+			}, 5000);
+		}
+	}
+
+	setAutoUpdateProgress() {
+		if (!this.autoUpdateProgress) {
+			this.autoUpdateProgress = setInterval(function() {
+				var ms = this.state.progress + 1000;
+				this.setState({progress: ms});
+			}.bind(this), 1000)
+		}
+	}
+
 	setGetTrackProgressInterval() {
 		let {player} = this.props;
-		console.log("setGetTrackProgressInterval");
 		if (player && player.status === "PLAYING") {
 			console.log("set it");
-			if (!this.getProgressInterval) {
-				console.log("playlist:track:progress:get");
-				Io.socket.emit("playlist:track:progress:get");
-				this.getProgressInterval = setInterval(function(){
-				console.log("playlist:track:progress:get");
-					Io.socket.emit("playlist:track:progress:get");
-				}, 5000);
-			}
-			if (!this.autoUpdateProgress) {
-				this.autoUpdateProgress = setInterval(function() {
-					var ms = player.progress + 1000;
-					//PlaylistActionCreators.updateProgress(ms);
-				}.bind(this), 1000)
-			}
+			this.setProgressInterval();
+			this.setAutoUpdateProgress();
 		} else {
 			if (this.getProgressInterval) {
 				clearInterval(this.getProgressInterval);

@@ -82,6 +82,10 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 			listener.unlink(socketService);
 	}
 
+	public void off(String event, Emitter.Listener callback) {
+		socketService.off(event, callback);
+	}
+
 	@ReactMethod
 	public void clearEvents() {
 		for ( SocketListener listener : jsEvents) {
@@ -90,6 +94,7 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 	}
 
 	public void on(String event, Emitter.Listener callback) {
+		Log.i(TAG, "New event from java for event " + event);
 		socketService.on(event, callback);
 	}
 
@@ -148,7 +153,7 @@ class SocketListener {
 		return new Emitter.Listener() {
 	        @Override
 	        public void call(final Object... args) {
-            Log.i(TAG, "got socket's event for JS");
+            Log.i(TAG, "got socket's event for JS: " + event);
 	        	String data = null;
 	        	if(args.length > 0) {
 		            data = ((JSONObject) args[0]).toString();

@@ -51,6 +51,9 @@ public class SocketService extends Service {
    	@Override
    	public void onDestroy() {
       super.onDestroy();
+      if (mSocket != null) {
+      	mSocket.disconnect();
+      }
       Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
    	}
 
@@ -77,7 +80,6 @@ public class SocketService extends Service {
         }
 	}
 	public void on(String event, Emitter.Listener callback) {
-		Log.i(TAG, "new event listener from java for " + event);
 		events.add(event);
 		mSocket.on(event, callback);
 	}

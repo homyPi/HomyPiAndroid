@@ -6,9 +6,12 @@ import playlistSocket from "./sockets/playlistSocket"
 import raspberrySocket from "./sockets/raspberrySocket"
 import Settings from "./settings";
 
-import SocketConnection from './natives/SocketConnection';
+import SocketConnection from "./natives/SocketConnection";
+
+var store = null;
 
 export default {
+  setStore: function(s) {store = s},
   connect(token, connectedCallback, disconnectedCallback) {
     
     console.log("connect socket");
@@ -21,8 +24,8 @@ export default {
     if (disconnectedCallback && typeof disconnectedCallback === "function") {
       SocketConnection.on("disconnect", disconnectedCallback);
     }
-    playlistSocket(SocketConnection);
-    raspberrySocket(SocketConnection);
+    playlistSocket(SocketConnection, store);
+    raspberrySocket(SocketConnection, store);
     
     SocketConnection.connect();
   },

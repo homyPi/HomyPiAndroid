@@ -1,5 +1,5 @@
 import { 
-	SET_PLAYER, SET_PLAYLIST,
+	SET_PLAYER, SET_PLAYLIST, SET_STATUS,
 	CLEAR, SET_PLAYING
 } from '../actions/PlayerActions';
 
@@ -55,6 +55,9 @@ function player(state = {}, action) {
 		case SET_PLAYER:
 			console.log(action);
 			return {...state, ...action.player};
+		case SET_STATUS:
+			console.log(action);
+			return {...state, status: action.status};
      	default:
      		return state;
 	}

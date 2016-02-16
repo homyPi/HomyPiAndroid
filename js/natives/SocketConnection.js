@@ -11,7 +11,15 @@ function addListener(id, event, callback) {
 	}
 	listeners[event].push({id: id, callback: callback});
 }
-
+function exist(event, callback) {
+	if (!listeners[event]) return false;
+	for (var i = 0; i < listeners[event].length; i++) {
+	    if (listeners[event][i].callback === callback) {
+	    	return true;
+	    }
+	}
+	return false;
+}
 function off(event, callback) {
 	if (!listeners[event]) return;
 	i = listeners[event].length;
@@ -26,11 +34,13 @@ function off(event, callback) {
 export default {
 	createSocket: function(serverUrl, token) {
 		socket.createSocket(serverUrl, token);
+		console.log("wuuuuuuuuaaaaaaaaaaah", ToastModuleBis);
 	    ToastModuleBis.setSocketListeners();
 	},
 	connect: socket.connect,
 	clearEvents: socket.clearEvents,
 	on: function(event, callback) {
+			if (exist(event, callback)) return;
 			socket.on(event, function(listenerId) {
 				addListener(listenerId, event, callback);
 			});

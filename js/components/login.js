@@ -8,10 +8,7 @@ var {
   TouchableHighlight
 } = React;
 import { connect } from 'react-redux';
-//import UserAPI from "../apis/UserAPI";
 import Settings from "../settings";
-//import UserStore from "../stores/UserStore";
-import RouterActions from "../actions/RouterActionCreator";
 import {MKTextField, MKButton} from "react-native-material-kit";
 import {login as requestLogin} from "../actions/UserActions";
 

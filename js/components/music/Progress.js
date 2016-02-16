@@ -34,7 +34,7 @@ class Progress extends React.Component {
             value = max;
         }
         this.percentage = (value*100) / max;
-		this.styles = StyleSheet.create({
+        this.styles = StyleSheet.create({
 			progress: {
 				marginLeft: 10,
 				height: 40,

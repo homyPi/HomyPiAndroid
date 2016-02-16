@@ -1,14 +1,14 @@
-import React from 'react-native';
-import { connect } from 'react-redux';
+import React from "react-native";
+import { connect } from "react-redux";
 import {subscribe, unsubscribe} from "../../onSelectedRaspberryChange";
 import {fetchAll, setEnable, addAlarm, removeAlarm} from "../../actions/AlarmActions";
 
-import {MKButton} from 'react-native-material-kit';
+import {MKButton} from "react-native-material-kit";
 
-var RefreshableListView = require('react-native-refreshable-listview')
+var RefreshableListView = require("react-native-refreshable-listview")
 
-const Dimensions = require('Dimensions');
-const window = Dimensions.get('window');
+const Dimensions = require("Dimensions");
+const window = Dimensions.get("window");
 
 
 import Alarm from "./Alarm";
@@ -55,19 +55,21 @@ class AlarmList extends React.Component {
 			let {user, dispatch} = this.props;
 			dispatch(removeAlarm(user, alarm))
 		}
-		this._loadAlarms = (selected)  => {
-			let {selectedRaspberry, dispatch, user} = this.props;
-			if (selected || selectedRaspberry) {
-    			dispatch(fetchAll(user, selected || selectedRaspberry));
+		this._loadAlarms = (raspberry)  => {
+			let {selectedRaspberry, dispatch, user, isFetching} = this.props;
+			if ((raspberry || selectedRaspberry) && !isFetching) {
+    			dispatch(fetchAll(user, (raspberry || selectedRaspberry)));
 			}
 		}
 	}
 	componentDidMount() {
-		subscribe(this._loadAlarms);
 		this._loadAlarms();
 	}
-	componentWillUnmount() {
-		unsubscribe(this._loadAlarms);
+	componentWillReceiveProps(nextProps) {
+		console.log("props updated from ", this.props, " to ", nextProps);
+		if (nextProps.selectedRaspberry != this.props.selectedRaspberry) {
+			this._loadAlarms(nextProps.selectedRaspberry);
+		}
 	}
 	render() {
 		let {selectedRaspberry, alarms, isFetching} = this.props;

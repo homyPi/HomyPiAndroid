@@ -2,8 +2,8 @@
  * Sample React Native App
  * https://github.com/facebook/react-native
  */
-'use strict';
-var React = require('react-native');
+"use strict";
+var React = require("react-native");
 var {
   AppRegistry,
   StyleSheet,
@@ -12,14 +12,13 @@ var {
   Navigator,
   BackAndroid
 } = React;
-import { Provider } from "react-redux"
-import configureStore from './js/configureStore'
+import { Provider } from "react-redux";
+import IO from "./js/io";
+import configureStore from "./js/configureStore"
 const store = configureStore();
+console.log(IO);
+IO.setStore(store);
 
-
-
-import {setStore} from "./js/onSelectedRaspberryChange";
-setStore(store);
 import {subscribe} from "./js/natives/PlayerNotification";
 subscribe(store);
 
@@ -31,7 +30,7 @@ import Splash from "./js/components/splash";
 var _navigator;
 import PlayerFull from "./js/components/music/playerFull";
 
-BackAndroid.addEventListener('hardwareBackPress', () => {
+BackAndroid.addEventListener("hardwareBackPress", () => {
   if (_navigator && _navigator.getCurrentRoutes().length > 1) {
     _navigator.jumpBack();
     return true;
@@ -45,17 +44,17 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
     return (
       <Splash navigator={navigationOperations} onLoggedIn={route.onLoggedIn} />
     );
-  } else if (route.name === 'app') {
+  } else if (route.name === "app") {
     return (
       <App navigator={navigationOperations} logout={route.logout}/>
     );
-  } else if (route.name === 'login') {
+  } else if (route.name === "login") {
     return (
       <Login navigator={navigationOperations} onLoggedIn={route.onLoggedIn}/>
     );
-  } else if (route.name === 'player') {
+  } else if (route.name === "player") {
     return (
-      <PlayerFull navigator={navigationOperations} />
+      <PlayerFull navigator={navigationOperations} onClosing={route.onClosing}/>
     );
   }
 }
@@ -102,21 +101,21 @@ var HomyPiAndroid = React.createClass({
   styles: StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#F5FCFF',
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#F5FCFF",
     },
     welcome: {
       fontSize: 20,
-      textAlign: 'center',
+      textAlign: "center",
       margin: 10,
     },
     instructions: {
-      textAlign: 'center',
-      color: '#333333',
+      textAlign: "center",
+      color: "#333333",
       marginBottom: 5,
     },
   })
 });
 
-AppRegistry.registerComponent('HomyPiAndroid', () => HomyPiAndroid);
+AppRegistry.registerComponent("HomyPiAndroid", () => HomyPiAndroid);

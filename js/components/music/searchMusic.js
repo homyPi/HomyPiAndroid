@@ -60,11 +60,13 @@ const styles = {
 const SingleColorSpinner = mdl.Spinner.singleColorSpinner()
   .build();
 
+
+
 class SearchMusic extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			search: this.props.searchMusic.query || "gorillaz"
+			search: this.props.searchMusic.query
 		};
 	    this._handleSearch = (init = false) => {
 	    	if (init && this.props.searchMusic.albums.items.length &&

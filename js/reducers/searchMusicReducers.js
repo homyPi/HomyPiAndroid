@@ -1,10 +1,10 @@
 import { 
 	REQUEST, RECEIVED, RECEIVED_MORE
-} from '../actions/MusicSearchActions'
+} from "../actions/MusicSearchActions"
 
 const defaultStates = {
 	  	isFetching: false,
-	  	query: "gorillaz",
+	  	query: "",
 		items:[],
 		limit: 0,
 		offset:0,
@@ -92,11 +92,12 @@ function searchTracks(state=defaultStates, action) {
      		return state;
 	}
 }
-
+const DEBUG_ARTISTS = ["gorillaz", "pogo", "supertramp", "kate tempest"];
+const DEBUG_SEARCH = DEBUG_ARTISTS[Math.floor((Math.random() * DEBUG_ARTISTS.length))]
 function searchMusic(state = {
   isFetching: false,
   didInvalidate: false,
-  query: "gorillaz",
+  query: DEBUG_SEARCH,
   albums: defaultStates,
   artists: defaultStates,
   tracks: defaultStates

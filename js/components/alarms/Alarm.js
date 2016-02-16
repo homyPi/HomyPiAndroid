@@ -4,6 +4,8 @@ import {MKButton, MKColor} from "react-native-material-kit";
 
 var SwitchAndroid = require("SwitchAndroid");
 
+const Dimensions = require("Dimensions");
+const window = Dimensions.get("window");
 
 var {
 	View,
@@ -23,6 +25,13 @@ var styles = {
 		flexDirection: "row"
 
 	},
+	alarmBody: {
+		height: 100
+	},
+	deleteButton: {
+		width: 50,
+		height: 30
+	},
 	leftContainer: {
 		flex:3
 	},
@@ -33,6 +42,11 @@ var styles = {
 		flex: 1,
   		"alignItems": "center",
   		"justifyContent": "center"
+	},
+	separator: {
+		width: window.width,
+		height: 1,
+		backgroundColor: "#e9e9e9"
 	}
 };
 
@@ -45,6 +59,11 @@ var toString = function(hours, minutes) {
 	}
 	return hours + ":" + minutes;
 }
+const ColoredRaisedButton = MKButton.coloredButton()
+  .withText("Delete")
+  .withOnPress(() => {})
+  .build();
+
 
 class Alarm extends React.Component {
 	constructor(props) {
@@ -74,21 +93,27 @@ class Alarm extends React.Component {
 		let {alarm, deleteAlarm} = this.props;
 		console.log(this.props);
 		return (
-			<MKButton
-			  backgroundColor={MKColor.Teal}
-			  shadowRadius={2}
-			  shadowOffset={{width:0, height:2}}
-			  shadowOpacity={.7}
-			  shadowColor="black"
-			  onPress={() => {
-			    deleteAlarm(alarm)
-			  }}
-			  >
-			  <Text pointerEvents="none"
-			        style={{color: "white", fontWeight: 'bold',}}>
-			    Delete
-			  </Text>
-			</MKButton>
+			<View style={styles.alarmBody} >
+				{/*<MKButton
+				  backgroundColor={MKColor.Teal}
+				  shadowRadius={2}
+				  shadowOffset={{width:0, height:2}}
+				  shadowOpacity={.7}
+				  shadowColor="black"
+				  onPress={() => {
+				    deleteAlarm(alarm)
+				  }}
+				  style={styles.deleteButton}
+				  >
+				  <Text pointerEvents="none"
+				        style={{color: "white", fontWeight: "bold"}}>
+				    Delete
+				  </Text>
+				</MKButton>*/}
+				<ColoredRaisedButton onPress={() => {
+				    deleteAlarm(alarm)
+				  }} />
+			</View>
 		)
 	}
 	render() {
@@ -111,6 +136,7 @@ class Alarm extends React.Component {
 				<View>
 					{(this.state.showBody)? this.getBody():null}
 				</View>
+				<View style={styles.separator}></View>
 			</View>
 		);
 	}

@@ -1,6 +1,4 @@
 import React from "react-native";
-import ArtistStore from '../../stores/ArtistStore';
-import ArtistActions from '../../actions/ArtistActionCreators';
 
 import Track from "./trackItem";
 import AlbumItem from "./albumItem";
