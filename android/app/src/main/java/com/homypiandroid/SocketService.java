@@ -27,6 +27,7 @@ public class SocketService extends Service {
     private Socket mSocket;
 	private static final String TAG = "SocketService";
 	private static ArrayList<String> events = new ArrayList<String>();
+	private static ArrayList<Delayed> delayedEvents = new ArrayList<Delayed>();
 	protected static final Handler pinger = new Handler();
 
     IBinder mBinder = new LocalBinder();
@@ -74,23 +75,39 @@ public class SocketService extends Service {
  		try {
 			Log.i(TAG, "connecting to " + serverUrl);
             mSocket = IO.socket(serverUrl, opts);
+            setDelayed();
 		Log.i(TAG, "socket created");
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
 	}
+
+	public void setDelayed() {
+		Delayed e = null;
+		while(delayedEvents.size() > 0) {
+			e = delayedEvents.remove(0);
+			this.on(e.event, e.callback);
+		}
+	}
+
 	public void on(String event, Emitter.Listener callback) {
+		if (mSocket == null) {
+			delayedEvents.add(new Delayed(event, callback));
+			return;
+		}
 		events.add(event);
 		mSocket.on(event, callback);
 	}
 
 	public void clearEvents() {
+		if (mSocket == null) return;
 		for (String event: events) {
 			mSocket.off(event);
 		}
 	}
 
 	public void off(String event, Emitter.Listener callback) {
+		if (mSocket == null) return;
 		mSocket.off(event, callback);
 	}
 
@@ -160,5 +177,15 @@ public class SocketService extends Service {
 	public void emit(final String event, JSONObject obj) {
 		Log.i(TAG, "emit with JSONObject");
 		mSocket.emit(event, obj);
+	}
+}
+
+class Delayed {
+	public String event;
+	public Emitter.Listener callback;
+
+	public Delayed(String event, Emitter.Listener callback) {
+		this.event = event;
+		this.callback = callback;
 	}
 }

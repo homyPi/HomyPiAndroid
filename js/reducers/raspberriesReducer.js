@@ -1,8 +1,7 @@
 import { 
 	REQUEST_ALL, RECEIVE_ALL,
-	SELECTED_RASPBERRY, SELECTED_DEFAULT
-
-} from '../actions/RaspberryActions'
+	SELECTED_RASPBERRY, SELECTED_DEFAULT, STATE_CHANGED
+} from "../actions/RaspberryActions"
 
 const defaultRaspberry = {
 	_id: null,
@@ -43,6 +42,28 @@ function raspberries(state = {
         		items: action.items,
         		lastUpdated: action.receivedAt
      		};
+     	case STATE_CHANGED:
+            var items;
+            var index = 0;
+            var item = state.items.find(function(rasp, i) {
+                if (rasp.name === action.name) {
+                    index = i;
+                    return true;
+                }
+                return false;
+            });
+            if (item) {
+                item = {...item, state: action.state};
+                items = [
+                    ...state.items.slice(0, index),
+                    item,
+                    ...state.items.slice(++index)
+                ];
+            }
+            return {
+                ...state,
+                items: items || state.items
+            }
      	case SELECTED_RASPBERRY:
 			return {...state, ...action.raspberry};
      	default:

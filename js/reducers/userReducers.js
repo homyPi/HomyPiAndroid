@@ -1,6 +1,6 @@
 import { 
 	REQUEST, FAIL, SUCCESS, LOGOUT
-} from '../actions/UserActions'
+} from "../actions/UserActions"
 
 function user(state = {
   isFetching: false,

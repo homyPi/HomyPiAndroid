@@ -1,7 +1,7 @@
 import UserAPI from "./UserAPI"
 import Settings from "../settings";
 
-var superagent = require('superagent');
+var superagent = require("superagent");
 
 export default {
 	getAll() {
@@ -10,7 +10,7 @@ export default {
 			console.log(url);
 			superagent.get(url)
 				.set("Authorization", "Bearer " + UserAPI.getToken())
-  				.set('Accept', 'application/json')
+  				.set("Accept", "application/json")
 				.end(function(err, res) {
 					if(err) {
 						console.log(err.stack);

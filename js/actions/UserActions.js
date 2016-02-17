@@ -47,10 +47,10 @@ export function login(username, password, onLoggedIn) {
 		dispatch(connection_requested())
 	    return fetch(Settings.getServerUrl() + "/api/users/login", {
 			headers: {
-	        	'Accept': 'application/json',
-				'Content-Type': 'application/json'
+	        	"Accept": "application/json",
+				"Content-Type": "application/json"
 			},
-			method: 'post',
+			method: "post",
 			body: JSON.stringify({
 				username, password
 			})

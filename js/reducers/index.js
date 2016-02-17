@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux'
+import { combineReducers } from "redux"
 
 import raspberriesReducers from "./raspberriesReducer";
 import alarmsReducers from "./alarmsReducers";

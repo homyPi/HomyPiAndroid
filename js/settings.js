@@ -1,4 +1,4 @@
-var AsyncStorage = require('react-native').AsyncStorage;
+var AsyncStorage = require("react-native").AsyncStorage;
 
 var serverUrl = null;
 

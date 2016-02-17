@@ -2,7 +2,7 @@ import {
 	REQUEST_ALL, RECEIVE_ALL,
   NEW, DELETED, UPDATED
 
-} from '../actions/AlarmActions'
+} from "../actions/AlarmActions"
 
 function alarm(state = {}, action) {
   switch (action.type) {

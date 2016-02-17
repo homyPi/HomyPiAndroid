@@ -1,10 +1,10 @@
 import React from "react-native";
 let {View, ListView, StyleSheet, ScrollView} = React;
-var GridView = require('react-native-grid-view');
+var GridView = require("react-native-grid-view");
 import ArtistItem from "./artistItem";
 
-const Dimensions = require('Dimensions');
-const window = Dimensions.get('window');
+const Dimensions = require("Dimensions");
+const window = Dimensions.get("window");
 
 const styles = StyleSheet.create({
 	myArtistsList: {

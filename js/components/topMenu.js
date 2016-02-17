@@ -20,7 +20,7 @@ class TopMenu extends React.Component {
 			<TouchableOpacity
 				style={styles.container}
 		        onPress={this.props.openMenu}>
-		        <Image style={styles.menuButton} source={require('image!ic_action')} />
+		        <Image style={styles.menuButton} source={require("image!ic_action")} />
 		    </TouchableOpacity>
 		);
 	}

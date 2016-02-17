@@ -9,9 +9,7 @@ export const RECEIVE_ALL = "RASPBERRY_RECEIVE_ALL";
 export const SELECTED_RASPBERRY = "SELECTED_RASPBERRY";
 export const SELECTED_DEFAULT = "SELECTED_DEFAULT";
 
-export const UPDATE_STATUS = "RASPBERRY_UPDATE_STATUS";
-export const NEW = "RASPBERRY_NEW";
-export const REMOVE = "RASPBERRY_REMOVE";
+export const STATE_CHANGED = "RASPBERRY_STATE_CHANGED";
 
 export function requestAll(raspberries) {
 	return {
@@ -31,8 +29,8 @@ export function fetchAll(user) {
 		dispatch(requestAll())
 		return fetch(Settings.getServerUrl() + API + "/", {
 			headers: {
-				    'Accept': 'application/json',
-				    'Content-Type': 'application/json',
+				    "Accept": "application/json",
+				    "Content-Type": "application/json",
 				    "Authorization": "Bearer " + user.token
 				}
 			})
@@ -45,6 +43,14 @@ export function fetchAll(user) {
 					//dispatch(selectedDefaultRaspberry());
 				}
 			})
+	}
+}
+
+export function stateChanged(name, state) {
+	return {
+		type: STATE_CHANGED,
+		name,
+		state
 	}
 }
 

@@ -1,7 +1,7 @@
 import UserAPI from "./UserAPI.js"
 import Settings from "../settings";
 
-var superagent = require('superagent');
+var superagent = require("superagent");
 var serverUrl = "/api/modules/music";
 
 

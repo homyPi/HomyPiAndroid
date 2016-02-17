@@ -32,9 +32,8 @@ public class CustomReactPackage implements ReactPackage {
     public List<NativeModule> createNativeModules(
                               ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        SocketConnection sC = new SocketConnection(reactContext, mActivity);
-        modules.add(sC);
-        modules.add(new ToastModuleBis(reactContext, mActivity, sC));
+        modules.add(new SocketConnection(reactContext, mActivity));
+        modules.add(new ToastModuleBis(reactContext, mActivity));
         return modules;
     }
 

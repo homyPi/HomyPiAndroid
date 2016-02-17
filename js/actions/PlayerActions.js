@@ -53,8 +53,8 @@ export function getPlaylist(user, player) {
 	return dispatch => {
 		return fetch(Settings.getServerUrl() + PLAYLIST_API + "/" + player.name, {
 			headers: {
-				    'Accept': 'application/json',
-				    'Content-Type': 'application/json',
+				    "Accept": "application/json",
+				    "Content-Type": "application/json",
 				    "Authorization": "Bearer " + user.token
 				}
 			})
@@ -70,12 +70,12 @@ export function getPlaylist(user, player) {
 }
 
 export function getPlayer(user, raspberry) {
-  if (!user || !user.token) throw new Error("missing user or token in getPlayer");
 	return dispatch => {
+  if (!user || !user.token || !raspberry || !raspberry.name) return;
 		return fetch(Settings.getServerUrl() + PLAYER_API + "/" + raspberry.name, {
 			headers: {
-				    'Accept': 'application/json',
-				    'Content-Type': 'application/json',
+				    "Accept": "application/json",
+				    "Content-Type": "application/json",
 				    "Authorization": "Bearer " + user.token
 				}
 			})

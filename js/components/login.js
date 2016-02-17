@@ -1,4 +1,4 @@
-var React = require('react-native');
+var React = require("react-native");
 var {
   AppRegistry,
   StyleSheet,
@@ -7,7 +7,7 @@ var {
   TextInput,
   TouchableHighlight
 } = React;
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import Settings from "../settings";
 import {MKTextField, MKButton} from "react-native-material-kit";
 import {login as requestLogin} from "../actions/UserActions";
@@ -22,17 +22,17 @@ var styles = {
 };
 
 const Textfield = MKTextField.textfieldWithFloatingLabel()
-  .withPlaceholder('Server Url')
+  .withPlaceholder("Server Url")
   .withStyle(styles.textfieldWithFloatingLabel)
   .withFloatingLabelFont({
     fontSize: 10,
-    fontStyle: 'italic',
-    fontWeight: '200',
+    fontStyle: "italic",
+    fontWeight: "200",
   })
   .build();
 
 const LoginButton = MKButton.coloredButton()
-  .withText('Login')
+  .withText("Login")
   .build();
 
 var Login = React.createClass({
@@ -99,12 +99,12 @@ var Login = React.createClass({
   styles: StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#F5FCFF',
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#F5FCFF",
     },
     button: {
-      alignItems: 'center',
+      alignItems: "center",
       marginBottom: 7,
       backgroundColor: "blue",
       borderRadius: 2

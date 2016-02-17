@@ -11,6 +11,8 @@ var {
 import { connect } from "react-redux";
 import {subscribe, unsubscribe} from "../../onSelectedRaspberryChange";
 
+import {PLAYER_HEADER_HEIGHT} from "../../Constants";
+
 import PlayPause from "./PlayPause";
 import Io from "../../io";
 var _navigator;
@@ -18,9 +20,6 @@ var _navigator;
 
 
 var PlayerHeader = React.createClass({
-	getInitialState() {
-		return {showPlayerPause: true}
-	},
 	componentDidMount() {
 		
 	},
@@ -50,23 +49,18 @@ var PlayerHeader = React.createClass({
 								<Text numberOfLines={1} style={this.styles.artists}>{playing.artists.map(function(artist) { return (artist.name + "; ")})}</Text>
 							</View>
 						</TouchableHighlight>
-						{(this.state.showPlayerPause)?<PlayPause dispatch={this.props.dispatch} player={player} style={{}} styleImg={{width:35, height:35}} />: null}
+						<PlayPause dispatch={this.props.dispatch} player={player} style={{}} styleImg={{width:35, height:35}} />
 					</View>
 		);
 	},
 	_showPlayer: function() {
-		this.setState({showPlayerPause: false});
 		this.props.navigator.push({
-            name: "player",
-            onClosing: this.playerClosed.bind(this)
+            name: "player"
         });
-	},
-	playerClosed() {
-		this.setState({showPlayerPause: true});
 	},
 	styles: StyleSheet.create({
 		container: {
-			height: 50,
+			height: PLAYER_HEADER_HEIGHT,
 			alignItems: "center",
 			flexDirection: "row",
 			backgroundColor: "#263238",
@@ -76,8 +70,8 @@ var PlayerHeader = React.createClass({
 			flex: 0.15
 		},
 		cover: {
-			height: 50,
-			width: 50,
+			height: PLAYER_HEADER_HEIGHT,
+			width: PLAYER_HEADER_HEIGHT,
 			justifyContent: "flex-start"
 		},
 		trackInfoHighlight: {

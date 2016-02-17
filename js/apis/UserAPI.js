@@ -1,8 +1,8 @@
-var Io = require('../io.js');
+var Io = require("../io.js");
 import Settings from "../settings";
 
 var config = require("../config.js");
-var AsyncStorage = require('react-native').AsyncStorage;
+var AsyncStorage = require("react-native").AsyncStorage;
 
 
 var token = null;
@@ -12,7 +12,7 @@ var token = null;
 var setToken = function(newToken) {
 	token = newToken;
 	AsyncStorage.setItem("homyToken", token)
-    //localStorage.setItem('token', token);
+    //localStorage.setItem("token", token);
 }
 
 var getToken = function() {
@@ -39,8 +39,8 @@ export default {
 					method: "POST",
 				    body: JSON.stringify({ username: username, password: password }),
 				    headers: {
-					    'Accept': 'application/json',
-					    'Content-Type': 'application/json'
+					    "Accept": "application/json",
+					    "Content-Type": "application/json"
 					}
 				}).then(function(response) {
 					console.log("post login =>", response);

@@ -1,0 +1,1 @@
+export const PLAYER_HEADER_HEIGHT = 50;

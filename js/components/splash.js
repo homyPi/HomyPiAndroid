@@ -1,4 +1,4 @@
-var React = require('react-native');
+var React = require("react-native");
 var {
   AppRegistry,
   StyleSheet,
@@ -41,12 +41,12 @@ var SplashScreen = React.createClass({
   styles: StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#F5FCFF',
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#F5FCFF",
     },
     button: {
-      alignItems: 'center',
+      alignItems: "center",
       marginBottom: 7,
       backgroundColor: "blue",
       borderRadius: 2

@@ -59,6 +59,8 @@ class AlbumItem extends React.Component {
 		if(Date.now() - this.pressStart > 1500) {
 			console.log("play album");
 			this.playAlbum();
+		} else {
+			this.props.gotoDetails(this.props.album);
 		}
 	}
 	playAlbum() {
@@ -78,6 +80,7 @@ AlbumItem.defaultProps = {
 	album: {
 		images: [{url: ""}],
 		name: "untitled"
-	}
+	},
+	gotoDetails: function() {}
 };
 export default AlbumItem;

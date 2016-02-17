@@ -84,6 +84,13 @@ class SearchMusic extends React.Component {
 			console.log("play track on ", player);
 			Io.socket.emit("player:play:track", {player: {name: player.name}, "track": {"source": "spotify", "uri": track.uri}});
 		}
+		this.gotoDetails = album => {
+  			this.props.navigator.push({
+  				name: "albumDetails",
+  				id: album.id,
+  				source: "spotify"
+  			});
+		}
 	}
 	
   	componentDidMount() {
@@ -181,7 +188,7 @@ class SearchMusic extends React.Component {
 
 	renderAlbumItem(result) {
 		return (
-			<AlbumItem key={result.id} album={result} player={this.props.player}/>
+			<AlbumItem key={result.id} album={result} gotoDetails={this.gotoDetails} player={this.props.player}/>
 		);
   	}
   	_showMore(type) {

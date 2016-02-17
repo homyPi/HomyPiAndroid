@@ -34,8 +34,6 @@ function off(event, callback) {
 export default {
 	createSocket: function(serverUrl, token) {
 		socket.createSocket(serverUrl, token);
-		console.log("wuuuuuuuuaaaaaaaaaaah", ToastModuleBis);
-	    ToastModuleBis.setSocketListeners();
 	},
 	connect: socket.connect,
 	clearEvents: socket.clearEvents,

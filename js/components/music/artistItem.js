@@ -1,13 +1,13 @@
 import React from "react-native";
 let {View, Text, StyleSheet, Image} = React;
-const Dimensions = require('Dimensions');
-const window = Dimensions.get('window');
+const Dimensions = require("Dimensions");
+const window = Dimensions.get("window");
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-    	alignItems: 'center',
-    	flexDirection: 'column'
+    	alignItems: "center",
+    	flexDirection: "column"
 	},
 	cover: {
 		height: 125,

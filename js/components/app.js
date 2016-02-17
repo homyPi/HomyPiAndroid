@@ -17,6 +17,8 @@ import Home from "./alarms/AlarmList";
 import PlayerHeader from "./music/playerHeader";
 import TrackSearch from "./music/TrackSearch";
 import AlbumSearch from "./music/AlbumSearch";
+import AlbumDetails from "./music/AlbumDetails";
+
 import AlarmList from "./alarms/AlarmList";
 
 import Drawer from "react-native-drawer";
@@ -55,6 +57,10 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
     return (
       <AlbumSearch search={route.search} navigator={navigationOperations} />
     );
+  } else if (route.name === "albumDetails") {
+    return (
+      <AlbumDetails id={route.id} source={route.source} navigator={navigationOperations} />
+    );
   } else if (route.name === "searchArtists") {
     return (
       <AlbumSearch search={route.search} navigator={navigationOperations} />
@@ -83,7 +89,7 @@ var App = React.createClass({
   },
 
   render: function() {
-    var initialRoute = {name: "searchMusic"};
+    var initialRoute = {name: "albumDetails"};
     
     let nav = null;
     var menu = <Menu pushRoute={this._push} closeMenu={this.closeMenu} logout={() => this._logout()}/>;

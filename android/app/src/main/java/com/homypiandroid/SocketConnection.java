@@ -77,17 +77,20 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 
 	@ReactMethod
 	public void off(String id) {
+		if (socketService == null) return;
 		SocketListener listener = SocketListener.findInList(jsEvents, id);
 		if (listener != null)
 			listener.unlink(socketService);
 	}
 
 	public void off(String event, Emitter.Listener callback) {
+		if (socketService == null) return;
 		socketService.off(event, callback);
 	}
 
 	@ReactMethod
 	public void clearEvents() {
+		if (socketService == null) return;
 		for ( SocketListener listener : jsEvents) {
 			listener.unlink(socketService);
 		}

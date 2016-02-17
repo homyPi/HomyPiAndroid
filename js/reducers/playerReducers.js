@@ -1,7 +1,7 @@
 import { 
 	SET_PLAYER, SET_PLAYLIST, SET_STATUS,
 	CLEAR, SET_PLAYING
-} from '../actions/PlayerActions';
+} from "../actions/PlayerActions";
 
 console.log(SET_PLAYLIST);
 const defaultTrack = {

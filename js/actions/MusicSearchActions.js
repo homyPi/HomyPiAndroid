@@ -38,8 +38,8 @@ export function search(user, query, type, nb, offset, source="spotify") {
 		dispatch(requestAll(query))
 		return fetch(Settings.getServerUrl() + API + "/search?" + request, {
 			headers: {
-				    'Accept': 'application/json',
-				    'Content-Type': 'application/json',
+				    "Accept": "application/json",
+				    "Content-Type": "application/json",
 				    "Authorization": "Bearer " + user.token
 				}
 			})

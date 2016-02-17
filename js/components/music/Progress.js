@@ -1,10 +1,10 @@
-var React = require('react-native');
+var React = require("react-native");
 var {
   StyleSheet,
   View
 } = React;
-const Dimensions = require('Dimensions');
-const window = Dimensions.get('window');
+const Dimensions = require("Dimensions");
+const window = Dimensions.get("window");
 
 
 class Progress extends React.Component {

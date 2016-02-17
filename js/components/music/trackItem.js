@@ -1,17 +1,30 @@
 import React from "react-native";
-let {View, Text, StyleSheet, Image, TouchableOpacity} = React;
+let {
+	View,
+	Text,
+	StyleSheet,
+	Image,
+	TouchableOpacity,
+	Picker
+} = React;
 
+const {
+  Select,
+  Option,
+  OptionList,
+  updatePosition
+} = require("react-native-dropdown");
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-    	alignItems: 'flex-start',
-    	flexDirection: 'row',
+    	alignItems: "flex-start",
+    	flexDirection: "row",
     	height: 55
 	},
 	trackInfo: {
 		flex: 1,
-    	flexDirection: 'column'
+    	flexDirection: "column"
 	},
 	cover: {
 		width: 50,
@@ -24,7 +37,7 @@ const styles = StyleSheet.create({
 	},
 	trackData: {
 		flex: 1,
-    	flexDirection: 'row'
+    	flexDirection: "row"
 	},
 	artistsNames: {
 		flex: 1,
@@ -37,7 +50,7 @@ const styles = StyleSheet.create({
 		width: 100,
 		height: 300,
 		backgroundColor: "#e9e9e9",
-		transform: [{'translate':[0,0,1]}] 
+		transform: [{"translate":[0,0,1]}] 
 	}
 });
 
@@ -51,29 +64,33 @@ class TrackItem extends React.Component {
 		this.showMenu = () => {
 			this.setState({showMenu: true});
 		}
+
+		this.menuCallback = () => {
+			console.log(arguments)
+		}
 	}
 	renderMenu() {
-		return null;
-		if (this.state.showMenu) {
-			return (
-				<View style={styles.dropDown} >
-					<Text>Hello</Text>
-				</View>
-			);
-		}
-		return null;
+		return (
+			<Picker
+			  selectedValue={"js"}
+			  onValueChange={(lang) => this.setState({language: lang})}
+			  style={{width: 100, height: 100}} >
+			  <Picker.Item label="Javall" value="java" />
+			  <Picker.Item label="JavaScript" value="js" />
+			</Picker>
+            )
 	}
 	render() {
-		let {track, playTrack} = this.props;
+		let {track, playTrack, showCover} = this.props;
 		return (
 			<View style={styles.container}>
-				<Image style={styles.cover} source={{uri: track.album.images[0].url}} />
+				{(showCover)?<Image style={styles.cover} source={{uri: track.album.images[0].url}} />:null}
 				<View style={styles.trackInfo}>
 					<TouchableOpacity
 							style={styles.trackInfo}
 							onPress={ () => playTrack(track) }>
 						
-						<Text style={styles.title}>{track.name}</Text>
+						<Text numberOfLines={1} style={styles.title}>{track.name}</Text>
 						<View style={styles.trackData}>
 							<Text style={styles.artistsNames}>{
 								track.artists.map(artist => {
@@ -83,12 +100,12 @@ class TrackItem extends React.Component {
 						</View>
 					</TouchableOpacity>
 				</View>
-				<TouchableOpacity
+				{/*<TouchableOpacity
 					style={styles.menuButton}
 					onPress={this.showMenu} >
 					<Text>menu</Text>
-				</TouchableOpacity>
-				{this.renderMenu()}
+				</TouchableOpacity>*/}
+				{/*this.renderMenu()*/}
 			</View>
 		);
 	}

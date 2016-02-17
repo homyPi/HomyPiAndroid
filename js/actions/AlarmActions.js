@@ -1,6 +1,6 @@
 import Settings from "../settings";
 import UserAPI from "../apis/UserAPI";
-import AlarmAPI from '../apis/AlarmAPI';
+import AlarmAPI from "../apis/AlarmAPI";
 
 const API = "/api/modules/alarms";
 
@@ -48,8 +48,8 @@ export function fetchAll(user, raspberry) {
     dispatch(requestAll())
     return fetch(Settings.getServerUrl() + API + "/raspberries/" + raspberry.name, {
       headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
+            "Accept": "application/json",
+            "Content-Type": "application/json",
             "Authorization": "Bearer " + user.token
         }
       })
@@ -69,11 +69,11 @@ export function setEnable(user, alarm, enable) {
   return dispatch => {
     return fetch(Settings.getServerUrl() + API + "/" + alarm._id, {
         headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
+              "Accept": "application/json",
+              "Content-Type": "application/json",
               "Authorization": "Bearer " + user.token
         },
-        method: 'put',
+        method: "put",
         body: JSON.stringify({
           enable
         })
@@ -96,11 +96,11 @@ export function addAlarm(user, raspberry, alarm) {
   return dispatch => {
     return fetch(Settings.getServerUrl() + API + "/", {
         headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
+              "Accept": "application/json",
+              "Content-Type": "application/json",
               "Authorization": "Bearer " + user.token
         },
-        method: 'post',
+        method: "post",
         body: JSON.stringify({ alarm, raspberry })
       })
       .then(response => response.json())
@@ -122,11 +122,11 @@ export function removeAlarm(user, alarm) {
   return dispatch => {
     return fetch(Settings.getServerUrl() + API + "/" + alarm._id, {
         headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
+              "Accept": "application/json",
+              "Content-Type": "application/json",
               "Authorization": "Bearer " + user.token
         },
-        method: 'delete'
+        method: "delete"
       })
       .then(response => response.json())
       .then(json => {

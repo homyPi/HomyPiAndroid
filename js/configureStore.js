@@ -1,10 +1,10 @@
-import { createStore, applyMiddleware, compose } from 'redux'
-import thunkMiddleware from 'redux-thunk'
-import createLogger from 'redux-logger'
+import { createStore, applyMiddleware, compose } from "redux"
+import thunkMiddleware from "redux-thunk"
+import createLogger from "redux-logger"
 
 
-import freezeState from 'redux-freeze-state';
-import reducers from './reducers'
+import freezeState from "redux-freeze-state";
+import reducers from "./reducers"
 
 import cMiddlewares from "./middlewares";
 const loggerMiddleware = createLogger();

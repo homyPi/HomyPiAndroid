@@ -25,6 +25,8 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.ServiceConnection;
 import android.widget.RemoteViews;
 import android.widget.ImageButton;
 import android.view.View;
@@ -40,21 +42,25 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
+import android.os.Binder;
+import android.os.IBinder;
 
 import com.homypiandroid.MainActivity;
-import com.homypiandroid.SocketConnection;
+import com.homypiandroid.SocketService.LocalBinder;
 
 public class ToastModuleBis extends ReactContextBaseJavaModule implements LifecycleEventListener {
+  private static final String TAG = "PlayerNotification";
 
   private ReactApplicationContext conte;
   private Activity mActivity = null;
+  boolean mBounded;
+  private SocketService socketService;
   
   private NotificationManager mNotificationManager;
   private static final int NOTIFICATION_ID = 1;
   private int icon = R.drawable.ic_play_circle_outline_grey600_36dp;
   private Notification notification;
 
-  protected static SocketConnection socketConnection;
 
   private String cover;
   private String currentCoverUrl = "";
@@ -62,6 +68,27 @@ public class ToastModuleBis extends ReactContextBaseJavaModule implements Lifecy
   private String playerName = "";
   private String trackName = "";
   private String artists = "";
+
+  ServiceConnection mConnection = new ServiceConnection() {
+      public void onServiceDisconnected(ComponentName name) {
+          Log.i(TAG, "Disconnected from socket service");
+          mBounded = false;
+          socketService = null;
+      }
+
+      public void onServiceConnected(ComponentName name, IBinder service) {
+          Log.i(TAG, "Connected to socket service");
+          mBounded = true;
+          LocalBinder mLocalBinder = (LocalBinder)service;
+          socketService = mLocalBinder.getServerInstance();
+          socketService.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+            @Override
+            public void call(final Object... args) {
+              setSocketListeners();
+            }
+          });
+      }
+  };
 
   private Emitter.Listener onDisconnected = new Emitter.Listener() {
       @Override
@@ -122,11 +149,15 @@ public class ToastModuleBis extends ReactContextBaseJavaModule implements Lifecy
   public static final String KEY_PAUSE = "com.homypiandroid.ToastModuleBis.PAUSE";
 
 
-  public ToastModuleBis(ReactApplicationContext reactContext, Activity activity, SocketConnection socketConnection) {
+  public ToastModuleBis(ReactApplicationContext reactContext, Activity activity) {
     super(reactContext);
     this.conte = reactContext;
     mActivity = activity;
-    ToastModuleBis.socketConnection = socketConnection;
+
+
+    Intent mIntent = new Intent(activity, SocketService.class);
+    activity.bindService(mIntent, mConnection, MainActivity.BIND_AUTO_CREATE);
+
   	mNotificationManager = (NotificationManager) mActivity.getSystemService(Context.NOTIFICATION_SERVICE);
   	long when = System.currentTimeMillis();
   	notification = new Notification(icon, "wubba lubba dub dub", when);
@@ -147,10 +178,10 @@ public class ToastModuleBis extends ReactContextBaseJavaModule implements Lifecy
           }
           if (intent.getAction().equals(KEY_PLAY)) {
             Log.i("PlayerNotification", "emit play");
-            ToastModuleBis.socketConnection.emit("player:resume", json);
+            socketService.emit("player:resume", json);
           } else if (intent.getAction().equals(KEY_PAUSE)) {
             Log.i("PlayerNotification", "emit pause");
-            ToastModuleBis.socketConnection.emit("player:pause", json);
+            socketService.emit("player:pause", json);
           }
       }
     };
@@ -243,14 +274,14 @@ public class ToastModuleBis extends ReactContextBaseJavaModule implements Lifecy
       mNotificationManager.cancel(NOTIFICATION_ID);
   }
 
-  @ReactMethod
   public void setSocketListeners() {
     Log.i("PlayerNotification", "In setSocketListeners");
+    if (socketService == null) return;
     onDestroy();
-    this.socketConnection.on(Socket.EVENT_DISCONNECT, this.onDisconnected);
-    this.socketConnection.on("player:status:updated", this.onStatusUpdated);
-    this.socketConnection.on("playlist:playing:id", this.onPlayingUpdated);
-    this.socketConnection.on("modules:remove:player", new Emitter.Listener() {
+    socketService.on(Socket.EVENT_DISCONNECT, this.onDisconnected);
+    socketService.on("player:status:updated", this.onStatusUpdated);
+    socketService.on("playlist:playing:id", this.onPlayingUpdated);
+    socketService.on("modules:remove:player", new Emitter.Listener() {
           @Override
           public void call(final Object... args) {
             try {
@@ -267,15 +298,16 @@ public class ToastModuleBis extends ReactContextBaseJavaModule implements Lifecy
     });
   }
   public void onDestroy() {
+
+    if (socketService == null) return;
     Log.i("PlayerNotification", "DESTORYING!");
-    this.socketConnection.off(Socket.EVENT_DISCONNECT, this.onDisconnected);
-    this.socketConnection.off("player:status:updated", this.onStatusUpdated);
-    this.socketConnection.off("playlist:playing:id", this.onPlayingUpdated);
+    socketService.off(Socket.EVENT_DISCONNECT, this.onDisconnected);
+    socketService.off("player:status:updated", this.onStatusUpdated);
+    socketService.off("playlist:playing:id", this.onPlayingUpdated);
 
   }
   @Override
   public void onHostResume() {
-      // Actvity `onResume`
   }
 
   @Override
@@ -284,6 +316,5 @@ public class ToastModuleBis extends ReactContextBaseJavaModule implements Lifecy
   }
   @Override
   public void onHostDestroy() {
-    onDestroy();
   }
 }

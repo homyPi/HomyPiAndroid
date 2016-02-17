@@ -154,7 +154,7 @@ class PlayerFull extends React.Component {
 				<View style={styles.viewActions}>
 					<TouchableHighlight
 					style={styles.viewActionsButtons}
-		              onPress={this.closePlayer} >
+		              onPress={this.props.navigator.pop} >
 						<Image
 				        style={styles.hidePlayer}
 	              		resizeMode={Image.resizeMode.contain}

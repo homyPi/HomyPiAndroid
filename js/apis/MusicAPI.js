@@ -1,6 +1,6 @@
 import UserAPI from "../apis/UserAPI"
 import Settings from "../settings";
-var superagent = require('superagent');
+var superagent = require("superagent");
 
 var serverUrl = "/api/modules/music";
 
@@ -24,7 +24,7 @@ export default {
 		return new Promise((resolve, reject) => {
 			let url = Settings.getServerUrl() + serverUrl + "/sources/music";
 			superagent.post(url)
-				.send({'source': musicSource})
+				.send({"source": musicSource})
 				.set("Authorization", "Bearer " + UserAPI.getToken())
 				.end(function(err, res) {
 					if(err || !res.text) {
@@ -39,7 +39,7 @@ export default {
 		return new Promise((resolve, reject) => {
 			let url = Settings.getServerUrl() + serverUrl + "/sources/playlist";
 			superagent.post(url)
-				.send({'source': playlistSource})
+				.send({"source": playlistSource})
 				.set("Authorization", "Bearer " + UserAPI.getToken())
 				.end(function(err, res) {
 					if(err || !res.text) {

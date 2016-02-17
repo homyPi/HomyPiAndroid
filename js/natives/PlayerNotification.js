@@ -1,5 +1,5 @@
-import {NativeModules} from 'react-native';
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+import {NativeModules} from "react-native";
+var RCTDeviceEventEmitter = require("RCTDeviceEventEmitter");
 
 let PlayerNotification = NativeModules.ToastModuleBis;
 

@@ -9,8 +9,8 @@ export default {
 				{
 					method: "GET",
 				    headers: {
-					    'Accept': 'application/json',
-					    'Content-Type': 'application/json',
+					    "Accept": "application/json",
+					    "Content-Type": "application/json",
 					    "Authorization": "Bearer " + UserAPI.getToken()
 					}
 				}).then(function(response) {
@@ -29,8 +29,8 @@ export default {
 				{
 					method: "GET",
 				    headers: {
-					    'Accept': 'application/json',
-					    'Content-Type': 'application/json',
+					    "Accept": "application/json",
+					    "Content-Type": "application/json",
 					    "Authorization": "Bearer " + UserAPI.getToken()
 					}
 				}).then(function(response) {

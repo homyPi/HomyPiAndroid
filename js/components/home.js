@@ -1,4 +1,4 @@
-var React = require('react-native');
+var React = require("react-native");
 var {
   AppRegistry,
   StyleSheet,
@@ -22,18 +22,18 @@ var Home = React.createClass({
   styles: StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#FAFAFA',
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#FAFAFA",
     },
     status: {
-      flexDirection: 'row'
+      flexDirection: "row"
     },
     statusOk: {
       color: "green"
     },
     button: {
-      alignItems: 'center',
+      alignItems: "center",
       marginBottom: 7,
       backgroundColor: "blue",
       borderRadius: 2

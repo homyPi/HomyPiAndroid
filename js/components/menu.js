@@ -1,7 +1,7 @@
-var React = require('react-native');
-import { connect } from 'react-redux';
+var React = require("react-native");
+import { connect } from "react-redux";
 
-const Dimensions = require('Dimensions');
+const Dimensions = require("Dimensions");
 const {
   StyleSheet,
   ScrollView,
@@ -15,15 +15,15 @@ const {
 
 import {fetchAll as fetchAllRaspberries, selectedRaspberry} from "../actions/RaspberryActions";
 
-const window = Dimensions.get('window');
-const uri = 'http://pickaface.net/includes/themes/clean/img/slide2.png';
+const window = Dimensions.get("window");
+const uri = "http://pickaface.net/includes/themes/clean/img/slide2.png";
 
-const styles = StyleSheet.create({
+const styles = {
   menu: {
     flex: 1,
     width: window.width,
     height: window.height,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: "#f2f2f2",
     padding: 20,
   },
   avatarContainer: {
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   name: {
-    position: 'absolute',
+    position: "absolute",
     left: 70,
     top: 20,
   },
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 7,
     fontSize: 18,
-    fontWeight: '300'
+    fontWeight: "300"
   },
   raspberriesList: {
     paddingTop: 10,
@@ -57,8 +57,11 @@ const styles = StyleSheet.create({
   },
   raspItem: {
     fontSize: 18
+  },
+  raspItemDown: {
+    color: "#e9e9e9"
   }
-});
+};
 
 class Menu extends Component {
   constructor(props) {
@@ -77,11 +80,15 @@ class Menu extends Component {
     let {raspberries} = this.props;
     if (showRaspberriesList) {
       let raspItems = raspberries.map((rasp) => {
+          console.log("===>", styles);
+          let style = {...styles.raspItem};
+          if (rasp.state === "DOWN")
+            style = {...style, ...styles.raspItemDown};
           return (
             <TouchableHighlight
-              key={rasp.socketId}
+              key={rasp.name}
               onPress={() => {this._selectedPi(rasp)}} >
-                <View><Text style={styles.raspItem}>{rasp.name}</Text></View>
+                <View><Text style={style}>{rasp.name}</Text></View>
               </TouchableHighlight>
           );
         });
