@@ -3,13 +3,21 @@ import React from "react-native";
 var {
 	View,
 	ScrollView,
+	Animated,
 	Image,
 	Text,
 	StyleSheet,
-	TouchableWithoutFeedback
+	TouchableNativeFeedback,
+	InteractionManager
 } = React;
 import Io from "../../io";
 import Track from "./trackItem";
+
+import Settings from "../../settings";
+import { connect } from "react-redux";
+
+import SocketConnection from "../../natives/SocketConnection";
+let {publishToPi} = SocketConnection;
 
 import {PLAYER_HEADER_HEIGHT} from "../../Constants";
 
@@ -56,78 +64,69 @@ const styles = StyleSheet.create({
 	}
 });
 
-class AlbumItem extends React.Component {
+const NO_DATA_ALBUM = {
+	album:{}
+}
+
+class AlbumDetails extends React.Component {
 	constructor(props) {
 		super(props);
-
 		this.state = {
 			album: {
+				source: "spotify",
 				images: [],
-				name: "This is a very long album title but it should be okay!",
-				artists: [{
-					name: "duckTist"
-				}],
-				tracks: {
-					items: [
-						{
-							_id: 0,
-							name: "track 1 has a very stupidly long name which should overflow",
-							artists: [{
-								name: "duckTist"
-							}]
-						}, {
-							_id: 1,
-							name: "track 2",
-							artists: [{
-								name: "duckTist"
-							}]
-						}, {
-							_id: 2,
-							name: "track 3",
-							artists: [{
-								name: "duckTist"
-							}]
-						}, {
-							_id: 3,
-							name: "track 4",
-							artists: [{
-								name: "duckTist"
-							}]
-						}, {
-							_id: 4,
-							name: "track 5",
-							artists: [{
-								name: "duckTist"
-							}]
-						}, {
-							_id: 5,
-							name: "track 6",
-							artists: [{
-								name: "duckTist"
-							}]
-						}, {
-							_id: 6,
-							name: "track 7",
-							artists: [{
-								name: "duckTist"
-							}]
-						}
-					]
-				}
-			}
-		}
+				artists: [],
+				tracks: {items: []},
+				...this.props.album
+			},
+			borderRadius: new Animated.Value(window.width),
+			scale: new Animated.Value(0)
+		};
 	}
-	
+	componentWillMount() {
+		this._animateOpacity();
+		InteractionManager.runAfterInteractions(() => { 
+			this.getAlbumData();
+		});
+	}
+
+	getAlbumData() {
+		let {serviceId, source} = this.state.album;
+		fetch(Settings.getServerUrl() + "/api/modules/music/"+ source + "/albums/" + serviceId, {
+	      headers: {
+	            "Accept": "application/json",
+	            "Content-Type": "application/json",
+	            "Authorization": "Bearer " + this.props.user.token
+	        }
+	      })
+	      .then(response => response.json())
+	      .then(json => {
+	        if (json.status === "error") {
+	            console.log(json.error);
+	        } else {
+	           this.setState({album: json.data});
+	        }
+	      })
+	}
+	getImageUri(album) {
+		if (album.images.length && album.images[0].url) {
+			return album.images[0].url;
+		}
+		return "http://i2.wp.com/www.back2gaming.com/wp-content/gallery/tt-esports-shockspin/white_label.gif"
+	}
 	render() {
 		let {album} = this.state;
 		return (
 			<ScrollView style={styles.container}>
 				<View style={styles.coverContainer}>
-					{(album.images.length && album.images[0].url)?
-						(<Image style={styles.cover} source={{uri: album.images[0].url}} />)
-						:(<Image style={styles.cover}
-						 source={{uri: "http://i2.wp.com/www.back2gaming.com/wp-content/gallery/tt-esports-shockspin/white_label.gif"}} />)
-					}
+					<Animated.Image ref="cover" style={[
+							styles.cover,
+							{
+								borderRadius: this.state.borderRadius,
+								transform: [{scaleX: this.state.scale}, {scaleY: this.state.scale}]
+							}
+          				]} 
+					  source={{uri: this.getImageUri(album)}} />
 				</View>
 				<View style={styles.albumInfo} >
 					<Text numberOfLines={1} style={styles.albumName}>{album.name}</Text>
@@ -135,34 +134,70 @@ class AlbumItem extends React.Component {
 				</View>
 				<View style={styles.trackList} >
 					{
-						album.tracks.items.map(track => {
-							return (<Track key={track._id} track={track} playTrack={this._playTrack} addTrack={this._addTrackInPlaylist}/>);
+						album.tracks.items.map((track, key) => {
+							return (<Track key={key} track={track} playTrack={(track) => this._playTrack(track)} addTrack={this._addTrackInPlaylist}/>);
 						})
 					}
 				</View>
-				<View style={styles.playContainer}> 
-					<Text >Play </Text>
-				</View>
+				<TouchableNativeFeedback 
+				  onPress={()=>{this.playAlbum()}} 
+				  style={styles.playContainer}> 
+					<View style={styles.playContainer}> 
+					<Text>Play</Text>
+					</View>
+				</TouchableNativeFeedback>
 			</ScrollView>
 		)
 	}
+	_animateOpacity() {
+	    Animated.timing(       // Uses easing functions
+            this.state.borderRadius, // The value to drive
+            {
+              toValue: 0,        // Target
+              duration: 750,    // Configuration
+            },
+          ).start(); 
+	    Animated.timing(       // Uses easing functions
+            this.state.scale, // The value to drive
+            {
+              toValue: 1,        // Target
+              duration: 750,    // Configuration
+            },
+          ).start(); 
+	}
 	playAlbum() {
-		console.log("play with ", this.props);
-		let {album, player} = this.props;
-		if (!player) return;
-		Io.socket.emit("player:play:album", {
-			player,
+		let {album} = this.state;
+		publishToPi("player:play:track", {
+			source: "spotify",
 			album: {
-				id: album.id
+				serviceId: album.serviceId,
+				uri: album.uri
 			}
+		});
+	}
+	_playTrack(track) {
+		let {album} = this.state;
+		if (!album.serviceId || !album.uri || !track._id) {
+			console.log("missing data", track, album);
+			return;
+		}
+		publishToPi("player:play:track", {
+			source: "spotify",
+			album: {
+				serviceId: album.serviceId,
+				uri: album.uri
+			},
+			startAtTrack: track.serviceId
 		});
 	}
 
 }
-AlbumItem.defaultProps = {
-	album: {
-		id: "",
-		source: ""
-	}
+AlbumDetails.defaultProps = {
 };
-export default AlbumItem;
+function mapStateToProps(state) {
+	return {
+		user: state.user
+	};
+}
+
+export default connect(mapStateToProps)(AlbumDetails);

@@ -2,7 +2,8 @@ import React from "react-native";
 let {
 	Component,
 	ListView,
-	Text
+	Text,
+	InteractionManager
 } = React;
 
 import { connect } from "react-redux";
@@ -16,21 +17,25 @@ const Dimensions = require("Dimensions");
 const window = Dimensions.get("window");
 
 const styles = {
-	scrollView: {
-    	flex: 1
+	albumsGrid: {
+    	flex: 1,
+    	height: window.height - 500
   	}
 };
 var load = false;
 class AlbumSearch extends Component {
 	constructor(props) {
 		super(props);
-  		
+
   		this._playAlbum = album => {
   			console.log("play ", album);
   		}
 	}
 	componentDidMount() {
-	  	this.props.dispatch(search(this.props.search, "album", 15));
+		InteractionManager.runAfterInteractions(() => {
+			if (this.props.search)
+				this.props.dispatch(search(this.props.user, this.props.search, "album", 30));
+		}); 	
   	}
 	render() {
 		let {items} = this.props.searchAlbums;
@@ -40,8 +45,7 @@ class AlbumSearch extends Component {
 				items={items}
 				itemsPerRow={2}
 				renderItem={this.renderAlbumItem}
-				scrollEnabled={false}
-				onEndReached={()=>{console.log("end"); this._loadMore()}} />
+				onEndReached={()=>{this._loadMore()}} />
 				
 		);
 	}
@@ -55,7 +59,7 @@ class AlbumSearch extends Component {
 		let {isFetching, items} = this.props.searchAlbums;
 		console.log("load more?", (!isFetching));
 		if(!isFetching) {
-			this.props.dispatch(search(this.props.search, "album", 15, items.length));
+			this.props.dispatch(search(this.props.user, this.props.search, "album", 15, items.length));
 		}
 	}
 }
@@ -63,8 +67,10 @@ AlbumSearch.defaultProps = {
 	search: ""
 }
 function mapStateToProps(state) {
+	let {user, searchAlbums} = state;
 	return {
-		searchAlbums: state.searchAlbums
+		user,
+		searchAlbums
 	};
 }
 

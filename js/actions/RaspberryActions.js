@@ -1,6 +1,8 @@
 import Settings from "../settings";
 import UserAPI from "../apis/UserAPI";
 
+import SocketConnection from "../natives/SocketConnection";
+let  {switchRaspberryTopic} = SocketConnection;
 const API = "/api/raspberries";
 
 export const REQUEST_ALL = "RASPBERRY_REQUEST_ALL";
@@ -27,6 +29,7 @@ export function receiveAll(data) {
 export function fetchAll(user) {
 	return dispatch => {
 		dispatch(requestAll())
+		console.log(Settings.getServerUrl() + API + "/");
 		return fetch(Settings.getServerUrl() + API + "/", {
 			headers: {
 				    "Accept": "application/json",
@@ -55,16 +58,15 @@ export function stateChanged(name, state) {
 }
 
 export function selectedRaspberry(raspberry) {
+	if (raspberry && raspberry.name)
+		switchRaspberryTopic(raspberry.name)
 	return {
 		type: SELECTED_RASPBERRY,
 		raspberry: raspberry
 	}
 }
 export function selectedDefaultRaspberry(raspberries) {
-	return {
-		type: SELECTED_RASPBERRY,
-		raspberry: selectRaspberry(raspberries)
-	}
+	return selectedRaspberry(selectRaspberry(raspberries));
 }
 
 function selectRaspberry(raspberries, current) {

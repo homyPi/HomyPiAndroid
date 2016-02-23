@@ -4,18 +4,18 @@ var {
   StyleSheet,
   Text,
   Image,
-  View,
-  Navigator
+  View
 } = React;
+
+import {Actions} from "react-native-router-flux";
 
 import { connect } from "react-redux";
 import {subscribe, unsubscribe} from "../../onSelectedRaspberryChange";
 
-import {PLAYER_HEADER_HEIGHT} from "../../Constants";
+import {PLAYER_HEADER_HEIGHT, palette} from "../../Constants";
 
 import PlayPause from "./PlayPause";
 import Io from "../../io";
-var _navigator;
 
 
 
@@ -31,39 +31,38 @@ var PlayerHeader = React.createClass({
 			playing
 		} = this.props;
 		return (
-					<View style={this.styles.container}>
-						<TouchableHighlight
-						  style={this.styles.coverContainer}
-			              onPress={this._showPlayer} >
-							<Image
-						        style={this.styles.cover}
-			              		resizeMode={Image.resizeMode.contain}
-						        source={{uri: playing.album.images[0].url}} />
-
-						</TouchableHighlight>
-						<TouchableHighlight
-						  style={this.styles.trackInfoHighlight}
-			              onPress={this._showPlayer} >
-							<View style={this.styles.trackInfo}>
-								<Text numberOfLines={1} style={this.styles.trackName}>{playing.name}</Text>
-								<Text numberOfLines={1} style={this.styles.artists}>{playing.artists.map(function(artist) { return (artist.name + "; ")})}</Text>
-							</View>
-						</TouchableHighlight>
-						<PlayPause dispatch={this.props.dispatch} player={player} style={{}} styleImg={{width:35, height:35}} />
+			<View style={this.styles.container}>
+				<TouchableHighlight
+				  style={this.styles.coverContainer}
+	              onPress={this._showPlayer} >
+	              {(playing.album && playing.album.images && playing.album.images.length)? (
+					<Image
+				        style={this.styles.cover}
+	              		resizeMode={Image.resizeMode.contain}
+				        source={{uri: playing.album.images[0].url}} />
+				    ):null}
+				</TouchableHighlight>
+				<TouchableHighlight
+				  style={this.styles.trackInfoHighlight}
+	              onPress={this._showPlayer} >
+					<View style={this.styles.trackInfo}>
+						<Text numberOfLines={1} style={this.styles.trackName}>{playing.name}</Text>
+						<Text numberOfLines={1} style={this.styles.artists}>{playing.artists.map(function(artist) { return (artist.name + "; ")})}</Text>
 					</View>
+				</TouchableHighlight>
+				<PlayPause dispatch={this.props.dispatch} player={player} style={{}} styleImg={{width:35, height:35}} />
+			</View>
 		);
 	},
 	_showPlayer: function() {
-		this.props.navigator.push({
-            name: "player"
-        });
+		Actions.player();
 	},
 	styles: StyleSheet.create({
 		container: {
 			height: PLAYER_HEADER_HEIGHT,
 			alignItems: "center",
 			flexDirection: "row",
-			backgroundColor: "#263238",
+			backgroundColor: palette.PLAYER_BACKGROUND,
 			paddingLeft: 0
 		},
 		coverContainer: {
@@ -82,12 +81,14 @@ var PlayerHeader = React.createClass({
 			flexDirection: "column"
 		},
 		trackName: {
-			color: "#4CAF50",
+			color: palette.PRIMARY_TEXT_COLOR,
+			fontFamily: "RobotoCondensed-Bold",
 			fontSize: 14,
 			flex: 0.5
 		},
 		artists: {
-			color: "#4CAF50",
+			color: palette.PRIMARY_TEXT_COLOR,
+			fontFamily: "Roboto-Thin",
 			fontSize: 15,
 			flex: 0.5
 		}

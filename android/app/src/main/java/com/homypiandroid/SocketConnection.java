@@ -24,102 +24,144 @@ import io.socket.emitter.Emitter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.homypiandroid.MainActivity;
-import com.homypiandroid.SocketService;
-import com.homypiandroid.SocketService.LocalBinder;
 
+import com.homypiandroid.HomyMqtt;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.UUID;
 
+
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttException;
+
+
 public class SocketConnection extends ReactContextBaseJavaModule {
 	private static final String TAG = "SocketConnection";
 
- 	boolean mBounded;
 	private ReactApplicationContext context;
 	public static Activity activity = null;
-    private SocketService socketService;
 
-    private static ArrayList<SocketListener> jsEvents = new ArrayList<SocketListener>();
 
-	ServiceConnection mConnection = new ServiceConnection() {
-	    public void onServiceDisconnected(ComponentName name) {
-	        Toast.makeText(SocketConnection.activity, "Service is disconnected", 1000).show();
-	        mBounded = false;
-	        socketService = null;
-	    }
-
-	    public void onServiceConnected(ComponentName name, IBinder service) {
-	        Toast.makeText(SocketConnection.activity, "Service is connected", 1000).show();
-	        mBounded = true;
-	        LocalBinder mLocalBinder = (LocalBinder)service;
-	        socketService = mLocalBinder.getServerInstance();
-	    }
-	};
+    private HomyMqtt mqtt;
+    
 	public SocketConnection(ReactApplicationContext reactContext, Activity activity) {
 		super(reactContext);
+		this.mqtt = HomyMqtt.getInstance();
 		this.context = reactContext;
-		Intent mIntent = new Intent(activity, SocketService.class);
-		activity.bindService(mIntent, mConnection, MainActivity.BIND_AUTO_CREATE);
-		
 	}
 
 	@ReactMethod
-	public void createSocket(String serverUrl, String token) {
-		socketService.createSocket(serverUrl, token);
+	public void createSocket(final String serverUrl, final String token) {
+		Log.i(TAG, "Creating mqtt client: " + serverUrl);
+		if (this.mqtt.isConnected()) {
+			context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+      				.emit("MQTT_STATUS", "CONNECTED");
+			return;
+		}
+		mqtt.createClient(context, serverUrl, "foudefafa")
+			.onConnected(new IMqttActionListener() {
+				@Override
+				public void onSuccess(IMqttToken mqttToken) {
+					context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+	      				.emit("MQTT_STATUS", "CONNECTED");
+				}
+
+				@Override
+				public void onFailure(IMqttToken arg0, Throwable arg1) {
+					context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+	      				.emit("MQTT_STATUS", "DISCONNECTED");
+				}
+			})
+			.connect();
 	}
 	@ReactMethod
 	public void connect() {
-		socketService.connect();
 	}
 
 	@ReactMethod
 	public void off(String id) {
+		/*
 		if (socketService == null) return;
 		SocketListener listener = SocketListener.findInList(jsEvents, id);
 		if (listener != null)
 			listener.unlink(socketService);
+			*/
 	}
 
 	public void off(String event, Emitter.Listener callback) {
-		if (socketService == null) return;
-		socketService.off(event, callback);
+		/*if (socketService == null) return;
+		socketService.off(event, callback);*/
 	}
 
 	@ReactMethod
 	public void clearEvents() {
-		if (socketService == null) return;
-		for ( SocketListener listener : jsEvents) {
-			listener.unlink(socketService);
-		}
+		this.mqtt.clearEvents();
 	}
 
-	public void on(String event, Emitter.Listener callback) {
+	public void on(String event, EventCallback callback) {
 		Log.i(TAG, "New event from java for event " + event);
-		socketService.on(event, callback);
+		this.mqtt.on(event, callback);
 	}
 
 	@ReactMethod
 	public void on(final String event, Callback callback) {
-		SocketListener listener = new SocketListener(event, context);
-		jsEvents.add(listener);
-		callback.invoke(listener.link(socketService));
+		Log.i(TAG, "New event from js for event " + event);
+		this.mqtt.on(event, new EventCallback() {
+			@Override
+			public void call(JSONObject data, String topic) {
+				Log.i(TAG,"Emitting " + event + " to js");
+				context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+      				.emit(event, data.toString());
+			}
+		});
+		//SocketListener listener = new SocketListener(event, context);
+		//jsEvents.add(listener);
+		callback.invoke("null");
 	}
 
 	@ReactMethod
-	public void emit(final String event, final String data) {
-		socketService.emit(event, data);
-	}
-	public void emit(final String event, JSONObject obj) {
-		socketService.emit(event, obj);
-	}
-	public void emit(final String event) {
-		socketService.emit(event, new JSONObject());
+	public void publish(final String topic, final String event, final String data) {
+		try {
+			Log.i(TAG, "Publishing " +event + " to " + topic);
+			if (data != null)
+				this.mqtt.publish(topic, event, new JSONObject(data));
+			else 
+				this.mqtt.publish(topic, event);
+		} catch(JSONException e) {
+			Log.i(TAG, "Failed to publish " + event + ": " + e.getMessage());
+		}
 	}
 
+	@ReactMethod
+	public void publishToPi(final String event, final String data) {
+		try {
+			Log.i(TAG, "Publishing " +event + " to pi");
+			if (data != null)
+				this.mqtt.publishToPi(event, new JSONObject(data));
+			else 
+				this.mqtt.publishToPi(event);
+		} catch(JSONException e) {
+			Log.i(TAG, "Failed to publish " + event + ": " + e.getMessage());
+		}
+	}
+	@ReactMethod
+	public void switchRaspberryTopic(final String raspberryName) {
+		this.mqtt.switchRaspberryTopic(raspberryName);
+	}
 
+	@ReactMethod
+	public void subscribe(final String topic) {
+		this.mqtt.subscribe(topic);
+	}
+	@ReactMethod
+	public void unsubscribe(final String topic) {
+		this.mqtt.unsubscribe(topic);
+	}
 
 	@Override
 	public String getName() {
@@ -128,8 +170,8 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 
 
 }
-
-class SocketListener {
+/*
+class Event {
 	private static final String TAG = "SocketConnection";
 	private String id;
 	private String event;
@@ -140,25 +182,24 @@ class SocketListener {
 		this.event = event;
 		this.callback = createCallback(event, context);
 	}
-	public String link(SocketService socketService) {
+	public String link() {
 		Log.i(TAG, "Listening to event " + this.event);
-		socketService.on(this.event, this.callback);
+		//socketService.on(this.event, this.callback);
 		return this.id;
 	}
 
 	public String unlink(SocketService socketService) {
 		Log.i(TAG, "Removing listener for event " + this.event);
-		socketService.off(this.event, this.callback);
+		//socketService.off(this.event, this.callback);
 		return this.id;
 	}
-
 	private Emitter.Listener createCallback(final String event, final ReactApplicationContext context) {
 		return new Emitter.Listener() {
 	        @Override
 	        public void call(final Object... args) {
             Log.i(TAG, "got socket's event for JS: " + event);
 	        	String data = null;
-	        	if(args.length > 0) {
+	        	if(args.length > 0 && ((JSONObject) args[0]) != null) {
 		            data = ((JSONObject) args[0]).toString();
 		        }
 	            context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -166,11 +207,9 @@ class SocketListener {
 	        }
 	    };
 	}
-
 	public String getId() {
 		return this.id;
 	}
-
 	public static SocketListener findInList(ArrayList<SocketListener> list, String id) {
 		for(SocketListener inList: list) {
 			if (inList.getId().equals(id))
@@ -178,6 +217,5 @@ class SocketListener {
 		}
 		return null;
 	}
-
-
 }
+*/

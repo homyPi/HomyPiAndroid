@@ -5,11 +5,14 @@ let {
 	Text,
 	View,
 	TouchableOpacity,
-	Image
+	Image,
+	InteractionManager
 } = React;
 
 import { connect } from "react-redux";
 import { search } from "../../actions/MusicSearchActions";
+
+import {PLAYER_HEADER_HEIGHT} from "../../Constants";
 
 import {MKTextField, MKColor, MKButton}  from "react-native-material-kit";
 
@@ -52,13 +55,23 @@ class TrackSearch extends Component {
 		this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
 		
 		this._handleSearch = () => {
-	  		this.props.dispatch(search(this.props.user, this.props.search, "track", 15));
+	  		if (this.state.search) {
+	  			this.props.dispatch(search(this.props.user, this.props.search, "track", 30));
+	  		}
 	    }
 	}
 	componentDidMount() {
-	  	if (this.state.search) {
-	  		this._handleSearch();
-	  	}
+		InteractionManager.runAfterInteractions(() => { 
+			this._handleSearch();
+		});
+  	}
+  	componentDidUpdate(prevProps) {
+  		return;
+  		if (this.props.routeReady && prevProps.routeReady != this.props.routeReady) {
+  			if (this.state.search) {
+		  		this._handleSearch();
+		  	}
+  		}
   	}
 	render() {
 		let {search} = this.state;
@@ -83,17 +96,19 @@ class TrackSearch extends Component {
 					style={styles.scrollView}
 	      			dataSource={this.ds}
 	      			horizontal={false}
-	      			renderRow={(track)=> <Track track={track} key={track.id} /> }
+	      			onEndReachedThreshold={PLAYER_HEADER_HEIGHT*2.5}
+	      			renderRow={(track)=> <Track key={track._id} track={track} showCover={true} key={track.id} /> }
 	      			onEndReached={()=>{this._loadMore()}} />
 			</View>	
 		);
 	}
 
 	_loadMore() {
+		console.log("end reached");
 		let {isFetching, items} = this.props.searchTracks;
 		let {dispatch, user} = this.props;
 		if(!isFetching) {
-			dispatch(search(user, this.props.search, "track", 15, items.length));
+			dispatch(search(user, this.props.search, "track", 25, items.length));
 		}
 	}
 }

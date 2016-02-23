@@ -12,7 +12,8 @@ const {
   TouchableHighlight
 } = React;
 
-
+import {Actions} from "react-native-router-flux";
+import {palette} from "../Constants";
 import {fetchAll as fetchAllRaspberries, selectedRaspberry} from "../actions/RaspberryActions";
 
 const window = Dimensions.get("window");
@@ -23,30 +24,49 @@ const styles = {
     flex: 1,
     width: window.width,
     height: window.height,
-    backgroundColor: "#f2f2f2",
-    padding: 20,
+    backgroundColor: "white"
+  },
+  raspSelector: {
+    height: 125,
+    marginBottom: 20
+  },
+  background: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    height: 125
   },
   avatarContainer: {
-    marginBottom: 20,
-    marginTop: 20,
+    marginLeft: 10,
+    marginTop: 70,
   },
   avatar: {
     width: 48,
     height: 48,
-    borderRadius: 24,
-    backgroundColor: "#4285f4",
     flex: 1,
+    borderRadius: 24,
+    backgroundColor: palette.ACCENT_COLOR,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  avatarIcon: {
+    fontSize: 48,
+    color: "white"
   },
   name: {
     position: "absolute",
+    color: "black",
     left: 70,
-    top: 20,
+    top: 10,
+    fontSize: 20
   },
   item: {
     paddingTop: 10,
     paddingBottom: 7,
     fontSize: 18,
-    fontWeight: "300"
+    fontWeight: "300",
+    fontFamily: "Roboto-Regular",
+    color: "black"
   },
   raspberriesList: {
     paddingTop: 10,
@@ -55,11 +75,17 @@ const styles = {
     borderBottomColor: "#dddddd"
 
   },
+  raspItemContainer: {
+    height: 30
+  },
   raspItem: {
     fontSize: 18
   },
   raspItemDown: {
     color: "#e9e9e9"
+  },
+  menuList: {
+    marginLeft: 20
   }
 };
 
@@ -88,7 +114,7 @@ class Menu extends Component {
             <TouchableHighlight
               key={rasp.name}
               onPress={() => {this._selectedPi(rasp)}} >
-                <View><Text style={style}>{rasp.name}</Text></View>
+                <View style={styles.raspItemContainer}><Text style={style}>{rasp.name}</Text></View>
               </TouchableHighlight>
           );
         });
@@ -106,58 +132,55 @@ class Menu extends Component {
 
     return (
       <ScrollView style={styles.menu}>
-        <TouchableHighlight
-          onPress={this.toogleRaspberriesList.bind(this)} >
-          <View style={styles.avatarContainer}>
-            <Image
-              style={styles.avatar}
-              source={{ uri, }}/>
-            <Text style={styles.name}>{(selectedRaspberry)?selectedRaspberry.name: "None"}</Text>
-            
-          </View>
-        </TouchableHighlight>
-        
+        <View style={styles.raspSelector} >
+          <Image style={styles.background} source={require("image!menu_background")} />
+          <TouchableHighlight
+            onPress={this.toogleRaspberriesList.bind(this)} >
+            <View style={styles.avatarContainer}>
+              <View
+                style={styles.avatar} >
+                <Text style={styles.avatarIcon}>J</Text>
+              </View>
+              <Text style={styles.name}>{(selectedRaspberry)?selectedRaspberry.name: "None"}</Text>
+            </View>
+          </TouchableHighlight>
+        </View>
         {this.renderRaspberriesList()}
+        <View style={styles.menuList} >
+          <TouchableHighlight
+            style={styles.clickable}
+            onPress={this.gotoAlarms.bind(this)} >
+              <Text style={styles.item}>Alarms</Text>
+          </TouchableHighlight>
 
-        <TouchableHighlight
-          style={styles.clickable}
-          onPress={this.gotoAlarms.bind(this)} >
-            <Text style={styles.item}>Alarms</Text>
-        </TouchableHighlight>
-
-        <TouchableHighlight
-          style={styles.clickable}
-          onPress={this.gotoSearchMusic.bind(this)} >
-            <Text style={styles.item}>Music</Text>
-        </TouchableHighlight>
-        
-        <TouchableHighlight
-              onPress={() => {this.gotoMyArtists() }} >
-          <Text style={styles.item}>My artists</Text>
-        </TouchableHighlight>
-        <TouchableHighlight
-              onPress={this.props.logout} >
-          <Text style={styles.item}>Logout</Text>
-        </TouchableHighlight>
+          <TouchableHighlight
+            style={styles.clickable}
+            onPress={this.gotoSearchMusic.bind(this)} >
+              <Text style={styles.item}>Music</Text>
+          </TouchableHighlight>
+          
+          <TouchableHighlight
+                onPress={() => {this.gotoMyArtists() }} >
+            <Text style={styles.item}>My artists</Text>
+          </TouchableHighlight>
+          <TouchableHighlight
+                onPress={this.props.logout} >
+            <Text style={styles.item}>Logout</Text>
+          </TouchableHighlight>
+        </View>
       </ScrollView>
     );
   }
   gotoMyArtists() {
-    this.props.pushRoute({
-      name:"myArtists"
-    });
+    return;
     this.props.closeMenu();
   }
   gotoSearchMusic() {
-    this.props.pushRoute({
-      name:"searchMusic"
-    });
+    Actions.searchMusic();
     this.props.closeMenu();
   }
   gotoAlarms() {
-    this.props.pushRoute({
-      name:"alarms"
-    });
+    Actions.alarms();
     this.props.closeMenu();
   }
   _selectedPi(pi) {

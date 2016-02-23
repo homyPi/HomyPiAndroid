@@ -1,7 +1,7 @@
 import {NativeModules} from "react-native";
 var RCTDeviceEventEmitter = require("RCTDeviceEventEmitter");
 
-let PlayerNotification = NativeModules.ToastModuleBis;
+let PlayerNotification = NativeModules.PlayerNotification;
 
 let unsubscribe;
 
@@ -35,6 +35,10 @@ export function subscribe(newStore) {
     	}
     	currentState = nextState;
 	});
+}
+
+export function setSocketListeners() {
+	PlayerNotification.setSocketListeners();
 }
 
 export default PlayerNotification;

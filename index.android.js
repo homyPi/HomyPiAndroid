@@ -9,83 +9,52 @@ var {
   StyleSheet,
   Text,
   View,
-  Navigator,
   BackAndroid
 } = React;
 import { Provider } from "react-redux";
 import IO from "./js/io";
 import configureStore from "./js/configureStore"
 const store = configureStore();
-console.log(IO);
 IO.setStore(store);
+
+import {logout} from "./js/actions/UserActions";
 
 import {subscribe} from "./js/natives/PlayerNotification";
 subscribe(store);
+
+import Routes from "./js/components/Routes";
 
 import Login from "./js/components/login";
 import App from "./js/components/app";
 import Splash from "./js/components/splash";
 //import UserAPI from "./js/apis/UserAPI";
 
-var _navigator;
 import PlayerFull from "./js/components/music/playerFull";
 
+import {Actions} from "react-native-router-flux";
+
 BackAndroid.addEventListener("hardwareBackPress", () => {
-  if (_navigator && _navigator.getCurrentRoutes().length > 1) {
-    _navigator.jumpBack();
+  try {
+    Actions.currentRouter.pop();
     return true;
   }
-  return false;
-});
-
-var RouteMapper = function(route, navigationOperations, onComponentRef) {
-  _navigator = navigationOperations;
-  if (route.name === "splash") {
-    return (
-      <Splash navigator={navigationOperations} onLoggedIn={route.onLoggedIn} />
-    );
-  } else if (route.name === "app") {
-    return (
-      <App navigator={navigationOperations} logout={route.logout}/>
-    );
-  } else if (route.name === "login") {
-    return (
-      <Login navigator={navigationOperations} onLoggedIn={route.onLoggedIn}/>
-    );
-  } else if (route.name === "player") {
-    return (
-      <PlayerFull navigator={navigationOperations} onClosing={route.onClosing}/>
-    );
+  catch(err)  {
+    console.log("Cannot pop. Exiting the app...")
+    return false;
   }
-}
+});
 
 var HomyPiAndroid = React.createClass({
     render: function() {
       var initialRoute = {name: "splash", onLoggedIn: this.onLoggedIn};
     return (
-
       <Provider store={store}>
-        <Navigator
-          initialRoute={initialRoute}
-          configureScene={() => Navigator.SceneConfigs.FloatFromBottomAndroid}
-          renderScene={RouteMapper}
-        ref="navigator" />
+        <Routes />
       </Provider>
     );
   },
   _logout: function() {
-    UserAPI.logout();
-    _navigator.replace({
-      name: "login",
-      onLoggedIn: () => this.onLoggedIn()
-    });
-  },
-  onLoggedIn: function() {
-    try {
-    _navigator.replace({
-      name: "app", logout: () => this._logout()
-    });
-  }catch(e) {console.log(e);console.log(e.stack)}
+    store.dispatch(logout());
   },
   onLoaded: function(token) {
     let newRoute;
@@ -103,7 +72,7 @@ var HomyPiAndroid = React.createClass({
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: "#F5FCFF",
+      backgroundColor: "#FAFAFA",
     },
     welcome: {
       fontSize: 20,

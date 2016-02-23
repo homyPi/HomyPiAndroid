@@ -9,7 +9,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.uimanager.ViewManager;
 
-import com.homypiandroid.ToastModuleBis;
+import com.homypiandroid.PlayerNotification;
 import com.homypiandroid.SocketConnection;
 
 import android.app.Activity;
@@ -33,7 +33,7 @@ public class CustomReactPackage implements ReactPackage {
                               ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new SocketConnection(reactContext, mActivity));
-        modules.add(new ToastModuleBis(reactContext, mActivity));
+        modules.add(new PlayerNotification(reactContext, mActivity));
         return modules;
     }
 

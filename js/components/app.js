@@ -1,5 +1,6 @@
 var React = require("react-native");
 import { connect } from "react-redux";
+import {Actions} from "react-native-router-flux";
 var {
   AppRegistry,
   StyleSheet,
@@ -7,7 +8,6 @@ var {
   View,
   TextInput,
   TouchableHighlight,
-  Navigator,
   BackAndroid
 } = React;
 
@@ -33,51 +33,18 @@ var SocketConnection = require("../natives/SocketConnection");
 import MyArtists from "./music/myArtists";
 import SearchMusic from "./music/searchMusic";
 
-var _navigator;
+import AppRoutes from "./AppRoutes";
 
-var RouteMapper = function(route, navigationOperations, onComponentRef) {
-  _navigator = navigationOperations;
-  if (route.name === "home") {
-    return (
-      <Home navigator={navigationOperations} />
-    );
-  } else if (route.name === "myArtists") {
-    return (
-      <MyArtists navigator={navigationOperations} />
-    );
-  } else if (route.name === "searchMusic") {
-    return (
-      <SearchMusic navigator={navigationOperations} />
-    );
-  } else if (route.name === "searchTracks") {
-    return (
-      <TrackSearch search={route.search} navigator={navigationOperations} />
-    );
-  } else if (route.name === "searchAlbums") {
-    return (
-      <AlbumSearch search={route.search} navigator={navigationOperations} />
-    );
-  } else if (route.name === "albumDetails") {
-    return (
-      <AlbumDetails id={route.id} source={route.source} navigator={navigationOperations} />
-    );
-  } else if (route.name === "searchArtists") {
-    return (
-      <AlbumSearch search={route.search} navigator={navigationOperations} />
-    );
-  } else if (route.name === "alarms") {
-    return (
-      <AlarmList navigator={navigationOperations} />
-    );
-  }
-}
 BackAndroid.addEventListener("hardwareBackPress", () => {
-  if (_navigator && _navigator.getCurrentRoutes().length > 1) {
-    _navigator.pop();
+  try {
     return true;
   }
-  return false;
+  catch(err)  {
+    console.log("Cannot pop. Exiting the app...")
+    return false;
+  }
 });
+
 var App = React.createClass({
   getInitialState() {
     return {}
@@ -89,7 +56,7 @@ var App = React.createClass({
   },
 
   render: function() {
-    var initialRoute = {name: "albumDetails"};
+    var initialRoute = {name: "searchMusic"};
     
     let nav = null;
     var menu = <Menu pushRoute={this._push} closeMenu={this.closeMenu} logout={() => this._logout()}/>;
@@ -98,15 +65,18 @@ var App = React.createClass({
           content={menu}
           ref="sideMenu"
           openDrawerThreshold={0.35}
-          tweenHandler={Drawer.tweenPresets.parallax}
+          type="overlay"
+          styles={{
+            drawer: {shadowColor: "#000000", elevation: 16, shadowOpacity: 0.8, shadowRadius: 3}
+          }}
+          tweenHandler={(ratio) => ({
+            main: { opacity:(2-ratio)/2 }
+          })}
           openDrawerOffset={100}>
           <TopMenu openMenu={this.openSideMenu} />
           <View style={this.styles.container}> 
-             <Navigator
-              initialRoute={initialRoute}
-              configureScene={() => Navigator.SceneConfigs.FadeAndroid}
-              renderScene={RouteMapper}
-              ref="appNavigator" />
+
+              <AppRoutes route={this.props.route}/>
 
             <View style={this.styles.player}>
               <PlayerHeader navigator={this.props.navigator} />
@@ -114,11 +84,6 @@ var App = React.createClass({
           </View>
         </Drawer>
       );
-  },
-  _push: function(route) {
-    _navigator.push(route);
-  },
-  _pop: function() {
   },
   _logout: function() {
     this.props.logout();
@@ -137,7 +102,8 @@ var App = React.createClass({
     player: {
       height: 75,
       backgroundColor: "#263238",
-      marginLeft: 0 
+      marginLeft: 0,
+      elevation: 16
     }
   }
 });

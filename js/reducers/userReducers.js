@@ -1,5 +1,5 @@
 import { 
-	REQUEST, FAIL, SUCCESS, LOGOUT
+	REQUEST, FAIL, SUCCESS, LOGOUT, NOT_LOGGED_IN
 } from "../actions/UserActions"
 
 function user(state = {
@@ -13,6 +13,8 @@ function user(state = {
 			return {...state, hasFailed: false, error: "", isFetching: true, token: null};
 		case FAIL:
 			return {...state, hasFailed: true, error: action.error, isFetching: false, token: null};
+		case NOT_LOGGED_IN:
+			return {...state, hasFailed: (!!action.error), error: action.error, isFetching: false, token: null}
 		case SUCCESS:
 			return {...state, hasFailed: false, error: "", isFetching: false, token: action.token};
 		case LOGOUT: 

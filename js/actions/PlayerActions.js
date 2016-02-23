@@ -6,11 +6,13 @@ const PLAYLIST_API = "/api/modules/music/playlists";
 
 export const SET_PLAYER = "SET_PLAYER";
 export const SET_STATUS = "SET_STATUS";
-export const SET_PLAYLIST = "SET_PLAYLIST";
+export const REMOVE_PLAYER = "REMOVE_PLAYER";
 
+export const SET_PLAYLIST = "SET_PLAYLIST";
 export const SET_PLAYING = "SET_PLAYING_IN_PLAYLIST";
 export const CLEAR = "CLEAR_PLAYLIST";
-export const ADD = "ADD_IN_PLAYLIST";
+export const ADD_TRACK = "ADD_TRACK";
+export const ADD_TRACKSET = "ADD_TRACKSET";
 export const REMOVE = "REMOVE_FROM_PLAYLIST";
 
 
@@ -18,6 +20,11 @@ export function setPlayer(player) {
 	return {
 		type: SET_PLAYER,
 		player
+	}
+}
+export function removePlayer() {
+	return {
+		type: REMOVE_PLAYER
 	}
 }
 export function setPlaylist(playlist) {
@@ -31,19 +38,31 @@ export function clear() {
 		type: CLEAR
 	}
 }
-export function playing(trackPlaying) {
+export function playing(idPlaying) {
 	return {
 		type: SET_PLAYING,
-		playing: trackPlaying
+		idPlaying
 	}
 }
-
-
-export function status(status) {
-		    	console.log("SET_STATUS");
+export function status(status, idPlaying) {
 	return {
 		type: SET_STATUS,
-		status
+		status,
+		idPlaying
+	}
+}
+export function add(data) {
+	if (data.track) {
+		return {
+			type: ADD_TRACK,
+			track: data.track
+		}
+	}
+	if (data.trackset) {
+		return {
+			type: ADD_TRACKSET,
+			track: data.trackset
+		}
 	}
 }
 
@@ -71,7 +90,8 @@ export function getPlaylist(user, player) {
 
 export function getPlayer(user, raspberry) {
 	return dispatch => {
-  if (!user || !user.token || !raspberry || !raspberry.name) return;
+  	if (!user || !user.token || !raspberry || !raspberry.name) return;
+		console.log("fetch " + (Settings.getServerUrl() + PLAYER_API + "/" + raspberry.name));
 		return fetch(Settings.getServerUrl() + PLAYER_API + "/" + raspberry.name, {
 			headers: {
 				    "Accept": "application/json",
@@ -85,8 +105,10 @@ export function getPlayer(user, raspberry) {
 					console.log("ERROR ", json);
 				} else {
 					console.log("got player => ", json);
-					dispatch(setPlayer(json.data));
-					dispatch(getPlaylist(user, json.data));
+					if (json.data && json.data.name) {
+						dispatch(setPlayer(json.data));
+						dispatch(getPlaylist(user, json.data));
+					}
 				}
 			})
 	}

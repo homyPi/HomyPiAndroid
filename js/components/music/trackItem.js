@@ -8,6 +8,7 @@ let {
 	Picker
 } = React;
 
+
 const {
   Select,
   Option,
@@ -15,11 +16,21 @@ const {
   updatePosition
 } = require("react-native-dropdown");
 
+const parseMs = function(ms) {
+    var min = (ms/1000/60) << 0;
+    var sec = Math.floor((ms/1000) % 60);
+	return min + ":" + sec;
+}
+
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-    	alignItems: "flex-start",
+		paddingLeft: 10,
+		paddingRight: 10,
+    	alignItems: "center",
     	flexDirection: "row",
+    	justifyContent: "center",
+    	backgroundColor: "white",
     	height: 55
 	},
 	trackInfo: {
@@ -100,6 +111,7 @@ class TrackItem extends React.Component {
 						</View>
 					</TouchableOpacity>
 				</View>
+				<Text style={styles.duration}>{parseMs(track.duration_ms)}</Text>
 				{/*<TouchableOpacity
 					style={styles.menuButton}
 					onPress={this.showMenu} >

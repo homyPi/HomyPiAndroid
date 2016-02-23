@@ -24,7 +24,7 @@ class Volume extends React.Component {
     componentDidMount() {
     }
     render() {
-        let { value, min, max, toogleVolumeBar, showVolumeBar } = this.props;
+        let { value, min, max, showVolumeBar, bottom } = this.props;
         if (value < min ) {
             value = min;
         }
@@ -42,18 +42,20 @@ class Volume extends React.Component {
         1 = 160
         67 = x
          */
+        containerHeight = 200;
         let containerStyle = {
             "position": "absolute",
-            "height": 160,
+            top: bottom.y-(containerHeight + 50),
+            "left": bottom.x,   
+            "height": containerHeight,
             "width": 30,
-            "bottom": 25,
             "backgroundColor": "#667278"
         };
         let bar = {
             "position": "absolute",
+            bottom: 0,
             "backgroundColor": "#FC561E",
-            "height": (160*value/max),
-            "bottom": 0,    
+            "height": (containerHeight*value/max), 
             "marginLeft": 5,
             "marginRight": 5,
             "width": 20
@@ -61,9 +63,6 @@ class Volume extends React.Component {
 
         return (
             <View>
-                <TouchableHighlight style={{"height": 25, "width": 25}} onPress={toogleVolumeBar}>
-                    <Text>vol</Text>
-                </TouchableHighlight>
                 {(showVolumeBar)?
                     (<View style={containerStyle}
                         ref="volumeContainer"

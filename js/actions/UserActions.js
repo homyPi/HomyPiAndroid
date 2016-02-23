@@ -7,17 +7,18 @@ export const SUCCESS = "CONNECTION_SUCCESS";
 export const FAIL = "CONNECTION_FAILED";
 export const LOGOUT = "LOGOUT";
 
+export const NOT_LOGGED_IN = "NOT_LOGGED_IN";
+
 
 export function connection_requested() {
 	return {
 		type: REQUEST
 	}
 }
-export function connection_success(token, onLoggedIn) {
+export function connection_success(token) {
 	return {
 		type: SUCCESS,
-		token,
-		onLoggedIn
+		token
 	}
 }
 export function connection_failed(error) {
@@ -27,21 +28,33 @@ export function connection_failed(error) {
 	}
 }
 
-export function loadToken(onLoggedIn) {
+export function not_logged_in(error) {
+	return {
+		type: NOT_LOGGED_IN,
+		error
+	}
+}
+
+export function loadToken() {
 	return dispatch => {
 		AsyncStorage.getItem("homyToken", function(err, savedToken) {
-			dispatch(connection_success(savedToken, onLoggedIn));
+			if (err || !savedToken)
+				return dispatch(not_logged_in(err));
+			else
+				return dispatch(connection_success(savedToken));
 		});
 	}
 }
-export function logout(onLoggedIn) {
-	AsyncStorage.setItem("homyToken", "");
-	dispatch({
-		type: LOGOUT
-	})
+export function logout() {
+	return dispatch => {
+		AsyncStorage.setItem("homyToken", "");
+		dispatch({
+			type: LOGOUT
+		});
+	}
 }
 
-export function login(username, password, onLoggedIn) {
+export function login(username, password, ) {
 	console.log("request login to ", Settings.getServerUrl(), "with ", username, password);
 	return dispatch => {
 		dispatch(connection_requested())
@@ -57,11 +70,11 @@ export function login(username, password, onLoggedIn) {
 		})
 		.then(response => response.json())
 		.then(json => {
-			if (json.status === "error") {
+			console.log(json);
+			if (json.status === "error" || !json.token) {
 				dispatch(connection_failed(json.data));
 			} else {
-				console.log(json);
-				dispatch(connection_success(json.token, onLoggedIn));
+				dispatch(connection_success(json.token));
 			}
 		})
 	}

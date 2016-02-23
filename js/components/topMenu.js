@@ -1,15 +1,17 @@
 import React from "react-native";
 let {Text, View, Image, StyleSheet, TouchableOpacity} = React;
 
+import {TOP_BAR_HEIGHT, palette} from "../Constants";
+
 const styles = StyleSheet.create({
 	container: {
-		height: 40,
-		backgroundColor: "#4285f4"
+		height: TOP_BAR_HEIGHT,
+		backgroundColor: palette.PRIMARY_COLOR,
+		justifyContent: "center"
 	},
 	menuButton: {
-		marginTop: 5,
-		marginLeft: 5,
-		height: 30,
+		marginLeft: 10,
+		height: 20,
 		width: 25
 	}
 });
