@@ -16,7 +16,7 @@ class Routes extends Component {
 
 				<Route name="splash" schema="modal" component={Splash} title="Splash"/>
 				<Route name="login" type="replace" schema="modal" component={Login} title="Login"/>
-				<Route name="app" schema="modal" component={App} title="App"/>
+				<Route name="app" type="replace" schema="modal" component={App} logout={this.props.logout} title="App"/>
 				<Route name="player" schema="modal" component={PlayerFull} title="Player"/>
 			</Router>
 		);

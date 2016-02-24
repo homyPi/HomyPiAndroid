@@ -5,6 +5,7 @@ var config = require("./config.js");
 import playlistSocket from "./sockets/playlistSocket"
 import raspberrySocket from "./sockets/raspberrySocket"
 import Settings from "./settings";
+import URL from "url";
 
 
 import {setSocketListeners as setPlayerNotifSocketListeners} from "./natives/PlayerNotification";
@@ -36,26 +37,24 @@ export default {
   setStore: function(s) {store = s},
   connect(token, connectedCallback, disconnectedCallback) {
     
-    console.log("connect socket");
-    getMQTTUrl(Settings.getServerUrl() + "/", token)
-      .then(url => {
-        console.log("==============================>", url);
-      SocketConnection.createSocket(url, token);
-      SocketConnection.clearEvents();
-      if (connectedCallback && typeof connectedCallback === "function") {
-        SocketConnection.on("connect", connectedCallback);
-        SocketConnection.on("reconnect", connectedCallback);
-      }
-      if (disconnectedCallback && typeof disconnectedCallback === "function") {
-        SocketConnection.on("disconnect", disconnectedCallback);
-      }
-      playlistSocket(SocketConnection, store);
-      raspberrySocket(SocketConnection, store);
+    console.log("connect socket", (Settings.getServerUrl() + "/"));
+    var objUrl = URL.parse(Settings.getServerUrl() + "/");
+    var url = "tcp://" + objUrl.hostname + ":3005";
+    SocketConnection.createSocket(url, token);
+    SocketConnection.clearEvents();
+    if (connectedCallback && typeof connectedCallback === "function") {
+      SocketConnection.on("connect", connectedCallback);
+      SocketConnection.on("reconnect", connectedCallback);
+    }
+    if (disconnectedCallback && typeof disconnectedCallback === "function") {
+      SocketConnection.on("disconnect", disconnectedCallback);
+    }
+    playlistSocket(SocketConnection, store);
+    raspberrySocket(SocketConnection, store);
 
-      setPlayerNotifSocketListeners();
+    setPlayerNotifSocketListeners();
 
-      SocketConnection.connect();
-    });
+    SocketConnection.connect();
   },
   socket: SocketConnection
 }

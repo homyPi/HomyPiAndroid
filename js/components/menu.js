@@ -9,7 +9,7 @@ const {
   Image,
   Text,
   Component,
-  TouchableHighlight
+  TouchableOpacity
 } = React;
 
 import {Actions} from "react-native-router-flux";
@@ -69,6 +69,7 @@ const styles = {
     color: "black"
   },
   raspberriesList: {
+    marginLeft: 20,
     paddingTop: 10,
     paddingBottom: 10,
     borderBottomWidth: 1,
@@ -111,11 +112,11 @@ class Menu extends Component {
           if (rasp.state === "DOWN")
             style = {...style, ...styles.raspItemDown};
           return (
-            <TouchableHighlight
+            <TouchableOpacity
               key={rasp.name}
               onPress={() => {this._selectedPi(rasp)}} >
                 <View style={styles.raspItemContainer}><Text style={style}>{rasp.name}</Text></View>
-              </TouchableHighlight>
+            </TouchableOpacity>
           );
         });
       return (
@@ -134,7 +135,7 @@ class Menu extends Component {
       <ScrollView style={styles.menu}>
         <View style={styles.raspSelector} >
           <Image style={styles.background} source={require("image!menu_background")} />
-          <TouchableHighlight
+          <TouchableOpacity
             onPress={this.toogleRaspberriesList.bind(this)} >
             <View style={styles.avatarContainer}>
               <View
@@ -143,30 +144,30 @@ class Menu extends Component {
               </View>
               <Text style={styles.name}>{(selectedRaspberry)?selectedRaspberry.name: "None"}</Text>
             </View>
-          </TouchableHighlight>
+          </TouchableOpacity>
         </View>
         {this.renderRaspberriesList()}
         <View style={styles.menuList} >
-          <TouchableHighlight
+          <TouchableOpacity
             style={styles.clickable}
             onPress={this.gotoAlarms.bind(this)} >
               <Text style={styles.item}>Alarms</Text>
-          </TouchableHighlight>
+          </TouchableOpacity>
 
-          <TouchableHighlight
+          <TouchableOpacity
             style={styles.clickable}
             onPress={this.gotoSearchMusic.bind(this)} >
               <Text style={styles.item}>Music</Text>
-          </TouchableHighlight>
+          </TouchableOpacity>
           
-          <TouchableHighlight
+          <TouchableOpacity
                 onPress={() => {this.gotoMyArtists() }} >
             <Text style={styles.item}>My artists</Text>
-          </TouchableHighlight>
-          <TouchableHighlight
+          </TouchableOpacity>
+          <TouchableOpacity
                 onPress={this.props.logout} >
             <Text style={styles.item}>Logout</Text>
-          </TouchableHighlight>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     );

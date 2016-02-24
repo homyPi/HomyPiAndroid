@@ -20,7 +20,7 @@ export default function(socket, store) {
     });
     socket.on("modules:new:player", function(data) {
         let {selectedRaspberry, user} = store.getState();
-        if (selectedRaspberry && selectedRaspberry.name === data.raspberry.name) {
+        if (selectedRaspberry && selectedRaspberry.name) {
             store.dispatch(getPlayer(user, selectedRaspberry));
         }
     })

@@ -35,7 +35,12 @@ import {Actions} from "react-native-router-flux";
 
 BackAndroid.addEventListener("hardwareBackPress", () => {
   try {
-    Actions.currentRouter.pop();
+    console.log(Actions);
+    if (Actions.currentRouter.stack.length > 1) {
+      Actions.currentRouter.pop();
+    } else {
+      Actions.currentRouter.routes.app.childRouter.pop();
+    }
     return true;
   }
   catch(err)  {
@@ -49,23 +54,13 @@ var HomyPiAndroid = React.createClass({
       var initialRoute = {name: "splash", onLoggedIn: this.onLoggedIn};
     return (
       <Provider store={store}>
-        <Routes />
+        <Routes logout={()=> this._logout()}/>
       </Provider>
     );
   },
   _logout: function() {
     store.dispatch(logout());
-  },
-  onLoaded: function(token) {
-    let newRoute;
-    console.log(token);
-    if (token) {
-      this.onLoggedIn();
-    } else {
-      _navigator.replace({name: "login", 
-        onLoggedIn: () => this.onLoggedIn()
-      });
-    }
+    Actions.login();
   },
   styles: StyleSheet.create({
     container: {

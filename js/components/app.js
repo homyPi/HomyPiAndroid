@@ -8,7 +8,8 @@ var {
   View,
   TextInput,
   TouchableHighlight,
-  BackAndroid
+  BackAndroid,
+  Image
 } = React;
 
 
@@ -35,19 +36,10 @@ import SearchMusic from "./music/searchMusic";
 
 import AppRoutes from "./AppRoutes";
 
-BackAndroid.addEventListener("hardwareBackPress", () => {
-  try {
-    return true;
-  }
-  catch(err)  {
-    console.log("Cannot pop. Exiting the app...")
-    return false;
-  }
-});
-
 var App = React.createClass({
   getInitialState() {
-    return {}
+    return {
+    }
   },
   componentWillMount: function() {
   },
@@ -59,6 +51,7 @@ var App = React.createClass({
     var initialRoute = {name: "searchMusic"};
     
     let nav = null;
+
     var menu = <Menu pushRoute={this._push} closeMenu={this.closeMenu} logout={() => this._logout()}/>;
     return (
         <Drawer 
@@ -77,7 +70,6 @@ var App = React.createClass({
           <View style={this.styles.container}> 
 
               <AppRoutes route={this.props.route}/>
-
             <View style={this.styles.player}>
               <PlayerHeader navigator={this.props.navigator} />
             </View>

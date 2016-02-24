@@ -51,6 +51,7 @@ export function logout() {
 		dispatch({
 			type: LOGOUT
 		});
+
 	}
 }
 

@@ -117,6 +117,7 @@ class SearchMusic extends React.Component {
 			publish("raspberry:" + player.name, "player:play:track", {"source": "spotify", "track": {"uri": track.uri, "serviceId": track.serviceId}});
 		}
 		this.gotoDetails = album => {
+			
   			Actions.albumDetails({
   				album: album,
   				source: "spotify"
