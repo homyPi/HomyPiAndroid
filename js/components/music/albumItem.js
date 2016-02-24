@@ -56,9 +56,15 @@ class AlbumItem extends React.Component {
 	constructor(props) {
 		super(props);
 		this.pressStart = 0;
+		this.coverDimensions = {px: 0, py: 0, width: 0, height: 0};
 
 	}
-	
+	componentDidUpdate() {
+		this.refs.cover.measure( (fx, fy, width, height, px, py) => {
+			console.log("dim = ", {fx, fy, width, height, px, py});
+			this.coverDimensions = {px, py, width, height};
+        });
+	}
 	render() {
 		let {album} = this.props;
 		return (
@@ -68,10 +74,10 @@ class AlbumItem extends React.Component {
               onLongPress={()=>{this.handleLongPress()}}
         	  background={TouchableNativeFeedback.SelectableBackground()} >
 				<View style={styles.container}>
-					<View style={styles.coverContainer}>
+					<View  style={styles.coverContainer}>
 						{(album.images.length && album.images[0].url)?
-							(<Image style={styles.cover} source={{uri: album.images[0].url}} />)
-							:(<Image style={styles.cover}
+							(<Image ref="cover" style={styles.cover} source={{uri: album.images[0].url}} />)
+							:(<Image ref="cover" style={styles.cover}
 							 source={{uri: "http://i2.wp.com/www.back2gaming.com/wp-content/gallery/tt-esports-shockspin/white_label.gif"}} />)
 						}
 					</View>
@@ -83,8 +89,8 @@ class AlbumItem extends React.Component {
 			</TouchableNativeFeedback>
 		)
 	}
-	handlePress() {
-		this.props.gotoDetails(this.props.album);
+	handlePress() {	
+		this.props.gotoDetails(this.props.album, this.coverDimensions);
 	}
 	handleLongPress() {
 		console.log("play album");

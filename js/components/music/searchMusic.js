@@ -5,12 +5,14 @@ var {
 	TextInput,
 	Text,
 	Image,
+	Animated,
 	ListView,
 	TouchableOpacity,
 	InteractionManager
 } = React;
 import {Actions} from "react-native-router-flux";
 import {MKTextField, MKColor, mdl}  from "react-native-material-kit";
+import AlbumItemCover from "./AlbumItemCover";
 
 import { connect } from "react-redux";
 import { search } from "../../actions/MusicSearchActions";
@@ -94,7 +96,6 @@ const SingleColorSpinner = mdl.Spinner.singleColorSpinner()
 class SearchMusic extends React.Component {
 	constructor(props) {
 		super(props);
-		console.log("=================>", Actions);
 		this.initialized = false;
 		this.state = {
 			search: this.props.searchMusic.query
@@ -116,10 +117,25 @@ class SearchMusic extends React.Component {
 			console.log("play track on ", player, track);
 			publish("raspberry:" + player.name, "player:play:track", {"source": "spotify", "track": {"uri": track.uri, "serviceId": track.serviceId}});
 		}
-		this.gotoDetails = album => {
-			
+		this.gotoDetails = (album, event) => {
+			let annimatedCover = (<AlbumItemCover
+				  album={album}
+				  initialState={{
+				  	x: event.px,
+				  	y: event.py,
+				  	width: event.width,
+				  	height: event.height
+				  }}
+				  finalState={{
+				  	x: 0,
+				  	y: 0,
+				  	width: (window.width),
+				  	height:(3*window.height/5)
+				  }}/>);
+			this.props.addFrontComponent(annimatedCover);
   			Actions.albumDetails({
-  				album: album,
+  				annimatedCover,
+  				album,
   				source: "spotify"
   			});
 		}
@@ -131,6 +147,7 @@ class SearchMusic extends React.Component {
 	    		this._handleSearch(true);
 	    	}
 		});
+
   	}
   	componentWillUnmount() {
   	}

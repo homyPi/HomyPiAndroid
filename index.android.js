@@ -41,6 +41,7 @@ BackAndroid.addEventListener("hardwareBackPress", () => {
     } else {
       Actions.currentRouter.routes.app.childRouter.pop();
     }
+    console.log("done");
     return true;
   }
   catch(err)  {

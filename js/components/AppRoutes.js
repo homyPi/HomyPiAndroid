@@ -16,15 +16,18 @@ import AlarmList from "./alarms/AlarmList";
 class AppRoutes extends Component {
 	render() {
 		return (
-			<Router name="appRouter" route={this.props.route} hideNavBar={true}>
+			<Router name="appRouter" route={this.props.route} hideNavBar={true}
+			  removeFrontComponent={this.props.removeFrontComponent}
+			  addFrontComponent={this.props.addFrontComponent} >
 				<Schema name="app" sceneConfig={Navigator.SceneConfigs.FloatFromLeft}/>
+				<Schema name="details" sceneConfig={Navigator.SceneConfigs.FloatFromBottom}/>
 
 				<Route name="home" schema="app" component={Home} title="Home"/>
 
 				<Route name="searchMusic" schema="app" component={SearchMusic} title="Search music"/>
 				<Route name="searchTrack" schema="app" component={TrackSearch} title="Search track"/>
 				<Route name="searchAlbum" schema="app" component={AlbumSearch} title="Search album"/>
-				<Route name="albumDetails" schema="app" component={AlbumDetails} title="Album"/>
+				<Route name="albumDetails" schema="details" component={AlbumDetails} title="Album"/>
 
 				<Route name="alarms" schema="app" component={AlarmList} title="Alarms"/>
 			</Router>

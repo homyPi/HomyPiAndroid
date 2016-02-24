@@ -9,10 +9,12 @@ var {
   TextInput,
   TouchableHighlight,
   BackAndroid,
-  Image
+  Image,
+  Animated
 } = React;
+import {PLAYER_HEADER_HEIGHT} from "../Constants";
 
-
+import FrontComponent from "./FrontComponent";
 
 import Home from "./alarms/AlarmList";
 import PlayerHeader from "./music/playerHeader";
@@ -39,6 +41,7 @@ import AppRoutes from "./AppRoutes";
 var App = React.createClass({
   getInitialState() {
     return {
+      frontComponents: []
     }
   },
   componentWillMount: function() {
@@ -69,13 +72,45 @@ var App = React.createClass({
           <TopMenu openMenu={this.openSideMenu} />
           <View style={this.styles.container}> 
 
-              <AppRoutes route={this.props.route}/>
+            <AppRoutes route={this.props.route} 
+              addFrontComponent={(component, zIndex)=> this.addFrontComponent(component, zIndex)}
+              removeFrontComponent={(component)=> this.removeFrontComponent(component)} />
+            
+            <View style={{position: "absolute", top: 0, left: 0}}>
+              {this.state.frontComponents.map(component => (component))}
+            </View>
             <View style={this.styles.player}>
-              <PlayerHeader navigator={this.props.navigator} />
+              <PlayerHeader />
             </View>
           </View>
         </Drawer>
       );
+  },
+  addFrontComponent: function(component, zIndex) {
+    if (!component) return;
+    var key = "xxxxxxxx-xxxx-4xxx".replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c == "x" ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
+    var frontComponents = this.state.frontComponents;
+    frontComponents.push(<FrontComponent key={key} component={component} zIndex={zIndex || 0} />);
+    frontComponents.sort((a,b) => {
+      if (a.props.zIndex > b.props.zIndex)
+        return 1;
+      if (a.props.zIndex < b.props.zIndex)
+        return -1;
+      return 0;
+    });
+    this.setState({frontComponents});
+  },
+  removeFrontComponent: function(component) {
+    console.log("remove ", component);
+    var index = this.state.frontComponents.find(fc => {
+      return (fc.props.component == component)
+    });
+    if (index === -1) return;
+    this.state.frontComponents.splice(index, 1);
+    this.setState({frontComponents: this.state.frontComponents});
   },
   _logout: function() {
     this.props.logout();
@@ -92,7 +127,7 @@ var App = React.createClass({
       backgroundColor: "#FAFAFA"
     },
     player: {
-      height: 75,
+      height: PLAYER_HEADER_HEIGHT,
       backgroundColor: "#263238",
       marginLeft: 0,
       elevation: 16

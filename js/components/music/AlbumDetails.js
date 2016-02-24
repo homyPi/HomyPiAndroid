@@ -19,7 +19,7 @@ import { connect } from "react-redux";
 import SocketConnection from "../../natives/SocketConnection";
 let {publishToPi} = SocketConnection;
 
-import {PLAYER_HEADER_HEIGHT} from "../../Constants";
+import {PLAYER_HEADER_HEIGHT, palette} from "../../Constants";
 
 const Dimensions = require("Dimensions");
 const window = Dimensions.get("window");
@@ -32,7 +32,9 @@ const styles = StyleSheet.create({
 	coverContainer: {
 		flex: 1,
     	alignItems: "center",
-    	marginBottom: 40
+    	marginBottom: 40,
+		width: (window.width),
+		height: (3*window.height/5)
 	},
 	cover: {
 		width: (window.width),
@@ -40,11 +42,20 @@ const styles = StyleSheet.create({
 	},
 	playContainer: {
 		position: "absolute",
-		width: 50,
-		height: 50,
-		backgroundColor: "red",
-		top: (3*window.height/5)-25,
+		width: 60,
+		height: 60,
+		borderRadius: 30,
+		backgroundColor: palette.ACCENT_COLOR,
+		top: (3*window.height/5)-30,
 		left: (window.width-75)
+	},
+	playbutton: {
+		width: 65,
+		height: 65
+	},
+	playButtonImg: {
+		width: 60,
+		height: 60
 	},
 	albumInfo: {
 		marginLeft: 15,
@@ -79,15 +90,22 @@ class AlbumDetails extends React.Component {
 				tracks: {items: []},
 				...this.props.album
 			},
-			borderRadius: new Animated.Value(window.width),
-			scale: new Animated.Value(0)
+			showCover: false,
+			playButtonScale: new Animated.Value(0)
 		};
 	}
 	componentWillMount() {
-		this._animateOpacity();
+		
+		let {annimatedCover, removeFrontComponent} = this.props;
 		InteractionManager.runAfterInteractions(() => { 
-			this.getAlbumData();
+			if (annimatedCover)
+				removeFrontComponent(this.props.annimatedCover);
+			this.setState({showCover: true});
+			this._animatePlayButton();
 		});
+	}
+	componentDidMount() {
+		this.getAlbumData();
 	}
 
 	getAlbumData() {
@@ -117,16 +135,12 @@ class AlbumDetails extends React.Component {
 	render() {
 		let {album} = this.state;
 		return (
-			<ScrollView style={styles.container}>
+			<ScrollView showsVerticalScrollIndicator={this.state.showCover} style={styles.container}>
 				<View style={styles.coverContainer}>
-					<Animated.Image ref="cover" style={[
-							styles.cover,
-							{
-								borderRadius: this.state.borderRadius,
-								transform: [{scaleX: this.state.scale}, {scaleY: this.state.scale}]
-							}
-          				]} 
-					  source={{uri: this.getImageUri(album)}} />
+					{ this.state.showCover && 
+					  	<Animated.Image ref="cover" style={styles.cover}
+						  source={{uri: this.getImageUri(album)}} />
+					}
 				</View>
 				<View style={styles.albumInfo} >
 					<Text numberOfLines={1} style={styles.albumName}>{album.name}</Text>
@@ -139,40 +153,54 @@ class AlbumDetails extends React.Component {
 						})
 					}
 				</View>
-				<TouchableNativeFeedback 
-				  onPress={()=>{this.playAlbum()}} 
-				  style={styles.playContainer}> 
-					<View style={styles.playContainer}> 
-					<Text>Play</Text>
-					</View>
-				</TouchableNativeFeedback>
+				{this.state.showCover &&
+					<Animated.View style={[
+					   styles.playContainer,
+					   {transform: [{scale: this.state.playButtonScale}]}
+					  ]}>
+						<TouchableNativeFeedback 
+						  onPress={()=>{this.playAlbum()}} 
+						  style={styles.playButton}> 
+							<View style={styles.playButton}> 
+								<Animated.Image style={[
+								   styles.playButtonImg,
+								   {transform: [{scale: this.state.playButtonScale}]}
+								  ]} 
+								  resizeMode={Image.resizeMode.stretch}
+								  source={require("image!ic_play_circle_outline_black_36dp")} />
+							</View>
+						</TouchableNativeFeedback>
+					</Animated.View>
+				}
 			</ScrollView>
 		)
 	}
-	_animateOpacity() {
+	_animatePlayButton() {
 	    Animated.timing(       // Uses easing functions
-            this.state.borderRadius, // The value to drive
-            {
-              toValue: 0,        // Target
-              duration: 750,    // Configuration
-            },
-          ).start(); 
-	    Animated.timing(       // Uses easing functions
-            this.state.scale, // The value to drive
+            this.state.playButtonScale, // The value to drive
             {
               toValue: 1,        // Target
               duration: 750,    // Configuration
             },
-          ).start(); 
+          ).start();
 	}
 	playAlbum() {
-		let {album} = this.state;
-		publishToPi("player:play:track", {
-			source: "spotify",
-			album: {
-				serviceId: album.serviceId,
-				uri: album.uri
-			}
+		this.state.playButtonScale.setValue(1.1);
+	    Animated.spring(
+	      this.state.playButtonScale,
+	      {
+	        toValue: 1,
+	        friction: 5,
+	      }
+	    ).start(() => {
+			let {album} = this.state;
+			publishToPi("player:play:track", {
+				source: "spotify",
+				album: {
+					serviceId: album.serviceId,
+					uri: album.uri
+				}
+			});
 		});
 	}
 	_playTrack(track) {
