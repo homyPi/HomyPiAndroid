@@ -58,7 +58,7 @@ class MyArtists extends React.Component {
   	}
 
   	onEndReached() {
-  		console.log("end...");
+  		
   	}
 
 }

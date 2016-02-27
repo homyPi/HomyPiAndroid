@@ -19,7 +19,7 @@ class Progress extends React.Component {
         let { onSeekTrack} = this.props;
         const xPos = (e.nativeEvent.locationX - 10) / (window.width - 20);
         let value = Math.round(xPos * this.props.max);
-        console.log(xPos, value);
+        
         onSeekTrack && onSeekTrack.call(this, value, e);
     }
 

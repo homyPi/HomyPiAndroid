@@ -4,7 +4,7 @@ import {
 	ADD_TRACK, ADD_TRACKSET
 } from "../actions/PlayerActions";
 
-console.log(SET_PLAYLIST);
+
 const defaultTrack = {
 	album: {images:[{}]},
 	images: [],
@@ -17,13 +17,13 @@ const defaultPlaylistState = {
 };
 
 function getPlaying(idPlaying, trackset) {
-	console.log("get playing with id ", idPlaying, " in trackset ", trackset);
+	
 	if(!idPlaying || !trackset || !trackset.length) return defaultTrack;
-	console.log("searching...");
+	
 	for(let i = 0; i < trackset.length; i++) {
-		console.log(trackset[i]._id);
+		
 		if (trackset[i]._id === idPlaying) {
-			console.log("found it \o/ ", trackset[i]);
+			
 			return trackset[i];
 		}
 	}
@@ -89,10 +89,10 @@ function playlist(state = defaultPlaylistState, action) {
 function player(state = {}, action) {
 	switch (action.type) {
 		case SET_PLAYER:
-			console.log(action);
+			
 			return {...state, ...action.player};
 		case SET_STATUS:
-			console.log(action);
+			
 			return {...state, status: action.status};
 		case REMOVE_PLAYER:
 			return {};

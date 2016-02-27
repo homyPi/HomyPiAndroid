@@ -65,18 +65,18 @@ export default {
 	on: function(event, callback) {
 			if (exist(event, callback)) return;
 			socket.on(event, function(listenerId) {
-				console.log("id = " + listenerId);
+				
 				addListener(listenerId, event, callback);
 			});
-			console.log("=> added ", event);
+			
 			DeviceEventEmitter.addListener(event, function(data) {
-				console.log("got " + event, " with data ", data);
+				
 				var json;
 				if(data) {
 					try {
 						json = JSON.parse(data);
 					} catch(e) {
-						console.log(e);
+						
 						return;
 					}
 				}

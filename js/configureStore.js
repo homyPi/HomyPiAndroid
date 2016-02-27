@@ -10,7 +10,7 @@ const loggerMiddleware = createLogger();
 
 
 const middlewares = [thunkMiddleware, loggerMiddleware, cMiddlewares.authMiddleware, cMiddlewares.getPlayerOnRaspberryChange];
-console.log(middlewares);
+
 export default function configureStore(initialState) {
 	const finalCreateStore = compose(
     applyMiddleware(...middlewares)

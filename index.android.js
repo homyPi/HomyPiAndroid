@@ -35,13 +35,11 @@ import {Actions} from "react-native-router-flux";
 
 BackAndroid.addEventListener("hardwareBackPress", () => {
   try {
-    console.log(Actions);
     if (Actions.currentRouter.stack.length > 1) {
       Actions.currentRouter.pop();
     } else {
       Actions.currentRouter.routes.app.childRouter.pop();
     }
-    console.log("done");
     return true;
   }
   catch(err)  {

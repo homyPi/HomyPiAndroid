@@ -23,7 +23,7 @@ export default function(socket, store) {
     	store.dispatch(add(data));
 	});
 	socket.on("playlist:playing:id", function(data) {
-		console.log("========++++>", data);
+		
 		store.dispatch(playing(data._id));
 	});
 	/*

@@ -104,7 +104,7 @@ var App = React.createClass({
     this.setState({frontComponents});
   },
   removeFrontComponent: function(component) {
-    console.log("remove ", component);
+    
     var index = this.state.frontComponents.find(fc => {
       return (fc.props.component == component)
     });

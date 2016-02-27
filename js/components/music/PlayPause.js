@@ -16,10 +16,10 @@ class PlayPause extends React.Component {
 		this._playPause = () => {
 			let {player} = this.props;
 			if (player && player.status === "PAUSED") {
-				console.log("emit player:resume");
+				
 				try {
 				publish("raspberry:" + player.name, "player:resume");
-			} catch(e) {console.log(e)}
+			} catch(e) {}
 			} else if (player && player.status === "PLAYING") {
 				publish("raspberry:" + player.name, "player:pause");
 			}

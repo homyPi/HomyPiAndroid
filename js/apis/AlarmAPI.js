@@ -45,7 +45,7 @@ export default {
 				.send({ alarm: alarm, raspberry: raspberry })
 				.set("Authorization", "Bearer " + UserAPI.getToken())
 				.end(function(err, res) {
-					console.log(err, res);
+					
 					if(err ) {
 						reject(err)
 					} else {
@@ -82,7 +82,7 @@ export default {
 	enableAlarm(alarm, enabled) {
 		return new Promise(function(resolve, reject) {
 			var url = Settings.getServerUrl() + serverUrl + "/" + alarm._id;
-			console.log(url);
+			
 			superagent.put(url)
 				.send({ enable: enabled})
 				.set("Authorization", "Bearer " + UserAPI.getToken())

@@ -13,9 +13,9 @@ export default {
 				.end(function(err, res) {
 					if(err || !res.text) {
 						if (err) {
-							console.log(err.stack);
+							
 						}
-						console.log(err)
+						
 						return reject(err);
 					} else {
 						return resolve(JSON.parse(res.text).playlist);

@@ -33,7 +33,7 @@ export function search(user, query, type, nb, offset, source="spotify") {
 	request += (type)? ("&type=" + type) : "";
 	request += (nb)? ("&limit=" + nb) : "";
 	request += (offset)? ("&offset=" + offset) : "";
-	console.log("searchy music with :", Settings.getServerUrl() + API + "/search?" + request);
+	
 	return dispatch => {
 		dispatch(requestAll(query))
 		return fetch(Settings.getServerUrl() + API + "/search?" + request, {
@@ -45,7 +45,7 @@ export function search(user, query, type, nb, offset, source="spotify") {
 			})
 			.then(response => response.json())
 			.then(json => {
-					console.log("RESPONSE ", json);
+					
 				if (json.status === "error") {
 					// TODO
 				} else {

@@ -28,7 +28,7 @@ class AlbumSearch extends Component {
 		super(props);
 
   		this._playAlbum = album => {
-  			console.log("play ", album);
+  			
   		}
 	}
 	componentDidMount() {
@@ -57,7 +57,7 @@ class AlbumSearch extends Component {
   	}
 	_loadMore() {
 		let {isFetching, items} = this.props.searchAlbums;
-		console.log("load more?", (!isFetching));
+		
 		if(!isFetching) {
 			this.props.dispatch(search(this.props.user, this.props.search, "album", 15, items.length));
 		}

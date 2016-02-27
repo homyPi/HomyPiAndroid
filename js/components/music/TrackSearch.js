@@ -23,7 +23,9 @@ const window = Dimensions.get("window");
 
 const styles = {
 	container: {
-    	flex: 1
+    	flex: 1,
+    	paddingLeft: 5,
+    	paddingRight: 5
   	},
 	searchButton: {
 		flex:0.15
@@ -33,6 +35,7 @@ const styles = {
 		alignSelf: "center"
 	},
 	form: {
+		height: 50,
 		flexDirection: "row",
 		alignItems: "center"
 	},
@@ -60,9 +63,12 @@ class TrackSearch extends Component {
 	  		}
 	    }
 	}
+	componentWillMount() {
+		this._handleSearch();
+	}
 	componentDidMount() {
 		InteractionManager.runAfterInteractions(() => { 
-			this._handleSearch();
+			
 		});
   	}
   	componentDidUpdate(prevProps) {
@@ -104,7 +110,7 @@ class TrackSearch extends Component {
 	}
 
 	_loadMore() {
-		console.log("end reached");
+		
 		let {isFetching, items} = this.props.searchTracks;
 		let {dispatch, user} = this.props;
 		if(!isFetching) {

@@ -29,7 +29,7 @@ export function receiveAll(data) {
 export function fetchAll(user) {
 	return dispatch => {
 		dispatch(requestAll())
-		console.log(Settings.getServerUrl() + API + "/");
+		
 		return fetch(Settings.getServerUrl() + API + "/", {
 			headers: {
 				    "Accept": "application/json",

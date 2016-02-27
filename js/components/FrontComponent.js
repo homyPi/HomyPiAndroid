@@ -21,7 +21,7 @@ class FrontComponent extends Component {
 	          },
 	        ))
 	    }
-	    console.log(component.props.style);*/
+	    */
 	}
 	componentDidMount() {
 		//this.animations.forEach(animation=> animation.start());

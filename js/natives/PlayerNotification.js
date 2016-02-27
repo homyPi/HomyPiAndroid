@@ -6,7 +6,7 @@ let PlayerNotification = NativeModules.PlayerNotification;
 let unsubscribe;
 
 var setPlaying = function(player, track) {
-	console.log("update notif ", player, track);
+	
 	if (track && track.name) {
 		PlayerNotification.setPlayerName(player.name);
 		PlayerNotification.setTrackName(track.name);

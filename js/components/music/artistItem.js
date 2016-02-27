@@ -33,18 +33,18 @@ const styles = StyleSheet.create({
 });
 
 let ArtistItem = React.createClass({
+	getImageSource(artist) {
+		if (artist.images.length && artist.images[0].url) {
+			return {uri: artist.images[0].url};
+		}
+		return require("image!default_cover");
+	},
 	render: function() {
 		let {artist} = this.props;
-		var src = {};
-		if (artist.images.length && artist.images[0].url) {
-			src = {uri: artist.images[0].url};
-		} else {
-			src = {uri:  "http://i2.wp.com/www.back2gaming.com/wp-content/gallery/tt-esports-shockspin/white_label.gif"};
-		}
 		return (
 			<View style={styles.container}>
 				<View style={styles.coverContainer}>
-					<Image style={styles.cover} source={src} resizeMode={Image.resizeMode.stretch}/>
+					<Image style={styles.cover} source={this.getImageSource(artist)} resizeMode={Image.resizeMode.stretch}/>
 				</View>
 				<Text style={styles.artistName}>{artist.name}</Text>
 			</View>

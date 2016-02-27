@@ -91,7 +91,7 @@ export function getPlaylist(user, player) {
 export function getPlayer(user, raspberry) {
 	return dispatch => {
   	if (!user || !user.token || !raspberry || !raspberry.name) return;
-		console.log("fetch " + (Settings.getServerUrl() + PLAYER_API + "/" + raspberry.name));
+		
 		return fetch(Settings.getServerUrl() + PLAYER_API + "/" + raspberry.name, {
 			headers: {
 				    "Accept": "application/json",
@@ -102,9 +102,9 @@ export function getPlayer(user, raspberry) {
 			.then(response => response.json())
 			.then(json => {
 				if (json.status === "error") {
-					console.log("ERROR ", json);
+					
 				} else {
-					console.log("got player => ", json);
+					
 					if (json.data && json.data.name) {
 						dispatch(setPlayer(json.data));
 						dispatch(getPlaylist(user, json.data));

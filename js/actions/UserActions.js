@@ -56,7 +56,7 @@ export function logout() {
 }
 
 export function login(username, password, ) {
-	console.log("request login to ", Settings.getServerUrl(), "with ", username, password);
+	
 	return dispatch => {
 		dispatch(connection_requested())
 	    return fetch(Settings.getServerUrl() + "/api/users/login", {
@@ -71,7 +71,7 @@ export function login(username, password, ) {
 		})
 		.then(response => response.json())
 		.then(json => {
-			console.log(json);
+			
 			if (json.status === "error" || !json.token) {
 				dispatch(connection_failed(json.data));
 			} else {

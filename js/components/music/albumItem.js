@@ -61,9 +61,15 @@ class AlbumItem extends React.Component {
 	}
 	componentDidUpdate() {
 		this.refs.cover.measure( (fx, fy, width, height, px, py) => {
-			console.log("dim = ", {fx, fy, width, height, px, py});
+			
 			this.coverDimensions = {px, py, width, height};
         });
+	}
+	getImageSource(album) {
+		if (album.images.length && album.images[0].url) {
+			return {uri: album.images[0].url};
+		}
+		return require("image!default_cover");
 	}
 	render() {
 		let {album} = this.props;
@@ -75,11 +81,7 @@ class AlbumItem extends React.Component {
         	  background={TouchableNativeFeedback.SelectableBackground()} >
 				<View style={styles.container}>
 					<View  style={styles.coverContainer}>
-						{(album.images.length && album.images[0].url)?
-							(<Image ref="cover" style={styles.cover} source={{uri: album.images[0].url}} />)
-							:(<Image ref="cover" style={styles.cover}
-							 source={{uri: "http://i2.wp.com/www.back2gaming.com/wp-content/gallery/tt-esports-shockspin/white_label.gif"}} />)
-						}
+						<Image ref="cover" style={styles.cover} source={this.getImageSource(album)} />
 					</View>
 					<View style={styles.info}>
 						<Text style={styles.albumName} numberOfLines={2} >{album.name}</Text>
@@ -93,11 +95,11 @@ class AlbumItem extends React.Component {
 		this.props.gotoDetails(this.props.album, this.coverDimensions);
 	}
 	handleLongPress() {
-		console.log("play album");
+		
 		this.playAlbum();
 	}
 	playAlbum() {
-		console.log("play with ", this.props);
+		
 		let {album, player} = this.props;
 		if (!player) return;
 		publish("raspberry:" + player.name, "player:play:track", {

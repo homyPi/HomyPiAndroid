@@ -8,9 +8,9 @@ import {Actions} from "react-native-router-flux";
 
 const authMiddleware = store => next => action => {
 	if (action.type === SUCCESS) {
-		console.log("success in authMiddleware", action);
+		
 		AsyncStorage.setItem("homyToken", action.token);
-		console.log("connect socket");
+		
 		Io.connect(action.token);
 		next(action);
 		Actions.app();
@@ -43,11 +43,11 @@ const getPlayerOnRaspberryChange  = store => next => action => {
 	} else if(action.type === SELECTED_RASPBERRY) {
 		next(action);
 		let {user, selectedRaspberry} = store.getState();
-		console.log(selectedRaspberry);
+		
 		if (selectedRaspberry && selectedRaspberry.name) {
 			for (var i = 0; i < selectedRaspberry.modules.length; i++) {
 				if (selectedRaspberry.modules[i].name == "music" && selectedRaspberry.modules[i].state === "UP") {
-						console.log("is up")
+						
 						store.dispatch(getPlayer(user, selectedRaspberry));
 					}
 			}

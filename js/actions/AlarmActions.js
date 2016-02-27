@@ -56,7 +56,7 @@ export function fetchAll(user, raspberry) {
       .then(response => response.json())
       .then(json => {
         if (json.status === "error") {
-          console.log("Get alarms => ", json);
+          
               //return reject(resp.error);
         } else {
             dispatch(receiveAll(json.data));
@@ -81,9 +81,9 @@ export function setEnable(user, alarm, enable) {
       })
       .then(response => response.json())
       .then(json => {
-        console.log("RESPONSE = ", json);
+        
         if (json.status === "error") {
-          console.log("Set alarm enable => ", json);
+          
               //return reject(resp.error);
         } else {
             alarm.enable  = enable
@@ -107,12 +107,12 @@ export function addAlarm(user, raspberry, alarm) {
       })
       .then(response => response.json())
       .then(json => {
-        console.log("add alarm RESPONSE = ", json);
+        
         if (json.status === "error") {
-          console.log("Add alarm => ", json);
+          
               //return reject(json.error);
         } else {
-            console.log("dispatch", alarm, json.alarm._id);
+            
             alarm._id = json.alarm._id;
             dispatch(added(alarm));
         }
@@ -133,9 +133,9 @@ export function removeAlarm(user, alarm) {
       })
       .then(response => response.json())
       .then(json => {
-        console.log("RESPONSE = ", json);
+        
         if (json.status === "error") {
-          console.log("Remove alarm => ", json);
+          
               //return reject(resp.error);
         } else {
             dispatch(deleted(alarm));

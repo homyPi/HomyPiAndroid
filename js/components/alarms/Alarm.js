@@ -91,7 +91,7 @@ class Alarm extends React.Component {
 	}
 	getBody() {
 		let {alarm, deleteAlarm} = this.props;
-		console.log(this.props);
+		
 		return (
 			<View style={styles.alarmBody} >
 				{/*<MKButton

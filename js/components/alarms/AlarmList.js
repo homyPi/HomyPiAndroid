@@ -66,7 +66,7 @@ class AlarmList extends React.Component {
 		this._loadAlarms();
 	}
 	componentWillReceiveProps(nextProps) {
-		console.log("props updated from ", this.props, " to ", nextProps);
+		
 		if (nextProps.selectedRaspberry != this.props.selectedRaspberry) {
 			this._loadAlarms(nextProps.selectedRaspberry);
 		}

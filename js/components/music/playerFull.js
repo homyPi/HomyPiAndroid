@@ -123,7 +123,7 @@ class PlayerFull extends React.Component {
 		this.autoUpdateProgress = null;
 
 		this.onProgress = data => {
-			console.log(data);
+			
 			this.setState({progress: data.trackOffset_ms});
 		}
 		this.hidePlayer = () => {
@@ -221,7 +221,7 @@ class PlayerFull extends React.Component {
 				showVolumeBar: !this.state.showVolumeBar,
 				volumeBarBottom: {x: px, y:py}
 			});
-			console.log("===> ", {volumeBarBottom: {x: px, y:py}});
+			
         });
 	}
 	_previous() {
@@ -258,7 +258,7 @@ class PlayerFull extends React.Component {
 	setGetTrackProgressInterval() {
 		let {player} = this.props;
 		if (player && player.status === "PLAYING") {
-			console.log("set it");
+			
 			this.setProgressInterval();
 			this.setAutoUpdateProgress();
 		} else {
@@ -275,7 +275,7 @@ class PlayerFull extends React.Component {
 	_setVolume(value) {
 		this.setState({volume: value});
 		let {player} = this.props;
-		console.log("player:volume:set", {player: {name: player.name}, volume: value});
+		
         publish("raspberry:" + player.name, "player:volume:set", {volume: value});
 		this.props.dispatch(setPlayer({volume: value}))
 

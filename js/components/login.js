@@ -67,7 +67,7 @@ var Login = React.createClass({
           value={this.state.url}
           onChangeText={
             (text) => {
-              console.log("valid? :", Settings.isValidUrl(text));
+              
               this.setState({url: text, urlValid: Settings.isValidUrl(text)})
             }
           } />

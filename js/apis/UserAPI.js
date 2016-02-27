@@ -32,7 +32,7 @@ export default {
 	loadStoredToken: loadStoredToken,
 	getToken: getToken,
 	login(username, password) {
-		console.log("login with ", username, password, " to ", Settings.getServerUrl() + "/api/users/login");
+		
 		return new Promise(function(resolve, reject) {
 			fetch(Settings.getServerUrl() + "/api/users/login",
 				{
@@ -43,20 +43,20 @@ export default {
 					    "Content-Type": "application/json"
 					}
 				}).then(function(response) {
-					console.log("post login =>", response);
+					
 					return response.json();
 				}).then(function(json) {
 					setToken(json.token);
 					return resolve(json.token);
 				}).catch(function(err) {
-					console.log("login...", err, arguments);
-					console.log(err.stack);
+					
+					
 					return reject(err);
 				}).done();
 			});
 	},
 	logout: function() {
 		setToken("");
-		console.log("out: ", token);
+		
 	}
 };

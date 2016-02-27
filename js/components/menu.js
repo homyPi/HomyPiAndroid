@@ -107,7 +107,6 @@ class Menu extends Component {
     let {raspberries} = this.props;
     if (showRaspberriesList) {
       let raspItems = raspberries.map((rasp) => {
-          console.log("===>", styles);
           let style = {...styles.raspItem};
           if (rasp.state === "DOWN")
             style = {...style, ...styles.raspItemDown};
@@ -140,7 +139,7 @@ class Menu extends Component {
             <View style={styles.avatarContainer}>
               <View
                 style={styles.avatar} >
-                <Text style={styles.avatarIcon}>J</Text>
+                <Text style={styles.avatarIcon}>{selectedRaspberry && selectedRaspberry.name && selectedRaspberry.name[0].toUpperCase()}</Text>
               </View>
               <Text style={styles.name}>{(selectedRaspberry)?selectedRaspberry.name: "None"}</Text>
             </View>

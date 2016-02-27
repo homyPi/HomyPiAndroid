@@ -77,7 +77,7 @@ class TrackItem extends React.Component {
 		}
 
 		this.menuCallback = () => {
-			console.log(arguments)
+			
 		}
 	}
 	renderMenu() {

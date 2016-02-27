@@ -18,7 +18,7 @@ export default {
 				}).then(function(json) {
 					return resolve(json.artist);
 				}).catch(function(err) {
-					console.log("...", err);
+					
 					return reject(err);
 				});
 		});
@@ -38,7 +38,7 @@ export default {
 				}).then(function(json) {
 					return resolve(json.artists);
 				}).catch(function(err) {
-					console.log("...", err);
+					
 					return reject(err);
 				});
 		});

@@ -15,7 +15,7 @@ var store = null;
 
 function getMQTTUrl(serverUrl, token) {
   return new Promise((resolve, reject) => {
-    console.log(serverUrl + "/api/config");
+    
     fetch(serverUrl + "api/config", {
       headers: {
             "Accept": "application/json",
@@ -25,7 +25,7 @@ function getMQTTUrl(serverUrl, token) {
       })
       .then(response => response.json())
       .then(json => {
-        console.log("hey hey hey! ", json);
+        
         if (json.status === "success") {
           resolve(json.config.mqtt.url);
         }
@@ -37,7 +37,7 @@ export default {
   setStore: function(s) {store = s},
   connect(token, connectedCallback, disconnectedCallback) {
     
-    console.log("connect socket", (Settings.getServerUrl() + "/"));
+    
     var objUrl = URL.parse(Settings.getServerUrl() + "/");
     var url = "tcp://" + objUrl.hostname + ":3005";
     SocketConnection.createSocket(url, token);
