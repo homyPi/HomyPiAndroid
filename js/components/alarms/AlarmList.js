@@ -7,10 +7,9 @@ import {MKButton} from "react-native-material-kit";
 
 var RefreshableListView = require("react-native-refreshable-listview")
 
-const Dimensions = require("Dimensions");
-const window = Dimensions.get("window");
+const window = require("Dimensions").get("window");
 
-
+import {PLAYER_HEADER_HEIGHT} from "../../Constants";
 import Alarm from "./Alarm";
 
 
@@ -25,8 +24,7 @@ var {
 var styles = {
 	container: {
 		flex: 1,
-		height: (175),
-    	backgroundColor: "#CCCCCC"
+		//height: (175)
 	}
 };
 
@@ -34,8 +32,8 @@ const ColoredFab = MKButton.coloredFab()
   .withStyle({
 		position: "absolute",
 		right: 5,
-		top: window.height - 180,
-		bottom: 0
+		//top: window.height - 190,
+		bottom: 10
 	})
   .build();
 

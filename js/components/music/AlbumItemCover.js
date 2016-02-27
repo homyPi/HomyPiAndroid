@@ -7,7 +7,6 @@ class AlbumItemCover extends Component {
 		this.state = {
 			style: {
 				width: new Animated.Value(initialState.width),
-				height: new Animated.Value(initialState.height),
 				position: new Animated.ValueXY({x: initialState.x, y: initialState.y})
 			}
 		}
@@ -19,12 +18,6 @@ class AlbumItemCover extends Component {
 			Animated.timing(
 		        this.state.style.width, {
 		    	    toValue: finalState.width,
-		            duration: 750,
-		        },
-		    ),
-		    Animated.timing(
-		        this.state.style.height, {
-		    	    toValue: finalState.height,
 		            duration: 750,
 		        },
 		    ),
@@ -43,14 +36,17 @@ class AlbumItemCover extends Component {
 		return require("image!default_cover");
 	}
 	render() {
-		var {album} = this.props;
+		var {album, initialState, finalState} = this.props;
 		var {style} = this.state;
 		return (
 			<Animated.Image
 				style={{
 				  position: "absolute",
 				  width: style.width,
-				  height: style.height,
+				  height: style.width.interpolate({
+				  	inputRange: [initialState.width, finalState.width],
+				  	outputRange: [initialState.height, finalState.height]
+				  }),
 				  transform: style.position.getTranslateTransform()
 				}}
 				source={this.getImageSource(album)} />
