@@ -15,30 +15,32 @@ class AlbumItemCover extends Component {
 	}
 	componentDidMount() {
 		let {finalState} = this.props;
-		Animated.timing(
-	        this.state.style.width, {
-	    	    toValue: finalState.width,
-	            duration: 750,
-	        },
-	    ).start();
-	    Animated.timing(
-	        this.state.style.height, {
-	    	    toValue: finalState.height,
-	            duration: 750,
-	        },
-	    ).start();
-	    Animated.timing(
-	        this.state.style.position, {
-	    	    toValue: {x: finalState.x, y: finalState.y},
-	            duration: 750,
-	        },
-	    ).start();
+		Animated.parallel([
+			Animated.timing(
+		        this.state.style.width, {
+		    	    toValue: finalState.width,
+		            duration: 750,
+		        },
+		    ),
+		    Animated.timing(
+		        this.state.style.height, {
+		    	    toValue: finalState.height,
+		            duration: 750,
+		        },
+		    ),
+		    Animated.timing(
+		        this.state.style.position, {
+		    	    toValue: {x: finalState.x, y: finalState.y},
+		            duration: 750,
+		        },
+		    )
+	    ]).start();
 	}
-	getImageUri(album) {
+	getImageSource(album) {
 		if (album.images.length && album.images[0].url) {
-			return album.images[0].url;
+			return {uri: album.images[0].url};
 		}
-		return "http://i2.wp.com/www.back2gaming.com/wp-content/gallery/tt-esports-shockspin/white_label.gif"
+		return require("image!default_cover");
 	}
 	render() {
 		var {album} = this.props;
@@ -51,7 +53,7 @@ class AlbumItemCover extends Component {
 				  height: style.height,
 				  transform: style.position.getTranslateTransform()
 				}}
-				source={{uri: this.getImageUri(album)}} />
+				source={this.getImageSource(album)} />
 		);
 	}
 }

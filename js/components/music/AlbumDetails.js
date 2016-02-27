@@ -95,20 +95,32 @@ class AlbumDetails extends React.Component {
 		};
 	}
 	componentWillMount() {
-		
 		let {annimatedCover, removeFrontComponent} = this.props;
-		InteractionManager.runAfterInteractions(() => { 
-			if (annimatedCover)
-				removeFrontComponent(this.props.annimatedCover);
-			this.setState({showCover: true});
-			this._animatePlayButton();
+		console.log("get album data");
+		this.getAlbumData((albumData) => {
+			console.log("got data");
+			InteractionManager.runAfterInteractions(() => { 
+				console.log("remove animated cover");
+				if (annimatedCover)
+					removeFrontComponent(annimatedCover);
+				this._animatePlayButton();
+				this.setState({showCover: true, "album": albumData});
+				
+			});
 		});
+		if (annimatedCover) {
+			requestAnimationFrame(() => {
+				console.log("add animated cover");
+				this.props.addFrontComponent(annimatedCover);
+			});
+		}
+		
+		
 	}
 	componentDidMount() {
-		this.getAlbumData();
 	}
 
-	getAlbumData() {
+	getAlbumData(callback) {
 		let {serviceId, source} = this.state.album;
 		fetch(Settings.getServerUrl() + "/api/modules/music/"+ source + "/albums/" + serviceId, {
 	      headers: {
@@ -120,17 +132,18 @@ class AlbumDetails extends React.Component {
 	      .then(response => response.json())
 	      .then(json => {
 	        if (json.status === "error") {
-	            console.log(json.error);
+	            
 	        } else {
-	           this.setState({album: json.data});
+	        	callback(json.data);
 	        }
 	      })
 	}
-	getImageUri(album) {
+	getImageSource(album) {
+		console.log("get source");
 		if (album.images.length && album.images[0].url) {
-			return album.images[0].url;
+			return {uri: album.images[0].url};
 		}
-		return "http://i2.wp.com/www.back2gaming.com/wp-content/gallery/tt-esports-shockspin/white_label.gif"
+		return require("image!default_cover");
 	}
 	render() {
 		let {album} = this.state;
@@ -139,7 +152,7 @@ class AlbumDetails extends React.Component {
 				<View style={styles.coverContainer}>
 					{ this.state.showCover && 
 					  	<Animated.Image ref="cover" style={styles.cover}
-						  source={{uri: this.getImageUri(album)}} />
+						  source={this.getImageSource(album)} />
 					}
 				</View>
 				<View style={styles.albumInfo} >
@@ -206,7 +219,7 @@ class AlbumDetails extends React.Component {
 	_playTrack(track) {
 		let {album} = this.state;
 		if (!album.serviceId || !album.uri || !track._id) {
-			console.log("missing data", track, album);
+			
 			return;
 		}
 		publishToPi("player:play:track", {

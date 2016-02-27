@@ -81,7 +81,7 @@ const styles = {
 		backgroundColor: "white"
 	},
 	scrollView: {
-		height: window.height - (PLAYER_HEADER_HEIGHT + TOP_BAR_HEIGHT + 50)
+		height: window.height - (PLAYER_HEADER_HEIGHT + TOP_BAR_HEIGHT)
   	}
 }
 const SingleColorSpinner = mdl.Spinner.singleColorSpinner()
@@ -112,9 +112,9 @@ class SearchMusic extends React.Component {
 	    this._playTrack = track => {
 			let {player} = this.props;
 			if (!player) {
-				console.log("Missing player!!", player);
+				
 			}
-			console.log("play track on ", player, track);
+			
 			publish("raspberry:" + player.name, "player:play:track", {"source": "spotify", "track": {"uri": track.uri, "serviceId": track.serviceId}});
 		}
 		this.gotoDetails = (album, event) => {
@@ -132,7 +132,7 @@ class SearchMusic extends React.Component {
 				  	width: (window.width),
 				  	height:(3*window.height/5)
 				  }}/>);
-			this.props.addFrontComponent(annimatedCover);
+			
   			Actions.albumDetails({
   				annimatedCover,
   				album,
@@ -152,11 +152,26 @@ class SearchMusic extends React.Component {
   	componentWillUnmount() {
   	}
 	render () {
-		let {search} = this.state;
 		let {isFetching} = this.props.searchMusic;
 		return (
 			<View style={styles.container}>
-				<View style={styles.form}>
+				
+			  	{(isFetching)? this.getLoadingView(): this.getResultsView()}
+			</View>
+		);
+	}
+	getResultsView() {
+		let {artists, tracks, albums} = this.props.searchMusic;
+		let {search} = this.state;
+		if (!this.initialized) return null;
+		return (
+			<View>
+
+			  	<ScrollView
+					automaticallyAdjustContentInsets={true}
+					horizontal={false}
+					style={[styles.scrollView]}>
+					<View style={styles.form}>
 				  	<MKTextField
 				  	  style={styles.input}
 					  tintColor={MKColor.Blue}
@@ -169,20 +184,6 @@ class SearchMusic extends React.Component {
 						<Image style={styles.searchButtonImg} resizeMode={Image.resizeMode.contain} source={require("image!ic_search")} />
 					</TouchableOpacity>
 			  	</View>
-			  	{(isFetching)? this.getLoadingView(): this.getResultsView()}
-			</View>
-		);
-	}
-	getResultsView() {
-		let {artists, tracks, albums} = this.props.searchMusic;
-		if (!this.initialized) return null;
-		return (
-			<View>
-
-			  	<ScrollView
-					automaticallyAdjustContentInsets={true}
-					horizontal={false}
-					style={[styles.scrollView]}>
 							<View style={styles.titleBar}>
 								<Text style={styles.title}>Tracks</Text>
 								<TouchableOpacity
