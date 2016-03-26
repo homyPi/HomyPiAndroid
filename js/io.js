@@ -1,5 +1,4 @@
 var React = require("react-native");
-window.navigator.userAgent = "react-native";
 var socket;
 var config = require("./config.js");
 import playlistSocket from "./sockets/playlistSocket"
@@ -15,7 +14,7 @@ var store = null;
 
 function getMQTTUrl(serverUrl, token) {
   return new Promise((resolve, reject) => {
-    
+
     fetch(serverUrl + "api/config", {
       headers: {
             "Accept": "application/json",
@@ -25,7 +24,7 @@ function getMQTTUrl(serverUrl, token) {
       })
       .then(response => response.json())
       .then(json => {
-        
+
         if (json.status === "success") {
           resolve(json.config.mqtt.url);
         }
@@ -36,8 +35,8 @@ function getMQTTUrl(serverUrl, token) {
 export default {
   setStore: function(s) {store = s},
   connect(token, connectedCallback, disconnectedCallback) {
-    
-    
+
+
     var objUrl = URL.parse(Settings.getServerUrl() + "/");
     var url = "tcp://" + objUrl.hostname + ":3005";
     SocketConnection.createSocket(url, token);

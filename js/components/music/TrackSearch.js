@@ -32,6 +32,7 @@ const styles = {
 	},
 	searchButtonImg: {
 		height: 40,
+        width: 40,
 		alignSelf: "center"
 	},
 	form: {
@@ -43,10 +44,7 @@ const styles = {
 		flex:1
 	},
 	scrollView: {
-  	},
-	searchButtonImg: {
-		width: 40
-	}
+  	}
 };
 var load = false;
 class TrackSearch extends Component {
@@ -56,7 +54,7 @@ class TrackSearch extends Component {
 			search: props.search || ""
 		}
 		this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
-		
+
 		this._handleSearch = () => {
 	  		if (this.state.search) {
 	  			this.props.dispatch(search(this.props.user, this.props.search, "track", 30));
@@ -67,8 +65,8 @@ class TrackSearch extends Component {
 		this._handleSearch();
 	}
 	componentDidMount() {
-		InteractionManager.runAfterInteractions(() => { 
-			
+		InteractionManager.runAfterInteractions(() => {
+
 		});
   	}
   	componentDidUpdate(prevProps) {
@@ -105,12 +103,12 @@ class TrackSearch extends Component {
 	      			onEndReachedThreshold={PLAYER_HEADER_HEIGHT*2.5}
 	      			renderRow={(track)=> <Track key={track._id} track={track} showCover={true} key={track.id} /> }
 	      			onEndReached={()=>{this._loadMore()}} />
-			</View>	
+			</View>
 		);
 	}
 
 	_loadMore() {
-		
+
 		let {isFetching, items} = this.props.searchTracks;
 		let {dispatch, user} = this.props;
 		if(!isFetching) {

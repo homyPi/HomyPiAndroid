@@ -61,7 +61,7 @@ class AlbumItem extends React.Component {
 	}
 	componentDidUpdate() {
 		this.refs.cover.measure( (fx, fy, width, height, px, py) => {
-			
+
 			this.coverDimensions = {px, py, width, height};
         });
 	}
@@ -76,7 +76,7 @@ class AlbumItem extends React.Component {
 		return (
 			<TouchableNativeFeedback
 			  delayLongPress={3000}
-              onPress={()=>{this.handlePress()}} 
+              onPress={()=>{this.handlePress()}}
               onLongPress={()=>{this.handleLongPress()}}
         	  background={TouchableNativeFeedback.SelectableBackground()} >
 				<View style={styles.container}>
@@ -91,15 +91,15 @@ class AlbumItem extends React.Component {
 			</TouchableNativeFeedback>
 		)
 	}
-	handlePress() {	
+	handlePress() {
 		this.props.gotoDetails(this.props.album, this.coverDimensions);
 	}
 	handleLongPress() {
-		
+
 		this.playAlbum();
 	}
 	playAlbum() {
-		
+
 		let {album, player} = this.props;
 		if (!player) return;
 		publish("raspberry:" + player.name, "player:play:track", {

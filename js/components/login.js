@@ -63,11 +63,11 @@ var Login = React.createClass({
     }
     return (
           <View style={this.styles.container}>
-          <Textfield 
+          <Textfield
           value={this.state.url}
           onChangeText={
             (text) => {
-              
+
               this.setState({url: text, urlValid: Settings.isValidUrl(text)})
             }
           } />

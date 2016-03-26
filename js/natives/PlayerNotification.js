@@ -2,11 +2,11 @@ import {NativeModules} from "react-native";
 var RCTDeviceEventEmitter = require("RCTDeviceEventEmitter");
 
 let PlayerNotification = NativeModules.PlayerNotification;
-
+let store;
 let unsubscribe;
 
 var setPlaying = function(player, track) {
-	
+
 	if (track && track.name) {
 		PlayerNotification.setPlayerName(player.name);
 		PlayerNotification.setTrackName(track.name);
@@ -27,7 +27,7 @@ var setPlaying = function(player, track) {
 export function subscribe(newStore) {
 	if (unsubscribe) unsubscribe();
 	store = newStore;
-	currentState = store.getState().playlist;
+	var currentState = store.getState().playlist;
 	store.subscribe(() => {
     	let nextState = store.getState().playlist;
     	if (currentState.playing !== nextState.playing) {

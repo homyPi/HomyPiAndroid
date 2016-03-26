@@ -52,12 +52,12 @@ var App = React.createClass({
 
   render: function() {
     var initialRoute = {name: "searchMusic"};
-    
+
     let nav = null;
 
     var menu = <Menu pushRoute={this._push} closeMenu={this.closeMenu} logout={() => this._logout()}/>;
     return (
-        <Drawer 
+        <Drawer
           content={menu}
           ref="sideMenu"
           openDrawerThreshold={0.35}
@@ -70,12 +70,12 @@ var App = React.createClass({
           })}
           openDrawerOffset={100}>
           <TopMenu openMenu={this.openSideMenu} />
-          <View style={this.styles.container}> 
+          <View style={this.styles.container}>
 
-            <AppRoutes route={this.props.route} 
+            <AppRoutes route={this.props.route}
               addFrontComponent={(component, zIndex)=> this.addFrontComponent(component, zIndex)}
               removeFrontComponent={(component)=> this.removeFrontComponent(component)} />
-            
+
             <View style={{position: "absolute", top: 0, left: 0}}>
               {this.state.frontComponents.map(component => (component))}
             </View>
@@ -104,7 +104,7 @@ var App = React.createClass({
     this.setState({frontComponents});
   },
   removeFrontComponent: function(component) {
-    
+
     var index = this.state.frontComponents.find(fc => {
       return (fc.props.component == component)
     });

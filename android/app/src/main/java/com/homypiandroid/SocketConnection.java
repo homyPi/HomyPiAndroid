@@ -19,7 +19,6 @@ import android.widget.Toast;
 import android.content.ComponentName;
 import android.content.Intent;
 
-import io.socket.emitter.Emitter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,7 +47,7 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 
 
     private HomyMqtt mqtt;
-    
+
 	public SocketConnection(ReactApplicationContext reactContext, Activity activity) {
 		super(reactContext);
 		this.mqtt = HomyMqtt.getInstance();
@@ -63,7 +62,7 @@ public class SocketConnection extends ReactContextBaseJavaModule {
       				.emit("MQTT_STATUS", "CONNECTED");
 			return;
 		}
-		mqtt.createClient(context, serverUrl, "foudefafa")
+		mqtt.createClient(context, serverUrl, token)
 			.onConnected(new IMqttActionListener() {
 				@Override
 				public void onSuccess(IMqttToken mqttToken) {
@@ -93,10 +92,6 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 			*/
 	}
 
-	public void off(String event, Emitter.Listener callback) {
-		/*if (socketService == null) return;
-		socketService.off(event, callback);*/
-	}
 
 	@ReactMethod
 	public void clearEvents() {
@@ -130,7 +125,7 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 			Log.i(TAG, "Publishing " +event + " to " + topic);
 			if (data != null)
 				this.mqtt.publish(topic, event, new JSONObject(data));
-			else 
+			else
 				this.mqtt.publish(topic, event);
 		} catch(JSONException e) {
 			Log.i(TAG, "Failed to publish " + event + ": " + e.getMessage());
@@ -143,7 +138,7 @@ public class SocketConnection extends ReactContextBaseJavaModule {
 			Log.i(TAG, "Publishing " +event + " to pi");
 			if (data != null)
 				this.mqtt.publishToPi(event, new JSONObject(data));
-			else 
+			else
 				this.mqtt.publishToPi(event);
 		} catch(JSONException e) {
 			Log.i(TAG, "Failed to publish " + event + ": " + e.getMessage());

@@ -10,7 +10,7 @@
     "keymirror": "^0.1.1",
     "object-assign": "^4.0.1",
     "react": "^0.14.3",
-    "react-native": "^0.20.0",
+    "react-native": "^0.22.2",
     "react-native-date": "^1.0.2",
     "react-native-drawer": "^1.16.7",
     "react-native-dropdown": "0.0.6",

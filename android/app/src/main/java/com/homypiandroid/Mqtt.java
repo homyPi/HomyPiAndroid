@@ -25,20 +25,23 @@ import android.os.Handler;
 
 public class Mqtt {
 	private static final String TAG = "Mqtt";
-	private static final long RECONNECT_INTERVAL = 2000; // 2000ms
+	private static final long RECONNECT_INTERVAL = 10000; // 10000ms
 	protected static Mqtt instance;
 
 	private boolean reconnectionPlanned = false;
 
 	private MqttAndroidClient client;
 
-	
+
 	private HashMap<String, ArrayList<EventCallback>> events = new HashMap<>();
 	private ArrayList<IMqttActionListener> onConnectedCallbacks = new ArrayList<IMqttActionListener>();
 
 	private Context context;
 	private String url;
 	private String userId;
+
+    private ArrayList<EventCallback> connectedCallback = new ArrayList<EventCallback>();
+    private ArrayList<EventCallback> disconnectedCallback = new ArrayList<EventCallback>();
 
 	private Thread mReconnectThread;
 
@@ -78,6 +81,9 @@ public class Mqtt {
 				} else {
 					Log.i(TAG, "Connection lost for unknown reasons");
 				}
+                for(EventCallback callback: disconnectedCallback) {
+                    callback.call(null, null);
+                }
 				if (mReconnectThread == null) {
 					mReconnectThread = new Thread(new ReconnectRunnable());
 					mReconnectThread.start();
@@ -112,7 +118,7 @@ public class Mqtt {
 		//options.setCleanSession(false);
 		Log.i(TAG, "Connecting...");
 		try {
-			
+
 			client.connect(options, null, new IMqttActionListener() {
 		        @Override
 		        public void onSuccess(IMqttToken mqttToken) {
@@ -129,6 +135,9 @@ public class Mqtt {
 						mReconnectThread.interrupt();
 						mReconnectThread = null;
 					}
+                    for(EventCallback callback: connectedCallback) {
+                        callback.call(null, null);
+                    }
 		            for(IMqttActionListener callback: onConnectedCallbacks)
 		            	callback.onSuccess(mqttToken);
 		        }
@@ -160,6 +169,20 @@ public class Mqtt {
 	public boolean isConnected() {
 		return (this.client != null && this.client.isConnected());
 	}
+
+    public void onConnected(EventCallback callback) {
+        this.connectedCallback.add(callback);
+    }
+    public void removeOnConnectedCallback(EventCallback callback) {
+        this.connectedCallback.remove(callback);
+    }
+
+    public void onDisconnected(EventCallback callback) {
+        this.disconnectedCallback.add(callback);
+    }
+    public void removeOnDisconnectedCallback(EventCallback callback) {
+        this.disconnectedCallback.remove(callback);
+    }
 
 	public Mqtt subscribe(String topic) {
 		int i = existInTopics(topic);
@@ -287,4 +310,3 @@ public class Mqtt {
         }
     }
 }
-

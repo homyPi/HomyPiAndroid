@@ -4,6 +4,7 @@ var serverUrl = null;
 
 var isValidUrl = function(url) {
 	var urlregex = /^http:\/\/\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/;
+    if (!url) return false;
     if (!url.endsWith("/")) {
     	url = url + "/";
     }

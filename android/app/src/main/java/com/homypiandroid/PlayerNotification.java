@@ -35,9 +35,6 @@ import android.util.Log;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import io.socket.client.Socket;
-
-import io.socket.emitter.Emitter;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -55,7 +52,7 @@ public class PlayerNotification extends ReactContextBaseJavaModule implements Li
   private ReactApplicationContext conte;
   private Activity mActivity = null;
   boolean mBounded;
-  
+
   private NotificationManager mNotificationManager;
   private static final int NOTIFICATION_ID = 1;
   private int icon = R.drawable.ic_play_circle_outline_grey600_36dp;
@@ -239,15 +236,15 @@ public class PlayerNotification extends ReactContextBaseJavaModule implements Li
     if (mNotificationManager != null)
       mNotificationManager.cancel(NOTIFICATION_ID);
   }
-  
+
   @ReactMethod
   public void setSocketListeners() {
 
     Log.i(TAG, "setting Listeners");
     this.mqtt.on("player:status", this.onPlayingUpdated);
 
-    //socketService.on(Socket.EVENT_DISCONNECT, this.onDisconnected);
-    
+    this.mqtt.onDisconnected(this.onDisconnected);
+
     /*
     Log.i("PlayerNotification", "In setSocketListeners");
     if (socketService == null) return;

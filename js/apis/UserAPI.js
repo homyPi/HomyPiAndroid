@@ -32,7 +32,7 @@ export default {
 	loadStoredToken: loadStoredToken,
 	getToken: getToken,
 	login(username, password) {
-		
+
 		return new Promise(function(resolve, reject) {
 			fetch(Settings.getServerUrl() + "/api/users/login",
 				{
@@ -43,20 +43,20 @@ export default {
 					    "Content-Type": "application/json"
 					}
 				}).then(function(response) {
-					
+
 					return response.json();
 				}).then(function(json) {
 					setToken(json.token);
 					return resolve(json.token);
 				}).catch(function(err) {
-					
-					
+
+
 					return reject(err);
 				}).done();
 			});
 	},
 	logout: function() {
 		setToken("");
-		
+
 	}
 };
