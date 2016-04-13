@@ -114,6 +114,7 @@ public class Mqtt {
 	}
 	public Mqtt connect() {
 		if (this.client.isConnected()) return this;
+        final String url = this.url;
 		MqttConnectOptions options = new MqttConnectOptions();
 		//options.setCleanSession(false);
 		Log.i(TAG, "Connecting...");
@@ -146,7 +147,9 @@ public class Mqtt {
 		        public void onFailure(IMqttToken mqttToken, Throwable arg1) {
 		            // TODO Auto-generated method stub
 		            if (arg1 != null)
-		            	Log.i(TAG, "Client connection failed: "+arg1.getMessage() + " ==> (" + this + ")");
+		            	Log.i(TAG, "Client connection failed to " + url + ": "+arg1.getMessage() + " ==> (" + this + ")");
+                     else
+                        Log.i(TAG, "Client connection failed to " + url + " for unknown reasons...");
 		            mqttToken.setActionCallback(null);	//Avoid this callback to be called again
 		            if (!(arg1 instanceof MqttException)) {
 		            	Log.i(TAG, "exception", arg1);

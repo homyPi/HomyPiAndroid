@@ -101,7 +101,7 @@ class TrackSearch extends Component {
 	      			dataSource={this.ds}
 	      			horizontal={false}
 	      			onEndReachedThreshold={PLAYER_HEADER_HEIGHT*2.5}
-	      			renderRow={(track)=> <Track key={track._id} track={track} showCover={true} key={track.id} /> }
+	      			renderRow={(track)=> <Track track={track} showCover={true} key={track.id} /> }
 	      			onEndReached={()=>{this._loadMore()}} />
 			</View>
 		);

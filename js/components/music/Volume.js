@@ -6,7 +6,7 @@ class Volume extends React.Component {
     constructor (props) {
         super(props);
         this.percentage = 100;
-       
+
     }
     setTouch(e) {
         return true;
@@ -42,11 +42,11 @@ class Volume extends React.Component {
         1 = 160
         67 = x
          */
-        containerHeight = 200;
+        const containerHeight = 200;
         let containerStyle = {
             "position": "absolute",
             top: bottom.y-(containerHeight + 50),
-            "left": bottom.x,   
+            "left": bottom.x,
             "height": containerHeight,
             "width": 30,
             "backgroundColor": "#667278"
@@ -55,7 +55,7 @@ class Volume extends React.Component {
             "position": "absolute",
             bottom: 0,
             "backgroundColor": "#FC561E",
-            "height": (containerHeight*value/max), 
+            "height": (containerHeight*value/max),
             "marginLeft": 5,
             "marginRight": 5,
             "width": 20

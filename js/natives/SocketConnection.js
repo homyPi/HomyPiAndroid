@@ -24,7 +24,7 @@ function exist(event, callback) {
 }
 function off(event, callback) {
 	if (!listeners[event]) return;
-	i = listeners[event].length;
+	var i = listeners[event].length;
 	while (i--) {
 	    if (listeners[event][i].callback === callback) {
 	    	socket.off(listeners[event][i].id);
@@ -65,18 +65,18 @@ export default {
 	on: function(event, callback) {
 			if (exist(event, callback)) return;
 			socket.on(event, function(listenerId) {
-				
+
 				addListener(listenerId, event, callback);
 			});
-			
+
 			DeviceEventEmitter.addListener(event, function(data) {
-				
+
 				var json;
 				if(data) {
 					try {
 						json = JSON.parse(data);
 					} catch(e) {
-						
+
 						return;
 					}
 				}

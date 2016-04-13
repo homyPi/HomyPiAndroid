@@ -112,9 +112,9 @@ class SearchMusic extends React.Component {
 	    this._playTrack = track => {
 			let {player} = this.props;
 			if (!player) {
-				
+
 			}
-			
+
 			publish("raspberry:" + player.name, "player:play:track", {"source": "spotify", "track": {"uri": track.uri, "serviceId": track.serviceId}});
 		}
 		this.gotoDetails = (album, event) => {
@@ -132,7 +132,7 @@ class SearchMusic extends React.Component {
 				  	width: (window.width),
 				  	height:(3*window.height/5)
 				  }}/>);
-			
+
   			Actions.albumDetails({
   				annimatedCover,
   				album,
@@ -140,9 +140,9 @@ class SearchMusic extends React.Component {
   			});
 		}
 	}
-	
+
   	componentDidMount() {
-  		InteractionManager.runAfterInteractions(() => { 
+  		InteractionManager.runAfterInteractions(() => {
     		if (this.props.searchMusic.query != "") {
 	    		this._handleSearch(true);
 	    	}
@@ -155,7 +155,7 @@ class SearchMusic extends React.Component {
 		let {isFetching} = this.props.searchMusic;
 		return (
 			<View style={styles.container}>
-				
+
 			  	{(isFetching)? this.getLoadingView(): this.getResultsView()}
 			</View>
 		);
@@ -198,7 +198,7 @@ class SearchMusic extends React.Component {
 							  			return (<Track key={track._id} track={track} showCover={true} playTrack={this._playTrack} addTrack={this._addTrackInPlaylist}/>);
 							  		})
 							  	}
-							  	
+
 							</View>
 							<View style={styles.titleBar}>
 								<Text style={styles.title}>Albums</Text>
@@ -235,11 +235,11 @@ class SearchMusic extends React.Component {
 			</View>
 		)
 	}
-	
+
 	getLoadingView() {
 		return (<SingleColorSpinner/>);
 	}
-	
+
 	renderArtistItem(result) {
 		return (
 			<ArtistItem key={result.id} artist={result} playAlbum={this._playAlbum}/>

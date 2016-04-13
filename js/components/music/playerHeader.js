@@ -21,7 +21,7 @@ import Io from "../../io";
 
 var PlayerHeader = React.createClass({
 	componentDidMount() {
-		
+
 	},
 	componentWillUnmount() {
 	},
@@ -75,7 +75,8 @@ var PlayerHeader = React.createClass({
 		},
 		trackInfoHighlight: {
 			flex: 0.5,
-			alignSelf: "center"
+			alignSelf: "center",
+            backgroundColor: "white"
 		},
 		trackInfo: {
 			flexDirection: "column"
